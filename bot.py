@@ -1,19 +1,30 @@
 # coding: utf-8
 
-import requests
+# import requests
 import discord
-from discord.ext import commands
+import re
 
 bot = discord.Client()
 bot_id = None
 avatar_url = None
-# bot = commands.Bot(command_prefix="?")
+
+autogen_fusion_url = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Japeal/"
 
 sprite_gallery_id = 858107956326826004
 bot_log_id = 616239403957747742
 infinite_fusion_discord_id = 293500383769133056
 
 bot_log_channel = None
+
+green_colour = discord.Colour(0x2ecc71)
+orange_colour = discord.Colour(0xe67e22)
+red_colour = discord.Colour(0xe74c3c)
+
+title_ignored = "Ignored"
+title_accepted = "Accepted"
+
+description_missing_sprite = "Missing fusion sprite"
+description_missing_fusion_id = "Unable to identify fusion sprite"
 
 @bot.event
 async def on_ready():
@@ -46,8 +57,57 @@ async def on_guild_remove(guild):
 @bot.event
 async def on_message(message):
     if(message.channel.id == sprite_gallery_id):
-        get_fusion_id(message.content)
-        await bot_log_channel.send(content=message.content)
+
+        valid_fusion = False
+        fusion_id = None
+        thumbnail_url = None
+
+        if len(message.attachments) >= 1:
+            filename = message.attachments[0].filename
+            thumbnail_url = message.attachments[0].url
+            pattern = '([0-9]+)\.([0-9]+)'
+            result = re.match(pattern, filename)
+            if result:
+                # Existing attachment + valid file name
+                valid_fusion = True
+                fusion_id = result[0]
+                description = fusion_id
+                image_url = autogen_fusion_url + fusion_id.split(".")[0] + "/" + fusion_id + ".png"
+
+            else:
+                result = re.match(pattern, message.content) 
+                if result:
+                    # Existing attachment + valid description
+                    valid_fusion = True
+                    fusion_id = result[0]
+                    description = fusion_id
+                    image_url = autogen_fusion_url + fusion_id.split(".")[0] + "/" + fusion_id + ".png"
+
+                else:
+                    # Existing attachment + impossible to detect fusion id
+                    description = description_missing_fusion_id
+
+        else:
+            # Missing attachment (no sprite)
+            description = description_missing_sprite
+
+        if valid_fusion:
+            title = title_accepted + " : " + description
+            colour = green_colour
+        else:
+            title = title_ignored + " : " + description
+            colour = orange_colour
+
+        embed = discord.Embed(title=title, colour=colour, description="[Link to message](" + message.jump_url + ")")
+        embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
+        embed.set_footer(text=message.content)
+        if thumbnail_url:
+            embed.set_thumbnail(url=thumbnail_url)
+
+        if image_url:
+            embed.set_image(url=image_url)
+
+        await bot_log_channel.send(embed=embed)
     pass
 
 
@@ -92,8 +152,6 @@ async def f(ctx):
             await ctx.channel.send(content=message_not_found)
 """
 
-
 # The token of the bot is stored inside a file
 token = open("token.txt").read().rstrip()
-
 bot.run(token)
