@@ -1,8 +1,8 @@
 # coding: utf-8
 
-# import requests
 import discord
 import re
+import sheet
 
 # Custom sprite is displayed in the thumbnail
 compact_mode = "compact_mode"
@@ -85,6 +85,7 @@ def extract_data(message):
     description = description_error
     attachment_url = None
     autogen_url = None
+    fusion_id = None
 
     if len(message.attachments) >= 1:
         filename = message.attachments[0].filename
@@ -115,8 +116,7 @@ def extract_data(message):
         # Missing attachment (no sprite)
         description = description_missing_sprite
 
-    return valid_fusion, description, attachment_url, autogen_url
-
+    return valid_fusion, description, attachment_url, autogen_url, fusion_id
 
 @bot.event
 async def on_ready():
@@ -150,21 +150,16 @@ async def on_guild_remove(guild):
 async def on_message(message):
     if(message.channel.id == sprite_gallery_id):
 
-        valid_fusion, description, attachment_url, autogen_url = extract_data(message)
-
+        valid_fusion, description, attachment_url, autogen_url, fusion_id = extract_data(message)
         embed = create_embed(valid_fusion, description, message.jump_url)
         embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
         embed.set_footer(text=message.content)
         embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
-
         await bot_log_channel.send(embed=embed)
-    pass
+        
+        if valid_fusion:
+            sheet.validate_fusion(fusion_id)
 
-
-def get_fusion_id(content):
-    print(content.split("."))
-
-
-# The token of the bot is stored inside a file
-token = open("token.txt").read().rstrip()
-bot.run(token)
+if sheet.init():
+    token = open("token.txt").read().rstrip()
+    bot.run(token)
