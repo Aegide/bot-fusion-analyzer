@@ -89,8 +89,8 @@ def extract_data(message):
     if len(message.attachments) >= 1:
         filename = message.attachments[0].filename
         attachment_url = message.attachments[0].url
-        pattern = '([0-9]+)\.([0-9]+)'
-        result = re.match(pattern, filename)
+        pattern = '[0-9]+\.[0-9]+'
+        result = re.search(pattern, filename)
         if result:
             # Existing attachment + valid file name
             valid_fusion = True
@@ -99,7 +99,7 @@ def extract_data(message):
             autogen_url = autogen_fusion_url + fusion_id.split(".")[0] + "/" + fusion_id + ".png"
 
         else:
-            result = re.match(pattern, message.content) 
+            result = re.search(pattern, message.content)
             if result:
                 # Existing attachment + valid description
                 valid_fusion = True
