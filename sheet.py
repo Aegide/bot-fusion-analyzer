@@ -36,10 +36,13 @@ def get_fusion_data(head_id, body_id):
     return gspread.models.Worksheet.cell(wks, row, col)
 
 def set_fusion_data(head_id, body_id, new_value):
-    row = row_fusion_init + int(body_id)
-    col = col_fusion_init + int(head_id)
-    cell = gspread.utils.rowcol_to_a1(row, col)
-    wks.update_acell(cell, new_value)
+    row = row_fusion_init + body_id
+    col = col_fusion_init + head_id
+    if wks.col_count >= col and wks.row_count >= row: 
+        cell = gspread.utils.rowcol_to_a1(row, col)
+        wks.update_acell(cell, new_value)
+    else:
+        print("set_fusion_data", head_id, body_id)
 
 def validate_fusion(fusion_id):
     split_fusion_id = fusion_id.split(".")
