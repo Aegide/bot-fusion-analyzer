@@ -23,10 +23,13 @@ avatar_url = None
 autogen_fusion_url = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Japeal/"
 
 sprite_gallery_id = 858107956326826004
-bot_log_id = 616239403957747742
 infinite_fusion_discord_id = 293500383769133056
 
-bot_log_channel = None
+aegide_log_id = 616239403957747742
+infinite_fusion_log_id = None
+
+bot_log_ids = [aegide_log_id]
+bot_log_channels = []
 
 green_colour = discord.Colour(0x2ecc71)
 orange_colour = discord.Colour(0xe67e22)
@@ -118,6 +121,10 @@ def extract_data(message):
 
     return valid_fusion, description, attachment_url, autogen_url, fusion_id
 
+async def send_bot_logs(embed):
+    for bot_log_channel in bot_log_channels:
+        await bot_log_channel.send(embed=embed)
+
 @bot.event
 async def on_ready():
 
@@ -130,9 +137,10 @@ async def on_ready():
     owner = app_info.owner
     avatar_url = owner.avatar_url_as(static_format='png', size=256)
 
-    global bot_log_channel
+    global bot_log_channels
     infinite_fusion_discord_server = bot.get_guild(infinite_fusion_discord_id)
-    bot_log_channel = infinite_fusion_discord_server.get_channel(bot_log_id)
+    for bot_log_id in bot_log_ids:
+        bot_log_channels.append(infinite_fusion_discord_server.get_channel(bot_log_id))
 
     print("\n\n")
     print("Ready! bot invite:\n\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot")
@@ -155,7 +163,7 @@ async def on_message(message):
         embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
         embed.set_footer(text=message.content)
         embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
-        await bot_log_channel.send(embed=embed)
+        await send_bot_logs(embed)
         
         if valid_fusion:
             sheet.validate_fusion(fusion_id)
