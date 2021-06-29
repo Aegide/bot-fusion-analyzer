@@ -164,43 +164,6 @@ async def on_message(message):
 def get_fusion_id(content):
     print(content.split("."))
 
-"""
-@bot.event
-async def on_command_error(ctx, error):
-    print(ctx.author, ":", ctx.message.content, ":", error)
-
-@bot.command()
-async def f(ctx):
-    content = ctx.message.content[3:]
-    split = content.split(" ")
-    poke_head = split[0]
-    poke_body = split[1]
-    fusion = poke_head + "." + poke_body
-    filename = poke_head + "." + poke_body + ".png"
-    url = fusion_url + filename
-
-    username = ctx.message.author
-    server = ctx.message.guild
-
-    if(requests.get(url).status_code == 200):
-        embed = discord.Embed(title=fusion, description="Custom sprite")
-        embed.set_footer(text="Aegide", icon_url=avatar_url)
-        embed.set_image(url=url)
-        print(username, ":", fusion, "(", server, ")")
-        await ctx.channel.send(embed=embed)
-    else:
-        url = japeal_url + poke_head + "/" + filename
-
-        if(requests.get(url).status_code == 200):
-            embed = discord.Embed(title=fusion, description="Autogen sprite")
-            embed.set_footer(text="Aegide", icon_url=avatar_url)
-            embed.set_image(url=url)
-            print(username, ":", fusion, "(", server, ")")
-            await ctx.channel.send(embed=embed)
-        else:
-            print(username, ":", fusion, ":", "NOT FOUND", "(", server, ")")
-            await ctx.channel.send(content=message_not_found)
-"""
 
 # The token of the bot is stored inside a file
 token = open("token.txt").read().rstrip()
