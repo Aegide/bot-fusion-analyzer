@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import discord
+# from discord.ext import commands
 import re
 import sheet
 
@@ -17,6 +18,7 @@ display_mode = compact_mode
 
 
 bot = discord.Client()
+# bot = commands.Bot(command_prefix='$')
 bot_id = None
 avatar_url = None
 
@@ -123,7 +125,8 @@ def extract_data(message):
 
 async def send_bot_logs(embed):
     await aegide_log_channel.send(embed=embed)
-
+    # await infinite_fusion_log_channel.send(embed=embed)
+    
 @bot.event
 async def on_ready():
 
@@ -140,6 +143,10 @@ async def on_ready():
     aegide_server = bot.get_guild(aegide_server_id)
     aegide_log_channel = aegide_server.get_channel(aegide_log_id)
 
+    # global infinite_fusion_log_channel
+    # infinite_fusion_server = bot.get_guild(infinite_fusion_server_id)
+    # infinite_fusion_log_channel = infinite_fusion_server.get_channel(infinite_fusion_log_id)
+
     print("\n\n")
     print("Ready! bot invite:\n\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot")
     print("\n\n")
@@ -147,24 +154,35 @@ async def on_ready():
 @bot.event
 async def on_guild_join(guild):
     print("JOINED THE SERVER :", guild)
+    embed = discord.Embed(title="Joined the server", colour=green_colour, description=guild)
+    embed.set_thumbnail(url=guild.icon_url)
+    await aegide_log_channel.send(embed=embed)
 
 @bot.event
 async def on_guild_remove(guild):
     print("REMOVED FROM THE SERVER :", guild)
+    embed = discord.Embed(title="Removed from server", colour=red_colour, description=guild)
+    embed.set_thumbnail(url=guild.icon_url)
+    await aegide_log_channel.send(embed=embed)
 
 @bot.event
 async def on_message(message):
     if(message.channel.id == sprite_gallery_id):
-
         valid_fusion, description, attachment_url, autogen_url, fusion_id = extract_data(message)
         embed = create_embed(valid_fusion, description, message.jump_url)
         embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
         embed.set_footer(text=message.content)
         embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
         await send_bot_logs(embed)
-        
         if valid_fusion:
             sheet.validate_fusion(fusion_id)
+
+    elif message.channel.id == aegide_log_id and message.author.id != bot_id:
+        if(message.content.startswith("%" + "test")):
+            await message.channel.send(content=message.content)
+        
+        elif(message.content.startswith("%" + "update")):
+            await message.channel.send(content=message.content)
 
 if sheet.init():
     token = open("token.txt").read().rstrip()
