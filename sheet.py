@@ -3,9 +3,9 @@ import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
 
 spreadsheet_name = "Pokemon IF Sprite Completion (discord bot)"
-worksheet_name = "TestSheet"
-row_fusion_init = 6
-col_fusion_init = 3
+worksheet_name = "Full dex"
+row_fusion_init = 9
+col_fusion_init = 8
 
 no_fusion = ""
 valid_fusion = "x"
