@@ -158,6 +158,34 @@ async def remove_log_channel(channel):
     embed.set_thumbnail(url=channel.guild.icon_url)
     await aegide_log_channel.send(embed=embed)
 
+async def handle_sprite_gallery(message):
+    valid_fusion, description, attachment_url, autogen_url, fusion_id = extract_data(message)
+    embed = create_embed(valid_fusion, description, message.jump_url)
+    embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
+    embed.set_footer(text=message.content)
+    embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
+    await send_bot_logs(embed)
+    if valid_fusion:
+        sheet.validate_fusion(fusion_id)
+
+async def handle_command(message):
+    content = message.content
+    if(message.channel in log_channels):
+        if(content.startswith("%" + "hello")):
+            await message.channel.send(content=content)
+        elif(content.startswith("%" + "update")):
+            pass
+        elif(content.startswith("%" + "test")):
+            await send_test_embed()
+        elif(content.startswith("%" + "remove")):
+            await message.channel.send(content="Channel removed")
+            await remove_log_channel(message.channel)
+        elif(content.startswith("%" + "add")):
+            await message.channel.send(content="Channel already added")
+    else:
+        if(content.startswith("%" + "add")):
+            await message.channel.send(content="Channel added")
+            await add_log_channel(message.channel)
 
 @bot.event
 async def on_ready():
@@ -201,44 +229,11 @@ async def on_guild_remove(guild):
 
 @bot.event
 async def on_message(message):
-    
     if message.author.id != bot_id:
-
         if(message.channel.id == sprite_gallery_id):
-            valid_fusion, description, attachment_url, autogen_url, fusion_id = extract_data(message)
-            embed = create_embed(valid_fusion, description, message.jump_url)
-            embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
-            embed.set_footer(text=message.content)
-            embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
-            await send_bot_logs(embed)
-            if valid_fusion:
-                sheet.validate_fusion(fusion_id)
-
+            await handle_sprite_gallery(message)
         else:
-            content = message.content
-
-            if(message.channel in log_channels):
-            
-                if(content.startswith("%" + "hello")):
-                    await message.channel.send(content=content)
-            
-                elif(content.startswith("%" + "update")):
-                    pass
-
-                elif(content.startswith("%" + "test")):
-                    await send_test_embed()
-
-                elif(content.startswith("%" + "remove")):
-                    await message.channel.send(content="Channel removed")
-                    await remove_log_channel(message.channel)
-
-                elif(content.startswith("%" + "add")):
-                    await message.channel.send(content="Channel already added")
-
-            else:
-                if(content.startswith("%" + "add")):
-                    await message.channel.send(content="Channel added")
-                    await add_log_channel(message.channel)
+            await handle_command(message)
 
 if sheet.init():
     token = open("token.txt").read().rstrip()
