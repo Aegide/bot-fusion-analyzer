@@ -14,7 +14,7 @@ safe_mode = "safe_mode"
 # Custom sprite is displayed, autogen equivalent is displayed in the thumbnail
 extended_mode = "extended_mode"
 
-display_mode = compact_mode
+display_mode = safe_mode
 
 
 bot = discord.Client()
@@ -34,9 +34,11 @@ aegide_log_id = 616239403957747742
 aegide_log_channel = None
 
 # Output - katten
+"""
 katten_server_id = 750734964823294033
 katten_log_id = 750734964823294036
 katten_log_channel = None
+"""
 
 # Output - regular
 log_channels = set()
@@ -174,10 +176,12 @@ async def on_ready():
     aegide_log_channel = aegide_server.get_channel(aegide_log_id)
     log_channels.add(aegide_log_channel)
 
+    """
     global katten_log_channel
     katten_server = bot.get_guild(katten_server_id)
     katten_log_channel = katten_server.get_channel(katten_log_id)
     log_channels.add(katten_log_channel)
+    """
 
     print("\n\n")
     print("Ready! bot invite:\n\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot")
@@ -198,9 +202,6 @@ async def on_guild_remove(guild):
 @bot.event
 async def on_message(message):
     
-    if (message.guild.id != 302153478556352513):
-        print(">", message.author, "(", message.guild.name, "/", message.channel.name, ") :", message.content)
-
     if message.author.id != bot_id:
 
         if(message.channel.id == sprite_gallery_id):
