@@ -31,9 +31,22 @@ def init():
         successful_init = False
     return successful_init
 
+
+def get_fusion_data_by_fusion_id(fusion_id):
+    split_fusion_id = fusion_id.split(".")
+    if len(split_fusion_id) == 2:
+        head_id, body_id = int(split_fusion_id[0]), int(split_fusion_id[1])
+        return get_fusion_data(head_id, body_id)
+    
+    
 def get_fusion_data(head_id, body_id):
     row, col = row_fusion_init + body_id, col_fusion_init + head_id
-    return gspread.models.Worksheet.cell(wks, row, col)
+    try:
+        result = gspread.models.Worksheet.cell(wks, row, col)
+    except Exception as e :
+        print(e)
+        result = "API ERROR"
+    return result
 
 def set_fusion_data(head_id, body_id, new_value):
     row = row_fusion_init + body_id
