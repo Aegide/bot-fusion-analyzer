@@ -48,6 +48,9 @@ def validate_fusion(fusion_id):
     split_fusion_id = fusion_id.split(".")
     if len(split_fusion_id) == 2:
         head_id, body_id= int(split_fusion_id[0]), int(split_fusion_id[1])
-        set_fusion_data(head_id, body_id, valid_fusion)
+        current_value = get_fusion_data(head_id, body_id)
+        if(current_value != approved_fusion):
+            set_fusion_data(head_id, body_id, valid_fusion)
+        
     else:
         print("validate_fusion", fusion_id)
