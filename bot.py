@@ -51,8 +51,11 @@ gray_colour = discord.Colour(0xcdcdcd)
 title_ignored = "Ignored"
 title_accepted = "Accepted"
 
-description_missing_sprite = "Missing fusion sprite"
+description_missing_file = "Missing sprite"
+description_missing_file_name = "Missing sprite name"
 description_missing_fusion_id = "Unable to identify fusion sprite"
+
+description_different_fusion_id = "Incoherent fusion name"
 description_error = "Please contact Aegide"
 
 def apply_compact_mode(embed, attachment_url, autogen_url):
@@ -86,52 +89,93 @@ def apply_display_mode(embed, display_mode, attachment_url, autogen_url):
 
     return embed
 
-def create_embed(valid_fusion, description, jump_url):
+def create_embed(valid_fusion, description, jump_url, fusion_id):
     if valid_fusion:
         title = title_accepted + " : " + description
         colour = green_colour
-    else:
+    elif fusion_id is not None:
         title = title_ignored + " : " + description
         colour = orange_colour
+    else:
+        title = title_ignored + " : " + description
+        colour = red_colour
 
     return discord.Embed(title=title, colour=colour, description="[Link to message](" + jump_url + ")")
         
-def extract_data(message):
-    valid_fusion = False
-    description = description_error
-    attachment_url = None
-    autogen_url = None
+def extract_fusion_id_from_attachment(message):
     fusion_id = None
-
     if len(message.attachments) >= 1:
         filename = message.attachments[0].filename
-        attachment_url = message.attachments[0].url
         pattern = '[0-9]+\.[0-9]+'
         result = re.search(pattern, filename)
         if result:
-            # Existing attachment + valid file name
-            valid_fusion = True
             fusion_id = result[0]
-            description = fusion_id
-            autogen_url = autogen_fusion_url + fusion_id.split(".")[0] + "/" + fusion_id + ".png"
+    return fusion_id
 
-        else:
-            result = re.search(pattern, message.content)
-            if result:
-                # Existing attachment + valid description
+def get_autogen_url(fusion_id):
+    return autogen_fusion_url + fusion_id.split(".")[0] + "/" + fusion_id + ".png"
+
+def get_attachment_url(message):
+    return message.attachments[0].url
+
+def have_attachment(message):
+    return len(message.attachments) >= 1
+
+def extract_fusion_id_from_content(message):
+    fusion_id = None
+    pattern = '[0-9]+\.[0-9]+'
+    result = re.search(pattern, message.content)
+    if result:
+        fusion_id = result[0]
+    return fusion_id
+
+def extract_data(message):
+    valid_fusion = False
+    description = description_error
+    autogen_url = None
+    fusion_id = None
+
+    # Existing file
+    if have_attachment(message):
+        attachment_url = get_attachment_url(message)
+
+        attachment_fusion_id = extract_fusion_id_from_attachment(message)
+        content_fusion_id = extract_fusion_id_from_content(message)
+
+        # Two values
+        if attachment_fusion_id is not None and content_fusion_id is not None:
+            autogen_url = get_autogen_url(attachment_fusion_id)
+            # Same values
+            if attachment_fusion_id == content_fusion_id:
                 valid_fusion = True
-                fusion_id = result[0]
-                description = fusion_id
-                autogen_url = autogen_fusion_url + fusion_id.split(".")[0] + "/" + fusion_id + ".png"
-
+                fusion_id = attachment_fusion_id
+                description = attachment_fusion_id
+            # Different values
             else:
-                # Existing attachment + impossible to detect fusion id
-                description = description_missing_fusion_id
+                fusion_id = attachment_fusion_id
+                description = description_different_fusion_id
+
+        # One value
+        elif attachment_fusion_id is not None or content_fusion_id is not None:
+            # Value from file
+            if attachment_fusion_id is not None:
+                valid_fusion = True
+                fusion_id = attachment_fusion_id
+                description = attachment_fusion_id
+                autogen_url = get_autogen_url(attachment_fusion_id)
+            # Value from text
+            else:
+                fusion_id = content_fusion_id
+                description = description_missing_file_name
+            pass
+
+        # Zero values
+        else:
+            description = description_missing_fusion_id
     
+    # Missing file + spoilers
     else:
-        # Missing attachment (no sprite)
-        # TODO : spoilers also trigger this
-        description = description_missing_sprite
+        description = description_missing_file
 
     return valid_fusion, description, attachment_url, autogen_url, fusion_id
 
@@ -160,7 +204,7 @@ async def remove_log_channel(channel):
 
 async def handle_sprite_gallery(message):
     valid_fusion, description, attachment_url, autogen_url, fusion_id = extract_data(message)
-    embed = create_embed(valid_fusion, description, message.jump_url)
+    embed = create_embed(valid_fusion, description, message.jump_url, fusion_id)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
     embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
