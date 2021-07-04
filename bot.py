@@ -29,8 +29,9 @@ aegide_server_id = 293500383769133056
 infinite_fusion_server_id = 302153478556352513
 # katten_server_id = 750734964823294033
 
-# Input
-sprite_gallery_id = 543958354377179176
+# Input(s)
+infinite_fusion_sprite_gallery_id = 543958354377179176
+aegide_sprite_gallery_id = 858107956326826004
 
 # Output - aegide
 aegide_log_id = 616239403957747742
@@ -186,9 +187,11 @@ def extract_data(message):
 
 async def send_bot_logs(embed):
     for log_channel in log_channels:
+        print(">", log_channel.guild.name, ":", log_channel.name)
         await log_channel.send(embed=embed)
 
-async def send_test_embed():
+async def send_test_embed(message):
+    print(">>", message.author.name, ":", message.content)
     embed = discord.Embed(title="Title test", colour=gray_colour, description="Description test")
     embed.set_thumbnail(url=avatar_url)
     await send_bot_logs(embed)
@@ -208,7 +211,7 @@ async def remove_log_channel(channel):
     await aegide_log_channel.send(embed=embed)
 
 async def handle_sprite_gallery(message):
-    print(">", message.author.name, ":", message.content)
+    print(">>", message.author.name, ":", message.content)
     valid_fusion, description, attachment_url, autogen_url, fusion_id = extract_data(message)
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
@@ -226,7 +229,7 @@ async def handle_command(message):
         elif(content.startswith("%" + "update")):
             pass
         elif(content.startswith("%" + "test")):
-            await send_test_embed()
+            await send_test_embed(message)
         elif(content.startswith("%" + "remove")):
             await message.channel.send(content="Channel removed")
             await remove_log_channel(message.channel)
@@ -278,7 +281,7 @@ async def on_guild_remove(guild):
 @bot.event
 async def on_message(message):
     if message.author.id != bot_id:
-        if(message.channel.id == sprite_gallery_id):
+        if(message.channel.id == infinite_fusion_sprite_gallery_id):
             await handle_sprite_gallery(message)
         else:
             await handle_command(message)
