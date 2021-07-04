@@ -208,8 +208,8 @@ async def remove_log_channel(channel):
     await aegide_log_channel.send(embed=embed)
 
 async def handle_sprite_gallery(message):
-    valid_fusion, description, attachment_url, autogen_url, fusion_id = extract_data(message)
     print(">", message.author.name, ":", message.content)
+    valid_fusion, description, attachment_url, autogen_url, fusion_id = extract_data(message)
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
