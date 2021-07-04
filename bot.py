@@ -58,8 +58,9 @@ title_ignored = "Ignored"
 title_accepted = "Accepted"
 
 description_missing_file = "Missing sprite"
-description_missing_file_name = "Missing sprite name"
+description_missing_file_name = "Invalid file name"
 description_missing_fusion_id = "Unable to identify fusion sprite"
+description_icon = "Fusion icon"
 
 description_different_fusion_id = "Incoherent fusion name"
 description_error = "Please contact Aegide"
@@ -95,19 +96,25 @@ def apply_display_mode(embed, display_mode, attachment_url, autogen_url):
 
     return embed
 
-def create_embed(valid_fusion, description, jump_url, fusion_id):
-    if valid_fusion:
-        title = title_accepted + " : " + description
-        colour = green_colour
-    elif fusion_id is not None:
-        title = title_ignored + " : " + description
+def create_embed(valid_fusion, description, jump_url, fusion_id, warning):
+    if warning is not None:
+        title = title_accepted + " : " + fusion_id + "\n(" + warning + ")"
         colour = orange_colour
+    elif valid_fusion:
+        title = title_accepted + " : " + fusion_id
+        colour = green_colour
     else:
         title = title_ignored + " : " + description
         colour = red_colour
 
     return discord.Embed(title=title, colour=colour, description="[Link to message](" + jump_url + ")")
         
+def have_icon_in_content(message):
+    fusion_id = None
+    pattern = 'icon'
+    result = re.search(pattern, message.content)
+    return result is not None
+
 def extract_fusion_id_from_attachment(message):
     fusion_id = None
     if len(message.attachments) >= 1:
@@ -140,14 +147,13 @@ def extract_data(message):
     description = description_error
     autogen_url = None
     fusion_id = None
-
+    attachment_url = None
+    warning = None
     # Existing file
     if have_attachment(message):
         attachment_url = get_attachment_url(message)
-
         attachment_fusion_id = extract_fusion_id_from_attachment(message)
         content_fusion_id = extract_fusion_id_from_content(message)
-
         # Two values
         if attachment_fusion_id is not None and content_fusion_id is not None:
             autogen_url = get_autogen_url(attachment_fusion_id)
@@ -159,31 +165,32 @@ def extract_data(message):
             # Different values
             else:
                 fusion_id = attachment_fusion_id
-                description = description_different_fusion_id
-
+                description = description_different_fusion_id + "\n( " + attachment_fusion_id + " =/= " + content_fusion_id + " )"
         # One value
         elif attachment_fusion_id is not None or content_fusion_id is not None:
+            valid_fusion = True
             # Value from file
             if attachment_fusion_id is not None:
-                valid_fusion = True
                 fusion_id = attachment_fusion_id
                 description = attachment_fusion_id
                 autogen_url = get_autogen_url(attachment_fusion_id)
             # Value from text
             else:
                 fusion_id = content_fusion_id
-                description = description_missing_file_name
+                description = content_fusion_id
+                autogen_url = get_autogen_url(content_fusion_id)
+                warning = description_missing_file_name
             pass
-
         # Zero values
         else:
-            description = description_missing_fusion_id
-    
+            if have_icon_in_content:
+                description = description_icon
+            else:
+                description = description_missing_fusion_id
     # Missing file + spoilers
     else:
         description = description_missing_file
-
-    return valid_fusion, description, attachment_url, autogen_url, fusion_id
+    return valid_fusion, description, attachment_url, autogen_url, fusion_id, warning
 
 async def send_bot_logs(embed):
     for log_channel in log_channels:
@@ -212,14 +219,23 @@ async def remove_log_channel(channel):
 
 async def handle_sprite_gallery(message):
     print(">>", message.author.name, ":", message.content)
-    valid_fusion, description, attachment_url, autogen_url, fusion_id = extract_data(message)
-    embed = create_embed(valid_fusion, description, message.jump_url, fusion_id)
+    valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
+    embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
     embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
     await send_bot_logs(embed)
     if valid_fusion:
         sheet.validate_fusion(fusion_id)
+
+def handle_test_sprite_gallery(message):
+    print("]>", message.author.name, ":", message.content)
+    valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
+    embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
+    embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
+    embed.set_footer(text=message.content)
+    embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
+    return embed
 
 async def handle_command(message):
     content = message.content
@@ -283,6 +299,9 @@ async def on_message(message):
     if message.author.id != bot_id:
         if(message.channel.id == infinite_fusion_sprite_gallery_id):
             await handle_sprite_gallery(message)
+        elif(message.channel.id == aegide_sprite_gallery_id):
+            embed = handle_test_sprite_gallery(message)
+            await aegide_log_channel.send(embed=embed)
         else:
             await handle_command(message)
 
