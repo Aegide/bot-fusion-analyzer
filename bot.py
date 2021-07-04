@@ -303,6 +303,7 @@ async def on_message(message):
             embed = handle_test_sprite_gallery(message)
             await aegide_log_channel.send(embed=embed)
         else:
+            # print("{>", message.author.name, "(",message.channel.name, ")", ":", message.content)
             await handle_command(message)
 
 if sheet.init():
