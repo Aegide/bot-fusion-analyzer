@@ -194,7 +194,7 @@ def extract_data(message):
 
 async def send_bot_logs(embed):
     for log_channel in log_channels:
-        print(">", log_channel.guild.name, ":", log_channel.name)
+        # print(">", log_channel.guild.name, ":", log_channel.name)
         await log_channel.send(embed=embed)
 
 async def send_test_embed(message):
