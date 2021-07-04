@@ -24,21 +24,26 @@ avatar_url = None
 
 autogen_fusion_url = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Japeal/"
 
-# Input
+# Servers
+aegide_server_id = 293500383769133056
 infinite_fusion_server_id = 302153478556352513
+# katten_server_id = 750734964823294033
+
+# Input
 sprite_gallery_id = 543958354377179176
 
-# Output - secret
-aegide_server_id = 293500383769133056
+# Output - aegide
 aegide_log_id = 616239403957747742
 aegide_log_channel = None
 
+# Output - IF
+infinite_fusion_log_id = 703351286019653762
+infinite_fusion_log_channel = None
+
 # Output - katten
-"""
-katten_server_id = 750734964823294033
-katten_log_id = 750734964823294036
-katten_log_channel = None
-"""
+# katten_log_id = 750734964823294036
+# katten_log_channel = None
+
 
 # Output - regular
 log_channels = set()
@@ -204,6 +209,7 @@ async def remove_log_channel(channel):
 
 async def handle_sprite_gallery(message):
     valid_fusion, description, attachment_url, autogen_url, fusion_id = extract_data(message)
+    print(">", message.author.name, ":", message.content)
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
@@ -248,12 +254,10 @@ async def on_ready():
     aegide_log_channel = aegide_server.get_channel(aegide_log_id)
     log_channels.add(aegide_log_channel)
 
-    """
-    global katten_log_channel
-    katten_server = bot.get_guild(katten_server_id)
-    katten_log_channel = katten_server.get_channel(katten_log_id)
-    log_channels.add(katten_log_channel)
-    """
+    global infinite_fusion_log_channel
+    infinite_fusion_server = bot.get_guild(infinite_fusion_server_id)
+    infinite_fusion_log_channel = infinite_fusion_server.get_channel(infinite_fusion_log_id)
+    log_channels.add(infinite_fusion_log_channel)
 
     print("\n\n")
     print("Ready! bot invite:\n\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot")
