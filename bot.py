@@ -183,7 +183,7 @@ def extract_data(message):
             pass
         # Zero values
         else:
-            if have_icon_in_content:
+            if have_icon_in_content(message):
                 description = description_icon
             else:
                 description = description_missing_fusion_id
