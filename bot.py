@@ -206,10 +206,13 @@ def extract_data(message):
         description = description_missing_file
     return valid_fusion, description, attachment_url, autogen_url, fusion_id, warning
 
-async def send_bot_logs(embed):
+async def send_bot_logs(embed, have_warning):
     for log_channel in log_channels:
         # print(">", log_channel.guild.name, ":", log_channel.name)
-        await log_channel.send(embed=embed)
+        if(have_warning and log_channel==aegide_log_channel):
+            await log_channel.send(content=aegide_id, embed=embed)
+        else:
+            await log_channel.send(embed=embed)
 
 async def send_test_embed(message):
     print(">>", message.author.name, ":", message.content)
@@ -238,7 +241,7 @@ async def handle_sprite_gallery(message):
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
     embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
-    await send_bot_logs(embed)
+    await send_bot_logs(embed, warning is not None)
     if valid_fusion:
         sheet.validate_fusion(fusion_id)
 
