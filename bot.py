@@ -23,6 +23,7 @@ bot_id = None
 avatar_url = None
 
 autogen_fusion_url = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Japeal/"
+aegide_id = "<@!293496911275622410>"
 
 # Servers
 aegide_server_id = 293500383769133056
@@ -255,8 +256,6 @@ async def handle_command(message):
     if(message.channel in log_channels):
         if(content.startswith("%" + "hello")):
             await message.channel.send(content=content)
-        elif(content.startswith("%" + "update")):
-            pass
         elif(content.startswith("%" + "test")):
             await send_test_embed(message)
         elif(content.startswith("%" + "remove")):
@@ -264,6 +263,10 @@ async def handle_command(message):
             await remove_log_channel(message.channel)
         elif(content.startswith("%" + "add")):
             await message.channel.send(content="Channel already added")
+        elif(content.startswith("%" + "update")):
+            pass
+        elif(content.startswith("%" + "aegide")):
+            await message.channel.send(content=aegide_id)
     else:
         if(content.startswith("%" + "add")):
             await message.channel.send(content="Channel added")
