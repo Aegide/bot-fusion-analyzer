@@ -61,6 +61,7 @@ description_missing_file = "Missing sprite"
 description_missing_file_name = "Invalid file name"
 description_missing_fusion_id = "Unable to identify fusion sprite"
 description_icon = "Fusion icon"
+description_custom = "Custom sprite"
 
 description_different_fusion_id = "Incoherent fusion name"
 description_error = "Please contact Aegide"
@@ -109,9 +110,15 @@ def create_embed(valid_fusion, description, jump_url, fusion_id, warning):
 
     return discord.Embed(title=title, colour=colour, description="[Link to message](" + jump_url + ")")
         
-def have_icon_in_content(message):
+def have_icon_in_message(message):
     fusion_id = None
     pattern = 'icon'
+    result = re.search(pattern, message.content)
+    return result is not None
+
+def have_custom_in_message(message):
+    fusion_id = None
+    pattern = 'custom'
     result = re.search(pattern, message.content)
     return result is not None
 
@@ -183,8 +190,10 @@ def extract_data(message):
             pass
         # Zero values
         else:
-            if have_icon_in_content(message):
+            if have_icon_in_message(message):
                 description = description_icon
+            elif have_custom_in_message(message):
+                description = description_custom
             else:
                 description = description_missing_fusion_id
     # Missing file + spoilers
