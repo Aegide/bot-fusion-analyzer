@@ -56,14 +56,15 @@ gray_colour = discord.Colour(0xcdcdcd)
 
 title_ignored = "Ignored"
 title_accepted = "Accepted"
+title_refused = "Refused"
 
 description_missing_file = "Missing sprite"
-description_missing_file_name = "Invalid file name"
+description_missing_file_name = "Missing file name"
 description_missing_fusion_id = "Unable to identify fusion sprite"
 description_icon = "Fusion icon"
 description_custom = "Custom sprite"
 
-description_different_fusion_id = "Incoherent fusion name"
+description_different_fusion_id = "Different fusion IDs"
 description_error = "Please contact Aegide"
 
 def apply_compact_mode(embed, attachment_url, autogen_url):
@@ -98,15 +99,17 @@ def apply_display_mode(embed, display_mode, attachment_url, autogen_url):
     return embed
 
 def create_embed(valid_fusion, description, jump_url, fusion_id, warning):
-    if warning is not None:
-        title = title_accepted + " : " + fusion_id + "\n(" + warning + ")"
-        colour = orange_colour
-    elif valid_fusion:
+
+    if valid_fusion:
         title = title_accepted + " : " + fusion_id
         colour = green_colour
     else:
-        title = title_ignored + " : " + description
-        colour = red_colour
+        if warning is not None:
+            title = title_refused + " : " + description + "\n( " + warning + " )"
+            colour = red_colour
+        else:
+            title = title_ignored + " : " + description
+            colour = orange_colour
 
     return discord.Embed(title=title, colour=colour, description="[Link to message](" + jump_url + ")")
         
@@ -172,21 +175,22 @@ def extract_data(message):
             # Different values
             else:
                 fusion_id = attachment_fusion_id
-                description = description_different_fusion_id + "\n( " + attachment_fusion_id + " =/= " + content_fusion_id + " )"
+                description = description_different_fusion_id
+                warning = attachment_fusion_id + " =/= " + content_fusion_id
         # One value
         elif attachment_fusion_id is not None or content_fusion_id is not None:
-            valid_fusion = True
             # Value from file
             if attachment_fusion_id is not None:
+                valid_fusion = True
                 fusion_id = attachment_fusion_id
                 description = attachment_fusion_id
                 autogen_url = get_autogen_url(attachment_fusion_id)
             # Value from text
             else:
                 fusion_id = content_fusion_id
-                description = content_fusion_id
+                description = description_missing_file_name
                 autogen_url = get_autogen_url(content_fusion_id)
-                warning = description_missing_file_name
+                warning = "File name should be " + content_fusion_id + ".png"
             pass
         # Zero values
         else:
