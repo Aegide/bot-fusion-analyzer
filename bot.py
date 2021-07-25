@@ -210,7 +210,8 @@ async def send_bot_logs(embed, have_warning):
     for log_channel in log_channels:
         # print(">", log_channel.guild.name, ":", log_channel.name)
         if(have_warning and log_channel==aegide_log_channel):
-            await log_channel.send(content=aegide_id, embed=embed)
+            await log_channel.send(content=aegide_id)
+            await log_channel.send(embed=embed)
         else:
             await log_channel.send(embed=embed)
 
