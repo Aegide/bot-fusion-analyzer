@@ -208,9 +208,9 @@ def extract_data(message):
 
 async def send_bot_logs(embed, have_warning):
     for log_channel in log_channels:
-        # print(">", log_channel.guild.name, ":", log_channel.name)
+        print(">", log_channel.guild.name, ":", log_channel.name, ":", have_warning)
         if(have_warning and log_channel==aegide_log_channel):
-            await log_channel.send(content=aegide_id)
+            await log_channel.send(content="Warning : " + aegide_id)
             await log_channel.send(embed=embed)
         else:
             await log_channel.send(embed=embed)
