@@ -3,7 +3,7 @@ import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
 
 spreadsheet_name = "Pokemon IF Sprite Completion (discord bot)"
-worksheet_name = "Full dex"
+# worksheet_name = "Full dex"
 row_fusion_init = 9
 col_fusion_init = 8
 
@@ -17,7 +17,7 @@ client = None
 sheet = None
 wks = None
 
-def init():
+def init(worksheet_name):
     successful_init = True
     try:
         global scope, creds, client, sheet, wks

@@ -24,6 +24,7 @@ avatar_url = None
 
 autogen_fusion_url = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Japeal/"
 aegide_id = "<@!293496911275622410>"
+worksheet_name = "Full dex"
 
 # Servers
 aegide_server_id = 293500383769133056
@@ -327,6 +328,6 @@ async def on_message(message):
             # print("{>", message.author.name, "(",message.channel.name, ")", ":", message.content)
             await handle_command(message)
 
-if sheet.init():
+if sheet.init(worksheet_name):
     token = open("token.txt").read().rstrip()
     bot.run(token)
