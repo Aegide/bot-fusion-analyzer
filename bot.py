@@ -208,10 +208,9 @@ def extract_data(message):
 
 async def send_bot_logs(embed, have_warning):
     for log_channel in log_channels:
-        print(">", log_channel.guild.name, ":", log_channel.name, ":", have_warning)
+        # print(">", log_channel.guild.name, ":", log_channel.name, ":", have_warning)
         if(have_warning and log_channel==aegide_log_channel):
-            await log_channel.send(content="Warning : " + aegide_id)
-            await log_channel.send(embed=embed)
+            await log_channel.send(content=aegide_id, embed=embed)
         else:
             await log_channel.send(embed=embed)
 
@@ -246,14 +245,17 @@ async def handle_sprite_gallery(message):
     if valid_fusion:
         sheet.validate_fusion(fusion_id)
 
-def handle_test_sprite_gallery(message):
+async def handle_test_sprite_gallery(message):
     print("]>", message.author.name, ":", message.content)
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
     embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
-    return embed
+    if warning is not None:
+        await aegide_log_channel.send(content=aegide_id, embed=embed)
+    else:
+        await aegide_log_channel.send(embed=embed)
 
 async def handle_command(message):
     content = message.content
@@ -320,8 +322,7 @@ async def on_message(message):
         if(message.channel.id == infinite_fusion_sprite_gallery_id):
             await handle_sprite_gallery(message)
         elif(message.channel.id == aegide_sprite_gallery_id):
-            embed = handle_test_sprite_gallery(message)
-            await aegide_log_channel.send(embed=embed)
+            await handle_test_sprite_gallery(message)
         else:
             # print("{>", message.author.name, "(",message.channel.name, ")", ":", message.content)
             await handle_command(message)
