@@ -257,6 +257,8 @@ async def handle_test_sprite_gallery(message):
         await aegide_log_channel.send(content=aegide_id, embed=embed)
     else:
         await aegide_log_channel.send(embed=embed)
+    if valid_fusion:
+        sheet.validate_fusion(fusion_id, is_test=True)
 
 async def handle_command(message):
     content = message.content
