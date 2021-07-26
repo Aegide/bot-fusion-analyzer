@@ -2,9 +2,12 @@ import gspread
 import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
 
-spreadsheet_name = "Pokemon IF Sprite Completion (discord bot)"
+spreadsheet_name = "Pokemon IF Sprite Completion (discord bot v2)"
+# white square before the data
 row_fusion_init = 9
 col_fusion_init = 8
+
+pokemon_amount = 420
 
 no_fusion = ""
 valid_fusion = "x"
@@ -85,6 +88,13 @@ def validate_fusion(fusion_id):
         current_value = get_fusion_data(head_id, body_id)
         if(current_value != approved_fusion):
             set_fusion_data(head_id, body_id, valid_fusion)
-        
     else:
         print("validate_fusion", fusion_id)
+
+def get_all_fusion_data():
+    first_cell = gspread.utils.rowcol_to_a1(row_fusion_init + 1, col_fusion_init + 1)
+    last_cell = gspread.utils.rowcol_to_a1(row_fusion_init + pokemon_amount, col_fusion_init + pokemon_amount)
+    all_range = first_cell + ":" + last_cell
+    print(first_cell, last_cell)
+    all_data = wks.get(all_range)
+    return all_data
