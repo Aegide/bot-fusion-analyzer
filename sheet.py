@@ -2,7 +2,7 @@ import gspread
 import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
 
-spreadsheet_name = "Pokemon IF Sprite Completion (discord bot v2)"
+spreadsheet_name = "Pokemon IF Sprite Completion (main sheet)"
 # white square before the data
 row_fusion_init = 9
 col_fusion_init = 8
