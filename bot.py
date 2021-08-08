@@ -117,13 +117,13 @@ def create_embed(valid_fusion, description, jump_url, fusion_id, warning):
         
 def have_icon_in_message(message):
     fusion_id = None
-    pattern = 'icon'
+    pattern = '[iI]con'
     result = re.search(pattern, message.content)
     return result is not None
 
 def have_custom_in_message(message):
     fusion_id = None
-    pattern = 'custom'
+    pattern = '[cC]ustom'
     result = re.search(pattern, message.content)
     return result is not None
 
