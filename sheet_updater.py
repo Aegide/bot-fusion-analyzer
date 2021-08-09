@@ -30,23 +30,88 @@ def load_sprites_json_then_update_sheet():
         else:
             print("ERROR")
 
-
-def load_data_from_sheet():
-    worksheet_name = "Aegide Dex"
+def save_data_from_sheet_to_file():
+    worksheet_name = "Full dex"
     if sheet.init(worksheet_name):
         print("INIT")
         all_data = sheet.get_all_fusion_data()
+        print("CONTINUE")
+        with open("full_dex.txt", "w", encoding="utf-8") as f:
+            for line_data in all_data:
+                f.write("%s\n" % line_data)
         print("DONE")
-        for idx1, val1 in enumerate(all_data):
-            index_1 = idx1+1
-            if index_1 == 15:
-                for idx2, cell_value in enumerate(val1):
-                    index_2 = idx2+1
-                    head_id = index_2
-                    body_id = index_1
-                    print(head_id, body_id, ":", cell_value)
+
+        
     else:
         print("ERROR")
+
+
+
+dex_dict = {}
+
+def add_element(key, value):
+    if key in dex_dict:
+        values = dex_dict[key]
+        values.append(value)
+        dex_dict[key]=values
+    else:
+        dex_dict[key]=[value]
+
+
+
+def load_data_from_file():
+    filename = "full_dex.txt"
+    with open(filename, "r", encoding="utf-8") as f:
+        idx1 = 0
+        for line in f:
+            val1 = line.split(",")
+            # clean : val1
+            index_1 = idx1 + 1
+            for idx2, cell_value in enumerate(val1):
+                cell_value = cell_value.replace("["," ").replace("]","")
+                index_2 = idx2 + 1
+                head_id = index_2
+                body_id = index_1
+                fusion_id = str(head_id) + "." + str(body_id)
+
+                cell_value = cell_value.strip()
+                
+                # print(fusion_id, ":", cell_value)
+                add_element(cell_value, fusion_id)
+
+
+
+def clean_dex_dict():
+    """
+    print(" ")
+    for key in dex_dict.keys():
+        print("[" + key + "]")
+    print(" ")
+    """
+
+    del dex_dict["''"]
+    del dex_dict["'\\u2003'"]
+    del dex_dict["'\\u2003\\u2003'"]
+    dex_dict["Confirmed"] = dex_dict.pop("'✓'")
+    dex_dict["Done"] = dex_dict.pop("'x'")
+    dex_dict["TODO"] = dex_dict.pop("'✓R'") + dex_dict.pop("'...R'") + dex_dict.pop("'R'")
+
+
+
+
+def display_dex_dict():
+    print(" ")
+    for key in dex_dict:
+        print(key, len(dex_dict[key]), "\n")
+
+
+
+
+# save_data_from_sheet_to_file()
+load_data_from_file()
+clean_dex_dict()
+display_dex_dict()
+
 
 
 """

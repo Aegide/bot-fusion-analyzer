@@ -100,6 +100,5 @@ def get_all_fusion_data():
     first_cell = gspread.utils.rowcol_to_a1(row_fusion_init + 1, col_fusion_init + 1)
     last_cell = gspread.utils.rowcol_to_a1(row_fusion_init + pokemon_amount, col_fusion_init + pokemon_amount)
     all_range = first_cell + ":" + last_cell
-    print(first_cell, last_cell)
     all_data = wks.get(all_range)
     return all_data
