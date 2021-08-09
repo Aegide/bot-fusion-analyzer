@@ -33,13 +33,13 @@ def load_sprites_json_then_update_sheet():
 def save_data_from_sheet_to_file():
     worksheet_name = "Full dex"
     if sheet.init(worksheet_name):
-        print("INIT")
+        # print("INIT")
         all_data = sheet.get_all_fusion_data()
-        print("CONTINUE")
+        # print("CONTINUE")
         with open("full_dex.txt", "w", encoding="utf-8") as f:
             for line_data in all_data:
                 f.write("%s\n" % line_data)
-        print("DONE")
+        # print("DONE")
 
         
     else:
@@ -82,28 +82,34 @@ def load_data_from_file():
 
 
 def clean_dex_dict():
-    """
-    print(" ")
-    for key in dex_dict.keys():
-        print("[" + key + "]")
-    print(" ")
-    """
 
     del dex_dict["''"]
     del dex_dict["'\\u2003'"]
     del dex_dict["'\\u2003\\u2003'"]
-    dex_dict["Confirmed"] = dex_dict.pop("'✓'")
-    dex_dict["Done"] = dex_dict.pop("'x'")
-    dex_dict["TODO"] = dex_dict.pop("'✓R'") + dex_dict.pop("'...R'") + dex_dict.pop("'R'")
 
+    confirmed = dex_dict.pop("'✓'")
+    done = dex_dict.pop("'x'")
+    redo = dex_dict.pop("'✓R'") + dex_dict.pop("'...R'") + dex_dict.pop("'R'")
 
+    keys = list(dex_dict.keys())
+    print(" ")
+    print(keys)
+    dex_dict["Claimed"] = []
+    for key in keys:
+        claimed = dex_dict[key]
+        dex_dict["Claimed"] = dex_dict["Claimed"] + claimed
+        del dex_dict[key]
+    
+    dex_dict["Confirmed"] = confirmed
+    dex_dict["Done"] = done
+    dex_dict["Redo"] = redo
 
 
 def display_dex_dict():
     print(" ")
     for key in dex_dict:
         print(key, len(dex_dict[key]), "\n")
-
+    print("TOTAL", len(dex_dict["Confirmed"]) + len(dex_dict["Done"]), "\n")
 
 
 
