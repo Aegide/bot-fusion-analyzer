@@ -5,6 +5,8 @@ import time
 valid_value = "✓"
 no_value = ""
 cell_list = []
+dex_dict = {}
+
 
 
 def load_sprites_json_then_update_sheet():
@@ -45,19 +47,14 @@ def save_data_from_sheet_to_file():
     else:
         print("ERROR")
 
-
-
-dex_dict = {}
-
 def add_element(key, value):
+
     if key in dex_dict:
         values = dex_dict[key]
         values.append(value)
         dex_dict[key]=values
     else:
         dex_dict[key]=[value]
-
-
 
 def load_data_from_file():
     filename = "full_dex.txt"
@@ -78,8 +75,7 @@ def load_data_from_file():
                 
                 # print(fusion_id, ":", cell_value)
                 add_element(cell_value, fusion_id)
-
-
+            idx1 = idx1 + 1
 
 def clean_dex_dict():
 
@@ -104,57 +100,64 @@ def clean_dex_dict():
     dex_dict["Done"] = done
     dex_dict["Redo"] = redo
 
-
 def display_dex_dict():
     print(" ")
     for key in dex_dict:
         print(key, len(dex_dict[key]), "\n")
-    print("TOTAL", len(dex_dict["Confirmed"]) + len(dex_dict["Done"]), "\n")
-
-
+    # print("TOTAL", len(dex_dict["Confirmed"]) + len(dex_dict["Done"]), "\n")
 
 def save_total_from_list_to_json():
-    total = dex_dict["Confirmed"] + dex_dict["Done"]
+    total = dex_dict["Confirmed"]
+    # total = dex_dict["Confirmed"] + dex_dict["Done"]
     total_json = json.dumps(total, separators=(',\n', ': '))
     sheet_sprites = open("sheet_sprites.json", "w")
     sheet_sprites.write(total_json)
     sheet_sprites.close()
 
+def clean_data_set(old_set):
+    new_set = set()
+    for old_element in old_set:
+        new_element = old_element.replace('"','').replace(',','').replace('\n','').replace(']','').replace('[','')
+        new_set.add(new_element)
+    return new_set
 
+def compare_json():
+    print(" ")
+    aegide_json = "aegide_sprites.json"
+    sheet_json = "sheet_sprites.json"
 
+    aegide_sprites = set()
+    sheet_sprites = set()
 
-save_data_from_sheet_to_file()
-load_data_from_file()
-clean_dex_dict()
-display_dex_dict()
-save_total_from_list_to_json()
+    with open(aegide_json, "r") as aegide_file:
+        aegide_sprites = set(aegide_file.readlines())
+        aegide_sprites = clean_data_set(aegide_sprites)
+        print("Aegide :", len(aegide_sprites))
 
+    with open(sheet_json, "r") as sheet_file:
+        sheet_sprites = set(sheet_file.readlines())
+        sheet_sprites = clean_data_set(sheet_sprites)
+        print("IF sheet :", len(sheet_sprites))
 
-"""
-delay = 4
-start = 400
-end = 500
-count = start
-with open("sprites.json") as json_file:
-    print("DURING")
-    fusions = json.load(json_file)
-    sheet.init(worksheet_name)
-    print("AFTER")
+    sprites_in_sheet_not_in_aegide = sheet_sprites - aegide_sprites
+    sprites_in_aegide_not_in_sheet = aegide_sprites - sheet_sprites
 
     print(" ")
-    print(len(fusions))
+    print("Sprites that IF's sheet have, but Aegide's calc dont :", len(sprites_in_sheet_not_in_aegide), "\n\n", sprites_in_sheet_not_in_aegide)
+    print(" ")
+    print("Sprites that Aegide's calc have, but IF's sheet dont :", len(sprites_in_aegide_not_in_sheet), "\n\n", sprites_in_aegide_not_in_sheet)
     print(" ")
 
-    for fusion_id in fusions[start:]:
-        data = sheet.get_fusion_data_by_fusion_id(fusion_id)
-        try:
-            if (data.value != sheet.approved_fusion):
-                print(count, ":", fusion_id, ":", data.value)
-        except Exception as e:
-            print("Exception (", count, "/", fusion_id, ") : ", e)
-        count += 1
-        time.sleep(delay)
 
-    print(" ")
-    print("DONE")
-"""
+
+
+update_data = True
+
+if update_data:
+    save_data_from_sheet_to_file()
+    load_data_from_file()
+    clean_dex_dict()
+    display_dex_dict()
+    save_total_from_list_to_json()
+
+compare_json()
