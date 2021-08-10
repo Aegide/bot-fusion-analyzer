@@ -113,11 +113,21 @@ def display_dex_dict():
 
 
 
-# save_data_from_sheet_to_file()
+def save_total_from_list_to_json():
+    total = dex_dict["Confirmed"] + dex_dict["Done"]
+    total_json = json.dumps(total, separators=(',\n', ': '))
+    sheet_sprites = open("sheet_sprites.json", "w")
+    sheet_sprites.write(total_json)
+    sheet_sprites.close()
+
+
+
+
+save_data_from_sheet_to_file()
 load_data_from_file()
 clean_dex_dict()
 display_dex_dict()
-
+save_total_from_list_to_json()
 
 
 """
