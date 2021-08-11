@@ -79,13 +79,18 @@ def load_data_from_file():
 
 def clean_dex_dict():
 
+    """
+    for key in dex_dict:
+        print(key, len(dex_dict[key]))
+    """
+
     del dex_dict["''"]
     del dex_dict["'\\u2003'"]
     del dex_dict["'\\u2003\\u2003'"]
 
-    confirmed = dex_dict.pop("'✓'")
+    confirmed = dex_dict.pop("'✓'") + dex_dict["'✓R'"]
     done = dex_dict.pop("'x'")
-    redo = dex_dict.pop("'✓R'") + dex_dict.pop("'...R'") + dex_dict.pop("'R'")
+    redo = dex_dict.pop("'✓R'")
 
     keys = list(dex_dict.keys())
     print(" ")
