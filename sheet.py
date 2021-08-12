@@ -62,7 +62,7 @@ def get_valid_cell(head_id, body_id):
 def get_fusion_data(head_id, body_id):
     row, col = row_fusion_init + body_id, col_fusion_init + head_id
     try:
-        result = gspread.models.Worksheet.cell(wks, row, col)
+        result = gspread.models.Worksheet.cell(wks, row, col).value
     except Exception as e :
         print(e)
         result = "API ERROR"
