@@ -148,11 +148,13 @@ def compare_json():
     sprites_in_aegide_not_in_sheet = aegide_sprites - sheet_sprites
 
     print(" ")
+    print(" ")
     print("Sprites that IF's sheet have, but Aegide's calc dont :", len(sprites_in_sheet_not_in_aegide), "\n\n", sprites_in_sheet_not_in_aegide)
+    print(" ")
     print(" ")
     print("Sprites that Aegide's calc have, but IF's sheet dont :", len(sprites_in_aegide_not_in_sheet), "\n\n", sprites_in_aegide_not_in_sheet)
     print(" ")
-
+    print(" ")
 
 
 
