@@ -87,7 +87,6 @@ def validate_fusion(fusion_id, is_test=False):
     if len(split_fusion_id) == 2:
         head_id, body_id= int(split_fusion_id[0]), int(split_fusion_id[1])
         current_value = get_fusion_data(head_id, body_id)
-        print(fusion_id, current_value, approved_fusion)
         if(current_value != approved_fusion):
             if is_test:
                 cell_data = test_fusion
