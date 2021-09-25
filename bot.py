@@ -4,6 +4,7 @@ import discord
 # from discord.ext import commands
 import re
 import sheet
+import os
 
 # Custom sprite is displayed in the thumbnail
 compact_mode = "compact_mode"
@@ -332,4 +333,5 @@ async def on_message(message):
 
 if sheet.init(worksheet_name):
     token = open("token.txt").read().rstrip()
+    # token = os.environ['DISCORD_KEY']
     bot.run(token)
