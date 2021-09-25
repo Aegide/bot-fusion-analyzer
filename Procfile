@@ -1,2 +1,2 @@
 worker: python3 bot.py
-ps:scale web=1
+ps: scale web=1
