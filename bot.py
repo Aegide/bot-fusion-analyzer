@@ -304,9 +304,7 @@ async def on_ready():
     infinite_fusion_log_channel = infinite_fusion_server.get_channel(infinite_fusion_log_id)
     log_channels.add(infinite_fusion_log_channel)
 
-    print("\n\n")
-    print("Ready! bot invite:\n\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot")
-    print("\n\n")
+    print("Ready! bot invite:\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot")
 
 @bot.event
 async def on_guild_join(guild):
