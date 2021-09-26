@@ -1,5 +1,6 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import os
 
 spreadsheet_name = "Pokemon IF Sprite Completion (main sheet)"
 # white square before the data
@@ -19,12 +20,21 @@ client = None
 sheet = None
 wks = None
 
+
+def create_json_token():
+    token_data = os.environ["GSHEET_KEY"]
+    token_file = open("gsheet.json", "wt")
+    token_file.write(token_data)
+    token_file.close()
+
 def init(worksheet_name):
+    create_json_token()
     successful_init = True
     try:
         global scope, creds, client, sheet, wks
-        scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-        creds = ServiceAccountCredentials.from_json_keyfile_name('token.json', scope)
+        scope = ["https://spreadsheets.google.com/feeds","https://www.googleapis.com/auth/drive"]
+        creds = ServiceAccountCredentials.from_json_keyfile_name("gsheet.json", scope)
+        # creds = ServiceAccountCredentials.from_json_keyfile_name("token.json", scope)
         client = gspread.authorize(creds)
         sheet = client.open(spreadsheet_name)
         wks = sheet.worksheet(worksheet_name)

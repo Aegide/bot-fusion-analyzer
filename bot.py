@@ -332,6 +332,6 @@ async def on_message(message):
             await handle_command(message)
 
 if sheet.init(worksheet_name):
-    token = open("token.txt").read().rstrip()
-    # token = os.environ['DISCORD_KEY']
+    # token = open("token.txt").read().rstrip()
+    token = os.environ['DISCORD_KEY']
     bot.run(token)
