@@ -1,10 +1,11 @@
 # coding: utf-8
 
 import discord
-# from discord.ext import commands
 import re
-import sheet
 import os
+
+import sheet
+import sprite_analyzer
 
 # Custom sprite is displayed in the thumbnail
 compact_mode = "compact_mode"
@@ -249,8 +250,9 @@ def log_message(symbol, message):
     print(symbol, message.author.name, ":", message.content)
 
 def analyze_sprite(attachment_url):
-    pass
+    sprite_analyzer.test_sprite(attachment_url)
 
+# TODO : add sprite checking
 def generate_embed(message):
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
     if valid_fusion:
@@ -273,10 +275,8 @@ async def handle_sprite_gallery(message):
         sheet.validate_fusion(fusion_id)
 
 async def handle_test_sprite_gallery(message):
-
     log_message("]>", message)
     embed, warning, valid_fusion, fusion_id = generate_embed(message)
-
     if warning is not None:
         await aegide_log_channel.send(content=aegide_id, embed=embed)
     else:
