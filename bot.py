@@ -248,8 +248,13 @@ async def remove_log_channel(channel):
 def log_message(symbol, message):
     print(symbol, message.author.name, ":", message.content)
 
+def analyze_sprite(attachment_url):
+    pass
+
 def generate_embed(message):
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
+    if valid_fusion:
+        analyze_sprite(attachment_url)
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
