@@ -142,7 +142,7 @@ def handle_one_value(attachment_fusion_id, content_fusion_id):
     # Value from text
     else:
         fusion_id = content_fusion_id
-        description = str(Description.missing_file_name)
+        description = Description.missing_file_name._value_
         autogen_url = get_autogen_url(content_fusion_id)
         warning = "File name should be " + content_fusion_id + ".png"
     return autogen_url, valid_fusion, fusion_id, description, warning
