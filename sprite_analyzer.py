@@ -206,7 +206,7 @@ class sprite_analysis():
                 self.warning += f"- Using {half_transparent_pixels} half-transparent pixels is weird" + "\n"
                 self.valid_fusion = False
         except Exception as e:
-            print("test_half_transparency()", e)
+            print("test_half_transparency()", e, str(e), str(e) == "image index out of range")
             if e != IndexError:
                 print(traceback.format_exc())
                 
