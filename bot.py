@@ -52,14 +52,12 @@ title_accepted = "Accepted"
 title_refused = "Refused"
 
 
-
 def apply_display_mode(embed, attachment_url, autogen_url):
     if attachment_url:
         embed.set_thumbnail(url=attachment_url)
     if autogen_url:
         embed.set_image(url=autogen_url)
     return embed
-
 
 def create_embed(valid_fusion, description, jump_url, fusion_id, warning):
     if valid_fusion:
@@ -278,7 +276,6 @@ async def handle_command(message):
         if(content.startswith("%" + "add")):
             await message.channel.send(content="Channel added")
             await add_log_channel(message.channel)
-
 
 def is_message_not_from_bot(message):
     message.author.id != bot_id
