@@ -240,10 +240,10 @@ async def handle_sprite_gallery(message):
 async def handle_test_sprite_gallery(message):
     log_message("]>", message)
     embed, warning, valid_fusion, fusion_id = generate_embed(message)
-    if warning is not None:
-        await aegide_log_channel.send(content=aegide_id, embed=embed)
-    else:
+    if warning is None:
         await aegide_log_channel.send(embed=embed)
+    else:
+        await aegide_log_channel.send(embed=embed, content=aegide_id)
     if valid_fusion:
         sheet.validate_fusion(fusion_id, is_test=True)
 
