@@ -10,3 +10,4 @@ class Description(Enum):
     icon = "Fusion icon"
     custom = "Custom sprite"
     error = "Please contact Aegide"
+    test = "Description test"
