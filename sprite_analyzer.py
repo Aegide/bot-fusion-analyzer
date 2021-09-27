@@ -4,7 +4,7 @@ import matplotlib.image as mpimg
 import traceback
 from PIL import Image
 import requests
-import description as Description
+from description import Description
 
 
 BLACK_TRANSPARENCY = (0, 0, 0, 0)
@@ -170,10 +170,7 @@ def test_palette(pixels):
 
 class sprite_analysis():
 
-    warning_size = None
-    warning_color = None
-    warning_transparency = None
-
+    warning = ""
     valid_fusion = True
 
     def __init__(self, image, pixels):
@@ -183,7 +180,7 @@ class sprite_analysis():
     def test_size(self):
         try:
             if not is_valid_size(self.image):
-                self.warning_size =  f"{self.image.size} is not a valid sprite size"
+                self.warning += f"- {self.image.size} is not a valid sprite size" + "\n"
         except Exception as e:
             print("test_size()", e)
             print(traceback.format_exc())
@@ -193,12 +190,11 @@ class sprite_analysis():
             if is_overusing_colors(self.image):
                 color_list = get_non_transparent_colors(self.image)
                 if color_list is None:
-                    self.warning_color = f"Using more than {UPPER_COLOR_LIMIT} colors is weird"
+                    self.warning += f"- Using more than {UPPER_COLOR_LIMIT} colors is weird" + "\n"
                     self.valid_fusion = False
                 else:
                     color_amount = len(color_list)
-                    self.warning_color = f"Using {color_amount} colors is not recommended"
-                    self.warning_color += f"\nConsider using less than {COLOR_LIMIT}"
+                    self.warning += f"- Using {color_amount} colors is not recommended" + "\n"
         except Exception as e:
             print("test_color_diversity()", e)
             print(traceback.format_exc())
@@ -207,7 +203,7 @@ class sprite_analysis():
         try:
             half_transparent_pixels = detect_half_transparency(self.pixels)
             if half_transparent_pixels > HALF_TRANSPARENCY_LIMIT:
-                self.warning_transparency = f"Using {half_transparent_pixels} half-transparent pixels is weird"
+                self.warning += f"- Using {half_transparent_pixels} half-transparent pixels is weird" + "\n"
                 self.valid_fusion = False
         except Exception as e:
             print("test_half_transparency()", e)
@@ -215,7 +211,13 @@ class sprite_analysis():
                 print(traceback.format_exc())
                 
     def handle_results(self):
-        pass
+        description = None
+        if len(self.warning) > 0:
+            if self.valid_fusion :
+                description = Description.sprite_issue
+            else:
+                description = Description.sprite_error
+        return self.valid_fusion, description, self.warning
 
 def get_data(url):
     image = Image.open(requests.get(url, stream=True).raw)
@@ -223,9 +225,6 @@ def get_data(url):
     analysis = sprite_analysis(image, pixels)
     return analysis
 
-def handle_results():
-    results = None, None, None
-    return results
 
 
 def test_sprite(url):
