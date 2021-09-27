@@ -3,6 +3,7 @@
 import discord
 import re
 import os
+from enum import Enum
 
 import sheet
 import sprite_analyzer
@@ -54,15 +55,16 @@ title_ignored = "Ignored"
 title_accepted = "Accepted"
 title_refused = "Refused"
 
-description_missing_file = "Missing sprite"
-description_missing_file_name = "Missing file name"
-description_missing_fusion_id = "Unable to identify fusion sprite"
-description_icon = "Fusion icon"
-description_custom = "Custom sprite"
-description_different_fusion_id = "Different fusion IDs"
-description_sprite_error = "Invalid sprite"
-description_sprite_issue = "Controversial sprite"
-description_error = "Please contact Aegide"
+class Description(Enum):
+    missing_file = "Missing sprite"
+    missing_file_name = "Missing file name"
+    missing_fusion_id = "Unable to identify fusion sprite"
+    different_fusion_id = "Different fusion IDs"
+    sprite_error = "Invalid sprite"
+    sprite_issue = "Controversial sprite"
+    icon = "Fusion icon"
+    custom = "Custom sprite"
+    error = "Please contact Aegide"
 
 def apply_display_mode(embed, attachment_url, autogen_url):
     if attachment_url:
@@ -136,7 +138,7 @@ def handle_two_values(attachment_fusion_id, content_fusion_id):
     # Different values
     else:
         fusion_id = attachment_fusion_id
-        description = description_different_fusion_id
+        description = Description.different_fusion_id
         warning = attachment_fusion_id + " =/= " + content_fusion_id
     return autogen_url, valid_fusion, fusion_id, description, warning
 
@@ -150,23 +152,23 @@ def handle_one_value(attachment_fusion_id, content_fusion_id):
     # Value from text
     else:
         fusion_id = content_fusion_id
-        description = description_missing_file_name
+        description = Description.missing_file_name
         autogen_url = get_autogen_url(content_fusion_id)
         warning = "File name should be " + content_fusion_id + ".png"
     return autogen_url, valid_fusion, fusion_id, description, warning
 
 def handle_zero_value(message):
     if have_icon_in_message(message):
-        description = description_icon
+        description = Description.icon
     elif have_custom_in_message(message):
-        description = description_custom
+        description = Description.custom
     else:
-        description = description_missing_fusion_id
+        description = Description.missing_fusion_id
     return description
 
 def extract_data(message):
     valid_fusion = False
-    description = description_error
+    description = Description.error
     autogen_url = None
     fusion_id = None
     attachment_url = None
@@ -185,7 +187,7 @@ def extract_data(message):
             description = handle_zero_value(message)
     # Missing file + spoilers
     else:
-        description = description_missing_file
+        description = Description.missing_file
     return valid_fusion, description, attachment_url, autogen_url, fusion_id, warning
 
 async def send_bot_logs(embed, have_warning):
