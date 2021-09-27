@@ -3,14 +3,10 @@
 import discord
 import re
 import os
-from enum import Enum
 
 import sheet
 import sprite_analyzer
-
-
-safe_mode = "safe_mode"
-
+import description as Description
 
 bot = discord.Client()
 # bot = commands.Bot(command_prefix='$')
@@ -55,16 +51,7 @@ title_ignored = "Ignored"
 title_accepted = "Accepted"
 title_refused = "Refused"
 
-class Description(Enum):
-    missing_file = "Missing sprite"
-    missing_file_name = "Missing file name"
-    missing_fusion_id = "Unable to identify fusion sprite"
-    different_fusion_id = "Different fusion IDs"
-    sprite_error = "Invalid sprite"
-    sprite_issue = "Controversial sprite"
-    icon = "Fusion icon"
-    custom = "Custom sprite"
-    error = "Please contact Aegide"
+
 
 def apply_display_mode(embed, attachment_url, autogen_url):
     if attachment_url:

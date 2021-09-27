@@ -1,16 +1,10 @@
-from os import listdir
-from os.path import isfile, join
-
-from PIL import Image
-
+from os.path import join
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-
 import traceback
-
 from PIL import Image
 import requests
-from io import BytesIO
+import description as Description
 
 
 BLACK_TRANSPARENCY = (0, 0, 0, 0)
@@ -208,7 +202,7 @@ def test_half_transparency(image, pixels):
         weird_amount = detect_weird_transparency(image, pixels)
     except Exception as e:
         if e == IndexError:
-            print("test_transparency", e)
+            print("test_half_transparency()", e)
             print(traceback.format_exc())
                 
     return weird_amount
