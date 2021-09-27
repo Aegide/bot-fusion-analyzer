@@ -13,9 +13,9 @@ PINK = (255, 0, 255, 255)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-MEGA_COLOR_LIMIT = 10000
+UPPER_COLOR_LIMIT = 10000
 COLOR_LIMIT = 100
-WEIRD_LIMIT = 1000
+HALF_TRANSPARENCY_LIMIT = 1000
 
 path_custom = "CustomBattlers"
 path_debug = "debug"
@@ -71,9 +71,8 @@ def have_weird_transparency(pixels, i, j):
 def is_not_transparent(pixels, i, j):
     return pixels[i, j][3] != 0
 
-def detect_weird_transparency(image, pixels):
-    weird_amount = 0
-
+def detect_half_transparency(pixels):
+    half_transparent_pixels = 0
     if isinstance(pixels[0, 0], tuple) and len(pixels[0, 0]) == 4:
         for i in range(0, 288):
             for j in range(0, 288):
@@ -82,7 +81,7 @@ def detect_weird_transparency(image, pixels):
                 if have_weird_transparency(pixels, i, j):
                     # print(i, j, pixels[i, j])
                     pixels[i, j] = PINK
-                    weird_amount += 1
+                    half_transparent_pixels += 1
 
                 # Background : WHITE
                 elif have_normal_transparency(pixels, i, j):
@@ -91,8 +90,7 @@ def detect_weird_transparency(image, pixels):
                 # Actual sprite : BLACK
                 else:
                     pixels[i, j] = BLACK
-
-    return weird_amount
+    return half_transparent_pixels
 
 def find_one_pixel(pixels):
     one_pixel = None
@@ -115,10 +113,10 @@ def is_using_palette(pixels):
     return isinstance(pixels[0,0], int)
 
 def is_missing_colors(image):
-    return image.getcolors(MEGA_COLOR_LIMIT) is None
+    return image.getcolors(UPPER_COLOR_LIMIT) is None
 
 def get_non_transparent_colors(image):
-    old_colors = image.getcolors(MEGA_COLOR_LIMIT)
+    old_colors = image.getcolors(UPPER_COLOR_LIMIT)
     new_colors = []
 
     # TODO : be careful of RGB-A with 3 channels
@@ -165,18 +163,6 @@ def test_palette(pixels):
 
 
 
-# Destructive test
-def test_half_transparency(image, pixels):
-    weird_amount = -1
-    try:
-        weird_amount = detect_weird_transparency(image, pixels)
-    except Exception as e:
-        if e == IndexError:
-            print("test_half_transparency()", e)
-            print(traceback.format_exc())
-                
-    return weird_amount
-
         
 
 # explore_sprites()
@@ -207,18 +193,27 @@ class sprite_analysis():
             if is_overusing_colors(self.image):
                 color_list = get_non_transparent_colors(self.image)
                 if color_list is None:
-                    self.warning_color = "Using more than 10.000 colors is weird."
+                    self.warning_color = f"Using more than {UPPER_COLOR_LIMIT} colors is weird"
                     self.valid_fusion = False
                 else:
                     color_amount = len(color_list)
-                    self.warning_color = f"Using {color_amount} colors is not recommended."
+                    self.warning_color = f"Using {color_amount} colors is not recommended"
+                    self.warning_color += f"\nConsider using less than {COLOR_LIMIT}"
         except Exception as e:
             print("test_color_diversity()", e)
             print(traceback.format_exc())
 
     def test_half_transparency(self):
-        pass
-
+        try:
+            half_transparent_pixels = detect_half_transparency(self.pixels)
+            if half_transparent_pixels > HALF_TRANSPARENCY_LIMIT:
+                self.warning_transparency = f"Using {half_transparent_pixels} half-transparent pixels is weird"
+                self.valid_fusion = False
+        except Exception as e:
+            print("test_half_transparency()", e)
+            if e != IndexError:
+                print(traceback.format_exc())
+                
     def handle_results(self):
         pass
 
