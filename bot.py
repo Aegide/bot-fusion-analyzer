@@ -247,6 +247,18 @@ async def handle_test_sprite_gallery(message):
     if valid_fusion:
         sheet.validate_fusion(fusion_id, is_test=True)
 
+def get_help_content():
+    help_content = """
+    hello - makes the bot say "hello"
+    test - sends a test embed message
+    add - turns a channel into a "log channel"
+    remove - turns a "log channel" into a channel
+    update - does nothing, yet
+    aegide - pings Aegide
+    help - shows this information
+    """
+    return help_content
+
 async def handle_command(message):
     content = message.content
     if(message.channel in log_channels):
@@ -263,6 +275,8 @@ async def handle_command(message):
             pass
         elif(content.startswith("%" + "aegide")):
             await message.channel.send(content=aegide_id)
+        elif(content.startswith("%" + "help")):
+            await message.channel.send(content=get_help_content())
     else:
         if(content.startswith("%" + "add")):
             await message.channel.send(content="Channel added")
