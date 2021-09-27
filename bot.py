@@ -59,8 +59,9 @@ description_missing_file_name = "Missing file name"
 description_missing_fusion_id = "Unable to identify fusion sprite"
 description_icon = "Fusion icon"
 description_custom = "Custom sprite"
-
 description_different_fusion_id = "Different fusion IDs"
+description_sprite_error = "Invalid sprite"
+description_sprite_issue = "Controversial sprite"
 description_error = "Please contact Aegide"
 
 def apply_display_mode(embed, attachment_url, autogen_url):
@@ -221,11 +222,10 @@ def log_message(symbol, message):
 def analyze_sprite(attachment_url):
     sprite_analyzer.test_sprite(attachment_url)
 
-# TODO : add sprite checking
 def generate_embed(message):
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
     if valid_fusion:
-        analyze_sprite(attachment_url)
+        valid_fusion, description, warning = analyze_sprite(attachment_url)
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
