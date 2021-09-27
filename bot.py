@@ -7,16 +7,8 @@ import os
 import sheet
 import sprite_analyzer
 
-# Custom sprite is displayed in the thumbnail
-compact_mode = "compact_mode"
 
-# Custom sprite is displayed in the thumbnail, autogen equivalent is displayed
 safe_mode = "safe_mode"
-
-# Custom sprite is displayed, autogen equivalent is displayed in the thumbnail
-extended_mode = "extended_mode"
-
-display_mode = safe_mode
 
 
 bot = discord.Client()
@@ -71,36 +63,13 @@ description_custom = "Custom sprite"
 description_different_fusion_id = "Different fusion IDs"
 description_error = "Please contact Aegide"
 
-def apply_compact_mode(embed, attachment_url, autogen_url):
-    if attachment_url:
-        embed.set_thumbnail(url=attachment_url)
-    return embed
-
-def apply_safe_mode(embed, attachment_url, autogen_url):
+def apply_display_mode(embed, attachment_url, autogen_url):
     if attachment_url:
         embed.set_thumbnail(url=attachment_url)
     if autogen_url:
         embed.set_image(url=autogen_url)
     return embed
 
-def apply_extended_mode(embed, attachment_url, autogen_url):
-    if attachment_url:
-        embed.set_image(url=attachment_url)
-    if autogen_url:
-        embed.set_thumbnail(url=autogen_url)
-    return embed
-
-def apply_display_mode(embed, display_mode, attachment_url, autogen_url):
-    if display_mode == compact_mode:
-        embed = apply_compact_mode(embed, attachment_url, autogen_url)
-
-    elif display_mode == safe_mode:
-        embed = apply_safe_mode(embed, attachment_url, autogen_url)
-
-    elif display_mode == extended_mode:
-        embed = apply_extended_mode(embed, attachment_url, autogen_url)
-
-    return embed
 
 def create_embed(valid_fusion, description, jump_url, fusion_id, warning):
 
@@ -260,7 +229,7 @@ def generate_embed(message):
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
-    embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
+    embed = apply_display_mode(embed, attachment_url, autogen_url)
     return embed, warning, valid_fusion, fusion_id
 
 async def handle_sprite_gallery(message):
@@ -269,7 +238,7 @@ async def handle_sprite_gallery(message):
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
-    embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
+    embed = apply_display_mode(embed, attachment_url, autogen_url)
     await send_bot_logs(embed, warning is not None)
     if valid_fusion:
         sheet.validate_fusion(fusion_id)
