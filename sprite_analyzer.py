@@ -1,24 +1,16 @@
 from os import listdir
 from os.path import isfile, join
 
-import io
 from PIL import Image
 
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 import traceback
-import sys
 
-"""
-img = cv.imread("debug/243.295.png")
-if img is None:
-    sys.exit("Could not read the image.")
-cv.imshow("Display window", img)
-k = cv.waitKey(0)
-if k != None:
-    sys.exit()
-"""
+from PIL import Image
+import requests
+from io import BytesIO
 
 
 BLACK_TRANSPARENCY = (0, 0, 0, 0)
@@ -28,7 +20,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 MEGA_COLOR_LIMIT = 10000
-COLOR_LIMIT = 1000
+COLOR_LIMIT = 100
 WEIRD_LIMIT = 1000
 
 path_custom = "CustomBattlers"
@@ -135,7 +127,7 @@ def get_non_transparent_colors(image):
     old_colors = image.getcolors(MEGA_COLOR_LIMIT)
     new_colors = []
 
-    # TODO : be careful of RGBA with 3 channels
+    # TODO : be careful of RGB-A with 3 channels
     if old_colors is not None and isinstance(old_colors[0][1], tuple) and len(old_colors[0][1]) == 4:
         for old_color in old_colors:
             if old_color[1][3]==255:
@@ -145,10 +137,12 @@ def get_non_transparent_colors(image):
 
 def is_overusing_colors(image):
     colors = get_non_transparent_colors(image)
-    if colors is not None:
+    if colors is None:
+        result = True
+    else: 
         color_amount = len(colors)
-        return color_amount > COLOR_LIMIT
-    return False
+        result = color_amount > COLOR_LIMIT
+    return result
 
 def test_colors(image):
     return_value = 0
@@ -174,86 +168,79 @@ def test_palette(pixels):
             return_value = 100
     return return_value
 
-def test_size(image):
-    return_value = 0
-    if TEST_SIZE:
-        try:
-            if not is_valid_size(image):
-                print("[SIZE ERROR]", image.size)
-                return_value = 1
-        except Exception as e:
-            print("test_size", e)
-            return_value = 100
-    return return_value
 
-def test_diversity(image):
-    return_value = 0
-    if TEST_HIGH_DIVERSITY:
-        try:
-            if is_overusing_colors(image):
-                color_amount = len(get_non_transparent_colors(image))
-                print("[HIGH COLOR DIVERSITY]", color_amount)
-                return_value = 1
-        except Exception as e:
-            print("test_diversity", e)
-            print(traceback.format_exc())
-            return_value = 100
-    return return_value
+def test_size(image):
+    warning = None
+    try:
+        if not is_valid_size(image):
+            warning = image.size + " is not a valid sprite size."
+    except Exception as e:
+        print("test_size()", e)
+        print(traceback.format_exc())
+    return warning
+
+
+
+def test_color_diversity(image):
+    warning, error = None, None
+    try:
+        if is_overusing_colors(image):
+            color_list = get_non_transparent_colors(image)
+            if color_list is None:
+                warning = "Using more than 10.000 colors is weird."
+                error = True
+            else:
+                color_amount = len(color_list)
+                warning = f"Using {color_amount} colors is not recommended."
+                error = False
+            
+    except Exception as e:
+        print("test_color_diversity()", e)
+        print(traceback.format_exc())
+    return warning, error
+
+
 
 # Destructive test
-def test_transparency(element, image, pixels):
-    return_value = 0
-    if TEST_TRANSPARENCY:
-        try:
-            weird_amount = detect_weird_transparency(image, pixels)
-            if weird_amount > WEIRD_LIMIT:
-                # image.show()
-                image.save(join(path_result, "b" + element))
-                print("[TRANSPARENCY ERROR]", weird_amount)
-                return_value = 1
-        except Exception as e:
-            if e == IndexError:
-                print("test_transparency", e)
-                print(traceback.format_exc())
-                return_value = 100
-                
-    return return_value
-
-def analyze_sprite(element):
-    fusion_name = element[:-4]
+def test_half_transparency(image, pixels):
+    weird_amount = -1
     try:
-        image = Image.open(join(main_path, element))
-        pixels = image.load()
-                
+        weird_amount = detect_weird_transparency(image, pixels)
     except Exception as e:
-        # print(fusion_name, "[UNKNOWN FILE ERROR]", e, "\n")
-        pass
-    
-    else:
-        error_amount = 0
+        if e == IndexError:
+            print("test_transparency", e)
+            print(traceback.format_exc())
+                
+    return weird_amount
 
-        error_amount += test_size(image)
-        error_amount += test_palette(pixels)
-        error_amount += test_colors(image)
-        error_amount += test_diversity(image)
-
-        # Destructive test
-        error_amount += test_transparency(element, image, pixels)
-    
-        image.close()
-
-        if error_amount > 0:
-            print(">>",fusion_name, "\n")
-
-        elif VERBOSE_MODE:
-            print(fusion_name)
         
-def explore_sprites():
-    print("[ START ]\n")
-    for element in listdir(main_path):
-        if isfile(join(main_path, element)) and element.endswith(".png"):
-            analyze_sprite(element)
-    print("[ END ]")
 
-explore_sprites()
+# explore_sprites()
 # analyze_sprite("243.299.png")
+
+
+def get_data(url):
+    image = Image.open(requests.get(url, stream=True).raw)
+    pixels = image.load()
+    return image, pixels
+
+
+
+
+def test_sprite(url):
+
+    return None, None, None
+
+    """
+    image, pixels = get_data(url)
+    warning_size = test_size(image)
+    warning_color, error_color = test_color_diversity(image)
+    warning_transparency = test_half_transparency(image, pixels)
+    # image.show()
+    """
+    
+
+if __name__ == "__main__":
+    url = "https://cdn.discordapp.com/attachments/543958354377179176/599989522540789803/138.154.png"
+    test_sprite(url)
+
