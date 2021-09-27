@@ -114,6 +114,9 @@ def extract_fusion_id_from_content(message):
 
 def handle_two_values(attachment_fusion_id, content_fusion_id):
     autogen_url = get_autogen_url(attachment_fusion_id)
+    warning = None
+    valid_fusion = False
+    
     # Same values
     if attachment_fusion_id == content_fusion_id:
         valid_fusion = True
@@ -127,6 +130,9 @@ def handle_two_values(attachment_fusion_id, content_fusion_id):
     return autogen_url, valid_fusion, fusion_id, description, warning
 
 def handle_one_value(attachment_fusion_id, content_fusion_id):
+    valid_fusion = False
+    warning = None
+
     # Value from file
     if attachment_fusion_id is not None:
         valid_fusion = True
@@ -155,8 +161,9 @@ def extract_data(message):
     description = Description.error
     autogen_url = None
     fusion_id = None
-    attachment_url = None
     warning = None
+    
+    attachment_url = None
     # Existing file
     if have_attachment(message):
         attachment_url = get_attachment_url(message)
