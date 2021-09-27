@@ -318,11 +318,12 @@ async def on_guild_remove(guild):
 
 @bot.event
 async def on_message(message):
-    print("on_message", message)
     if is_message_not_from_bot(message):
         if(message.channel.id == infinite_fusion_sprite_gallery_id):
+            print("handle_sprite_gallery", message.content)
             await handle_sprite_gallery(message)
         elif(message.channel.id == aegide_sprite_gallery_id):
+            print("handle_test_sprite_gallery", message.content)
             await handle_test_sprite_gallery(message)
         else:
             await handle_command(message)
