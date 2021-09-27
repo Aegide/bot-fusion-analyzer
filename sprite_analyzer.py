@@ -163,36 +163,6 @@ def test_palette(pixels):
     return return_value
 
 
-def test_size(image):
-    warning = None
-    try:
-        if not is_valid_size(image):
-            warning = image.size + " is not a valid sprite size."
-    except Exception as e:
-        print("test_size()", e)
-        print(traceback.format_exc())
-    return warning
-
-
-
-def test_color_diversity(image):
-    warning, error = None, None
-    try:
-        if is_overusing_colors(image):
-            color_list = get_non_transparent_colors(image)
-            if color_list is None:
-                warning = "Using more than 10.000 colors is weird."
-                error = True
-            else:
-                color_amount = len(color_list)
-                warning = f"Using {color_amount} colors is not recommended."
-                error = False
-            
-    except Exception as e:
-        print("test_color_diversity()", e)
-        print(traceback.format_exc())
-    return warning, error
-
 
 
 # Destructive test
@@ -212,26 +182,70 @@ def test_half_transparency(image, pixels):
 # explore_sprites()
 # analyze_sprite("243.299.png")
 
+class sprite_analysis():
+
+    warning_size = None
+    warning_color = None
+    warning_transparency = None
+
+    valid_fusion = True
+
+    def __init__(self, image, pixels):
+        self.image = image
+        self.pixels = pixels
+
+    def test_size(self):
+        try:
+            if not is_valid_size(self.image):
+                self.warning_size =  f"{self.image.size} is not a valid sprite size"
+        except Exception as e:
+            print("test_size()", e)
+            print(traceback.format_exc())
+
+    def test_color_diversity(self):
+        try:
+            if is_overusing_colors(self.image):
+                color_list = get_non_transparent_colors(self.image)
+                if color_list is None:
+                    self.warning_color = "Using more than 10.000 colors is weird."
+                    self.valid_fusion = False
+                else:
+                    color_amount = len(color_list)
+                    self.warning_color = f"Using {color_amount} colors is not recommended."
+        except Exception as e:
+            print("test_color_diversity()", e)
+            print(traceback.format_exc())
+
+    def test_half_transparency(self):
+        pass
+
+    def handle_results(self):
+        pass
 
 def get_data(url):
     image = Image.open(requests.get(url, stream=True).raw)
     pixels = image.load()
-    return image, pixels
+    analysis = sprite_analysis(image, pixels)
+    return analysis
 
-
+def handle_results():
+    results = None, None, None
+    return results
 
 
 def test_sprite(url):
-
-    return None, None, None
-
-    """
-    image, pixels = get_data(url)
-    warning_size = test_size(image)
-    warning_color, error_color = test_color_diversity(image)
-    warning_transparency = test_half_transparency(image, pixels)
+    analysis = get_data(url)
+    analysis.test_size()
+    analysis.test_color_diversity()
+    analysis.test_half_transparency()
+    results = analysis.handle_results()
     # image.show()
-    """
+    return results
+
+    
+    
+    
+    
     
 
 if __name__ == "__main__":
