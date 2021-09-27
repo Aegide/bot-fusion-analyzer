@@ -214,9 +214,9 @@ class sprite_analysis():
         description = None
         if len(self.warning) > 0:
             if self.valid_fusion :
-                description = Description.sprite_issue
+                description = str(Description.sprite_issue)
             else:
-                description = Description.sprite_error
+                description = str(Description.sprite_error)
         return self.valid_fusion, description, self.warning
 
 def get_data(url):

@@ -125,7 +125,7 @@ def handle_two_values(attachment_fusion_id, content_fusion_id):
     # Different values
     else:
         fusion_id = attachment_fusion_id
-        description = Description.different_fusion_id
+        description = str(Description.different_fusion_id)
         warning = attachment_fusion_id + " =/= " + content_fusion_id
     return autogen_url, valid_fusion, fusion_id, description, warning
 
@@ -142,23 +142,23 @@ def handle_one_value(attachment_fusion_id, content_fusion_id):
     # Value from text
     else:
         fusion_id = content_fusion_id
-        description = Description.missing_file_name
+        description = str(Description.missing_file_name)
         autogen_url = get_autogen_url(content_fusion_id)
         warning = "File name should be " + content_fusion_id + ".png"
     return autogen_url, valid_fusion, fusion_id, description, warning
 
 def handle_zero_value(message):
     if have_icon_in_message(message):
-        description = Description.icon
+        description = str(Description.icon)
     elif have_custom_in_message(message):
-        description = Description.custom
+        description = str(Description.custom)
     else:
-        description = Description.missing_fusion_id
+        description = str(Description.missing_fusion_id)
     return description
 
 def extract_data(message):
     valid_fusion = False
-    description = Description.error
+    description = str(Description.error)
     autogen_url = None
     fusion_id = None
     warning = None
@@ -178,7 +178,7 @@ def extract_data(message):
             description = handle_zero_value(message)
     # Missing file + spoilers
     else:
-        description = Description.missing_file
+        description = str(Description.missing_file)
     return valid_fusion, description, attachment_url, autogen_url, fusion_id, warning
 
 async def send_bot_logs(embed, have_warning):
@@ -191,7 +191,7 @@ async def send_bot_logs(embed, have_warning):
 
 async def send_test_embed(message):
     print(">>", message.author.name, ":", message.content)
-    embed = discord.Embed(title="Title test", colour=gray_colour, description=Description.test)
+    embed = discord.Embed(title="Title test", colour=gray_colour, description=str(Description.test))
     embed.set_thumbnail(url=avatar_url)
     await send_bot_logs(embed)
 
