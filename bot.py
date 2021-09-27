@@ -222,12 +222,17 @@ def log_message(symbol, message):
     print(symbol, message.author.name, ":", message.content)
 
 def analyze_sprite(attachment_url):
-    sprite_analyzer.test_sprite(attachment_url)
+    valid_fusion, description, warning = sprite_analyzer.test_sprite(attachment_url)
+
+def interesting_results(results):
+    return results != (None, None, None)
 
 def generate_embed(message):
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
     if valid_fusion:
-        valid_fusion, description, warning = analyze_sprite(attachment_url)
+        results = analyze_sprite(attachment_url)
+        if interesting_results(results):
+            valid_fusion, description, warning = results
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
