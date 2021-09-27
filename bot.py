@@ -155,6 +155,44 @@ def extract_fusion_id_from_content(message):
         fusion_id = result[0]
     return fusion_id
 
+def handle_two_values(attachment_fusion_id, content_fusion_id):
+    autogen_url = get_autogen_url(attachment_fusion_id)
+    # Same values
+    if attachment_fusion_id == content_fusion_id:
+        valid_fusion = True
+        fusion_id = attachment_fusion_id
+        description = attachment_fusion_id
+    # Different values
+    else:
+        fusion_id = attachment_fusion_id
+        description = description_different_fusion_id
+        warning = attachment_fusion_id + " =/= " + content_fusion_id
+    return autogen_url, valid_fusion, fusion_id, description, warning
+
+def handle_one_value(attachment_fusion_id, content_fusion_id):
+    # Value from file
+    if attachment_fusion_id is not None:
+        valid_fusion = True
+        fusion_id = attachment_fusion_id
+        description = attachment_fusion_id
+        autogen_url = get_autogen_url(attachment_fusion_id)
+    # Value from text
+    else:
+        fusion_id = content_fusion_id
+        description = description_missing_file_name
+        autogen_url = get_autogen_url(content_fusion_id)
+        warning = "File name should be " + content_fusion_id + ".png"
+    return autogen_url, valid_fusion, fusion_id, description, warning
+
+def handle_zero_value(message):
+    if have_icon_in_message(message):
+        description = description_icon
+    elif have_custom_in_message(message):
+        description = description_custom
+    else:
+        description = description_missing_fusion_id
+    return description
+
 def extract_data(message):
     valid_fusion = False
     description = description_error
@@ -167,42 +205,13 @@ def extract_data(message):
         attachment_url = get_attachment_url(message)
         attachment_fusion_id = extract_fusion_id_from_attachment(message)
         content_fusion_id = extract_fusion_id_from_content(message)
-        # Two values
+
         if attachment_fusion_id is not None and content_fusion_id is not None:
-            autogen_url = get_autogen_url(attachment_fusion_id)
-            # Same values
-            if attachment_fusion_id == content_fusion_id:
-                valid_fusion = True
-                fusion_id = attachment_fusion_id
-                description = attachment_fusion_id
-            # Different values
-            else:
-                fusion_id = attachment_fusion_id
-                description = description_different_fusion_id
-                warning = attachment_fusion_id + " =/= " + content_fusion_id
-        # One value
+            autogen_url, valid_fusion, fusion_id, description, warning = handle_two_values(attachment_fusion_id, content_fusion_id)
         elif attachment_fusion_id is not None or content_fusion_id is not None:
-            # Value from file
-            if attachment_fusion_id is not None:
-                valid_fusion = True
-                fusion_id = attachment_fusion_id
-                description = attachment_fusion_id
-                autogen_url = get_autogen_url(attachment_fusion_id)
-            # Value from text
-            else:
-                fusion_id = content_fusion_id
-                description = description_missing_file_name
-                autogen_url = get_autogen_url(content_fusion_id)
-                warning = "File name should be " + content_fusion_id + ".png"
-            pass
-        # Zero values
+            autogen_url, valid_fusion, fusion_id, description, warning = handle_one_value(attachment_fusion_id, content_fusion_id)
         else:
-            if have_icon_in_message(message):
-                description = description_icon
-            elif have_custom_in_message(message):
-                description = description_custom
-            else:
-                description = description_missing_fusion_id
+            description = handle_zero_value(message)
     # Missing file + spoilers
     else:
         description = description_missing_file
@@ -236,6 +245,17 @@ async def remove_log_channel(channel):
     embed.set_thumbnail(url=channel.guild.icon_url)
     await aegide_log_channel.send(embed=embed)
 
+def log_message(symbol, message):
+    print(symbol, message.author.name, ":", message.content)
+
+def generate_embed(message):
+    valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
+    embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
+    embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
+    embed.set_footer(text=message.content)
+    embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
+    return embed, warning, valid_fusion, fusion_id
+
 async def handle_sprite_gallery(message):
     print(">>", message.author.name, ":", message.content)
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
@@ -248,12 +268,10 @@ async def handle_sprite_gallery(message):
         sheet.validate_fusion(fusion_id)
 
 async def handle_test_sprite_gallery(message):
-    print("]>", message.author.name, ":", message.content)
-    valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
-    embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
-    embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
-    embed.set_footer(text=message.content)
-    embed = apply_display_mode(embed, display_mode, attachment_url, autogen_url)
+
+    log_message("]>", message)
+    embed, warning, valid_fusion, fusion_id = generate_embed(message)
+
     if warning is not None:
         await aegide_log_channel.send(content=aegide_id, embed=embed)
     else:
