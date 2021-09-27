@@ -214,12 +214,14 @@ def log_message(symbol, message):
 
 def interesting_results(results):
     description = results[1]
+    print("interesting_results", description, description is not None)
     return description is not None
 
 def generate_embed(message):
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
     if valid_fusion:
         results = sprite_analyzer.test_sprite(attachment_url)
+        print("sprite_analyzer.test_sprite", results)
         if interesting_results(results):
             valid_fusion, description, warning = results
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
