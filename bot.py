@@ -278,6 +278,7 @@ async def handle_command(message):
             await add_log_channel(message.channel)
 
 def is_message_not_from_bot(message):
+    print("is_message_not_from_bot", message.author.id, bot_id)
     message.author.id != bot_id
 
 @bot.event
@@ -319,15 +320,15 @@ async def on_guild_remove(guild):
 @bot.event
 async def on_message(message):
     if is_message_not_from_bot(message):
+        print("{1>", message.author.name, "(",message.channel.name, ")", ":", message.content)
         if(message.channel.id == infinite_fusion_sprite_gallery_id):
-            print("handle_sprite_gallery", message.content)
             await handle_sprite_gallery(message)
         elif(message.channel.id == aegide_sprite_gallery_id):
-            print("handle_test_sprite_gallery", message.content)
             await handle_test_sprite_gallery(message)
         else:
             await handle_command(message)
-            # print("{>", message.author.name, "(",message.channel.name, ")", ":", message.content)
+    else:
+        print("{2>", message.author.name, "(",message.channel.name, ")", ":", message.content)
 
 if sheet.init(worksheet_name):
     # token = open("token.txt").read().rstrip()
