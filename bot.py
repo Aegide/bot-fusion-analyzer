@@ -257,7 +257,7 @@ def generate_embed(message):
     return embed, warning, valid_fusion, fusion_id
 
 async def handle_sprite_gallery(message):
-    print(">>", message.author.name, ":", message.content)
+    log_message(">>", message)
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
