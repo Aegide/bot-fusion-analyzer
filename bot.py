@@ -278,7 +278,7 @@ async def handle_command(message):
             await add_log_channel(message.channel)
 
 def is_message_not_from_bot(message):
-    print("is_message_not_from_bot", message.author.id, bot_id)
+    print("is_message_not_from_bot", message.author.id, bot_id, type(message.author.id), type(bot_id))
     message.author.id != bot_id
 
 @bot.event
