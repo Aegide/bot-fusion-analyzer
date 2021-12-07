@@ -1,10 +1,14 @@
 import json
 import sheet
 
+
 valid_value = "✓"
 no_value = ""
 cell_list = []
 dex_dict = {}
+
+file_full_dex = "data/full_dex.txt"
+file_sheet_sprites = "data/sheet_sprites.json"
 
 def load_sprites_json_then_update_sheet():
     worksheet_name = "Aegide Dex"
@@ -32,18 +36,17 @@ def load_sprites_json_then_update_sheet():
 def save_data_from_sheet_to_file():
     worksheet_name = "Full dex"
     if sheet.init(worksheet_name):
-        # print("INIT")
+        print(">> LOADED GSHEET")
         all_data = sheet.get_all_fusion_data()
-        # print("CONTINUE")
-        with open("full_dex.txt", "w", encoding="utf-8") as f:
+        print(">> DOWNLOADED DATA")
+        with open(file_full_dex, "w", encoding="utf-8") as f:
             for line_data in all_data:
                 f.write("%s\n" % line_data)
-        # print("DONE")
+        print(">> SAVED DATA")
     else:
-        print("ERROR")
+        print(">> ERROR")
 
 def add_element(key, value):
-
     if key in dex_dict:
         values = dex_dict[key]
         values.append(value)
@@ -52,8 +55,8 @@ def add_element(key, value):
         dex_dict[key]=[value]
 
 def load_data_from_file():
-    filename = "full_dex.txt"
-    with open(filename, "r", encoding="utf-8") as f:
+    print(">> LOADED FILE")
+    with open(file_full_dex, "r", encoding="utf-8") as f:
         idx1 = 0
         for line in f:
             val1 = line.split(",")
@@ -65,18 +68,17 @@ def load_data_from_file():
                 head_id = index_2
                 body_id = index_1
                 fusion_id = str(head_id) + "." + str(body_id)
-
                 cell_value = cell_value.strip()
-                
                 # print(fusion_id, ":", cell_value)
                 add_element(cell_value, fusion_id)
             idx1 = idx1 + 1
 
 def clean_dex_dict():
-    """
+    print(" ")
+    print(">> RAW SPRITE DEX")
     for key in dex_dict:
         print(key, len(dex_dict[key]))
-    """
+    
     del dex_dict["''"]
     del dex_dict["'\\u2003'"]
     del dex_dict["'\\u2003\\u2003'"]
@@ -87,6 +89,7 @@ def clean_dex_dict():
 
     keys = list(dex_dict.keys())
     print(" ")
+    print(">> LIST OF SPRITERS")
     print(keys)
     dex_dict["Claimed"] = []
     for key in keys:
@@ -100,17 +103,21 @@ def clean_dex_dict():
 
 def display_dex_dict():
     print(" ")
+    print(">> CLEAN SPRITE DEX")
     for key in dex_dict:
-        print(key, len(dex_dict[key]), "\n")
+        print(key, len(dex_dict[key]))
     # print("TOTAL", len(dex_dict["Confirmed"]) + len(dex_dict["Done"]), "\n")
 
 def save_total_from_list_to_json():
+    print(" ")
+    print(">> START JSON")
     total = dex_dict["Confirmed"]
     # total = dex_dict["Confirmed"] + dex_dict["Done"]
     total_json = json.dumps(total, separators=(',\n', ': '))
-    sheet_sprites = open("sheet_sprites.json", "w")
+    sheet_sprites = open(file_sheet_sprites, "w")
     sheet_sprites.write(total_json)
     sheet_sprites.close()
+    print(">> END JSON")
 
 def clean_data_set(old_set):
     new_set = set()
@@ -149,13 +156,15 @@ def compare_json():
     print(" ")
     print(" ")
 
-update_data = True
 
-if update_data:
-    save_data_from_sheet_to_file()
-    load_data_from_file()
-    clean_dex_dict()
-    display_dex_dict()
-    save_total_from_list_to_json()
 
-compare_json()
+    
+if __name__ == '__main__':
+    update_data = True
+    if update_data:
+        # save_data_from_sheet_to_file()
+        load_data_from_file()
+        clean_dex_dict()
+        display_dex_dict()
+        save_total_from_list_to_json()
+    # compare_json()
