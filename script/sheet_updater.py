@@ -1,13 +1,10 @@
 import json
 import sheet
-import time
 
 valid_value = "✓"
 no_value = ""
 cell_list = []
 dex_dict = {}
-
-
 
 def load_sprites_json_then_update_sheet():
     worksheet_name = "Aegide Dex"
@@ -42,8 +39,6 @@ def save_data_from_sheet_to_file():
             for line_data in all_data:
                 f.write("%s\n" % line_data)
         # print("DONE")
-
-        
     else:
         print("ERROR")
 
@@ -78,12 +73,10 @@ def load_data_from_file():
             idx1 = idx1 + 1
 
 def clean_dex_dict():
-
     """
     for key in dex_dict:
         print(key, len(dex_dict[key]))
     """
-
     del dex_dict["''"]
     del dex_dict["'\\u2003'"]
     del dex_dict["'\\u2003\\u2003'"]
@@ -155,8 +148,6 @@ def compare_json():
     print("Sprites that Aegide's calc have, but IF's sheet dont :", len(sprites_in_aegide_not_in_sheet), "\n\n", sprites_in_aegide_not_in_sheet)
     print(" ")
     print(" ")
-
-
 
 update_data = True
 
