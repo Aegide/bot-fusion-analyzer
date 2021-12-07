@@ -160,9 +160,9 @@ def compare_json():
 
     
 if __name__ == '__main__':
-    update_data = True
+    update_data = False
     if update_data:
-        # save_data_from_sheet_to_file()
+        save_data_from_sheet_to_file()
         load_data_from_file()
         clean_dex_dict()
         display_dex_dict()

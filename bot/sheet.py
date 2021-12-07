@@ -21,20 +21,29 @@ sheet = None
 wks = None
 
 
-def create_json_token():
-    token_data = os.environ["GSHEET_KEY"]
-    token_file = open("gsheet.json", "wt")
-    token_file.write(token_data)
-    token_file.close()
+def create_json_token(token_data):
+    json_token = "bot" + "/" + "token.json"
+    with open(json_token, "w") as json_file: 
+        json_file.write('Hi there!')
+
+def get_creds(scope):
+    try:
+        token_data = os.environ["GSHEET_KEY"]
+    except:
+        keyfile = "bot/token.json"
+        creds = ServiceAccountCredentials.from_json_keyfile_name(keyfile, scope)
+    else:
+        create_json_token(token_data)
+        keyfile = "bot/gsheet.json"
+        creds = ServiceAccountCredentials.from_json_keyfile_name("gsheet.json", scope)
+    return creds
 
 def init(worksheet_name):
-    create_json_token()
     successful_init = True
     try:
         global scope, creds, client, sheet, wks
         scope = ["https://spreadsheets.google.com/feeds","https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name("gsheet.json", scope)
-        # creds = ServiceAccountCredentials.from_json_keyfile_name("token.json", scope)
+        creds = get_creds(scope)
         client = gspread.authorize(creds)
         sheet = client.open(spreadsheet_name)
         wks = sheet.worksheet(worksheet_name)
@@ -111,3 +120,9 @@ def get_all_fusion_data():
     all_range = first_cell + ":" + last_cell
     all_data = wks.get(all_range)
     return all_data
+
+
+if __name__ == "__main__":
+    scope = ["https://spreadsheets.google.com/feeds","https://www.googleapis.com/auth/drive"]
+    creds = get_creds(scope)
+    print(creds)
