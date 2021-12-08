@@ -10,6 +10,10 @@ dex_dict = {}
 file_full_dex = "data/full_dex.txt"
 file_sheet_sprites = "data/sheet_sprites.json"
 
+aegide_json = "data/aegide_sprites.json"
+sheet_json = "data/sheet_sprites.json"
+
+
 def load_sprites_json_then_update_sheet():
     worksheet_name = "Aegide Dex"
     print("BEFORE JSON FILE")
@@ -128,8 +132,6 @@ def clean_data_set(old_set):
 
 def compare_json():
     print(" ")
-    aegide_json = "aegide_sprites.json"
-    sheet_json = "sheet_sprites.json"
 
     aegide_sprites = set()
     sheet_sprites = set()
@@ -147,24 +149,19 @@ def compare_json():
     sprites_in_sheet_not_in_aegide = sheet_sprites - aegide_sprites
     sprites_in_aegide_not_in_sheet = aegide_sprites - sheet_sprites
 
-    print(" ")
-    print(" ")
+    print("\n\n")
     print("Sprites that IF's sheet have, but Aegide's calc dont :", len(sprites_in_sheet_not_in_aegide), "\n\n", sprites_in_sheet_not_in_aegide)
-    print(" ")
-    print(" ")
+    print("\n\n")
     print("Sprites that Aegide's calc have, but IF's sheet dont :", len(sprites_in_aegide_not_in_sheet), "\n\n", sprites_in_aegide_not_in_sheet)
-    print(" ")
-    print(" ")
+    print("\n\n")
 
-
-
-    
+   
 if __name__ == '__main__':
-    update_data = False
-    if update_data:
-        save_data_from_sheet_to_file()
-        load_data_from_file()
-        clean_dex_dict()
-        display_dex_dict()
-        save_total_from_list_to_json()
-    # compare_json()
+    save_data_from_sheet_to_file()
+
+    load_data_from_file()
+    clean_dex_dict()
+    display_dex_dict()
+    save_total_from_list_to_json()
+
+    compare_json()
