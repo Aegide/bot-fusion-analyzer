@@ -74,13 +74,11 @@ def create_embed(valid_fusion, description, jump_url, fusion_id, warning):
     return discord.Embed(title=title, colour=colour, description="[Link to message](" + jump_url + ")")
         
 def have_icon_in_message(message):
-    fusion_id = None
     pattern = '[iI]con'
     result = re.search(pattern, message.content)
     return result is not None
 
 def have_custom_in_message(message):
-    fusion_id = None
     pattern = '[cC]ustom'
     result = re.search(pattern, message.content)
     return result is not None
@@ -169,7 +167,6 @@ def extract_data(message):
         attachment_url = get_attachment_url(message)
         attachment_fusion_id = extract_fusion_id_from_attachment(message)
         content_fusion_id = extract_fusion_id_from_content(message)
-
         if attachment_fusion_id is not None and content_fusion_id is not None:
             autogen_url, valid_fusion, fusion_id, description, warning = handle_two_values(attachment_fusion_id, content_fusion_id)
         elif attachment_fusion_id is not None or content_fusion_id is not None:
