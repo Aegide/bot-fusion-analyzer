@@ -13,7 +13,7 @@ bot = discord.Client()
 bot_id = None
 avatar_url = None
 
-autogen_fusion_url = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Japeal/"
+autogen_fusion_url = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Battlers/"
 aegide_id = "<@!293496911275622410>"
 worksheet_name = "Full dex"
 
