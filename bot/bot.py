@@ -254,12 +254,12 @@ async def handle_test_sprite_gallery(message):
 def get_help_content():
     help_content = """
     hello - makes the bot say "hello"
-    test - sends a test embed message
-    add - turns a channel into a "log channel"
-    remove - turns a "log channel" into a channel
-    update - does nothing, yet
-    aegide - pings Aegide
-    help - shows this information
+test - sends a test embed message
+add - turns a channel into a "log channel"
+remove - turns a "log channel" into a channel
+update - does nothing, yet
+aegide - pings Aegide
+help - shows this information
     """
     return help_content
 
