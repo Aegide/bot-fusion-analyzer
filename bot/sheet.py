@@ -12,7 +12,6 @@ pokemon_amount = 420
 no_fusion = ""
 valid_fusion = "x"
 approved_fusion = "✓"
-test_fusion = "*"
 
 scope = None
 creds = None
@@ -99,17 +98,13 @@ def set_fusion_data(head_id, body_id, new_value):
 def set_fusion_data_from_list(list_cells):
     wks.update_cells(list_cells)
 
-def validate_fusion(fusion_id, is_test=False):
+def validate_fusion(fusion_id, update_sheet=True):
     split_fusion_id = fusion_id.split(".")
     if len(split_fusion_id) == 2:
         head_id, body_id= int(split_fusion_id[0]), int(split_fusion_id[1])
         current_value = get_fusion_data(head_id, body_id)
-        if(current_value != approved_fusion):
-            if is_test:
-                cell_data = test_fusion
-            else:
-                cell_data = valid_fusion
-            set_fusion_data(head_id, body_id, cell_data)
+        if(current_value != approved_fusion and update_sheet):
+            set_fusion_data(head_id, body_id, valid_fusion)
     else:
         print("validate_fusion", fusion_id)
 

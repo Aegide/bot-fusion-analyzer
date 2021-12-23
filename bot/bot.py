@@ -249,7 +249,7 @@ async def handle_test_sprite_gallery(message):
     else:
         await aegide_log_channel.send(embed=embed, content=aegide_id)
     if valid_fusion:
-        sheet.validate_fusion(fusion_id, is_test=True)
+        sheet.validate_fusion(fusion_id, update_sheet=False)
 
 def get_help_content():
     help_content = """
