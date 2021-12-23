@@ -21,10 +21,9 @@ sheet = None
 wks = None
 
 
-def create_json_token(token_data):
-    json_token = "bot" + "/" + "token.json"
-    with open(json_token, "w") as json_file: 
-        json_file.write('Hi there!')
+def create_json_token(token_data, keyfile):
+    with open(keyfile, "w") as json_file: 
+        json_file.write(token_data)
 
 def get_creds(scope):
     try:
@@ -33,8 +32,8 @@ def get_creds(scope):
         keyfile = "bot/token.json"
         creds = ServiceAccountCredentials.from_json_keyfile_name(keyfile, scope)
     else:
-        create_json_token(token_data)
         keyfile = "bot/gsheet.json"
+        create_json_token(token_data, keyfile)
         creds = ServiceAccountCredentials.from_json_keyfile_name("gsheet.json", scope)
     return creds
 
