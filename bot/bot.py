@@ -217,11 +217,13 @@ def interesting_results(results):
 
 def generate_embed(message):
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
+    """
     if valid_fusion:
         results = sprite_analyzer.test_sprite(attachment_url)
         print("sprite_analyzer.test_sprite", results)
         if interesting_results(results):
             valid_fusion, description, warning = results
+    """
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
