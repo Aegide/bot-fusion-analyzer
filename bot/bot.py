@@ -160,8 +160,8 @@ def extract_data(message):
     autogen_url = None
     fusion_id = None
     warning = None
-    
     attachment_url = None
+    
     # Existing file
     if have_attachment(message):
         attachment_url = get_attachment_url(message)
@@ -173,6 +173,7 @@ def extract_data(message):
             autogen_url, valid_fusion, fusion_id, description, warning = handle_one_value(attachment_fusion_id, content_fusion_id)
         else:
             description = handle_zero_value(message)
+    
     # Missing file + spoilers
     else:
         description = Description.missing_file.value
@@ -332,7 +333,15 @@ async def on_message(message):
         else:
             await handle_command(message)
 
+def get_token():
+    try:
+        token = os.environ['DISCORD_KEY']
+    except:
+        open("token.txt").read().rstrip()
+    return token
+
 if sheet.init(worksheet_name):
-    # token = open("token.txt").read().rstrip()
-    token = os.environ['DISCORD_KEY']
+    token = get_token()
     bot.run(token)
+else:
+    print("FAILED TO CONNECT TO GSHEET")
