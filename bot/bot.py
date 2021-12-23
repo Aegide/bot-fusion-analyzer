@@ -336,10 +336,11 @@ async def on_message(message):
             await handle_command(message)
 
 def get_token():
+    token = None
     try:
         token = os.environ['DISCORD_KEY']
     except:
-        open("token.txt").read().rstrip()
+        token = open("bot/token.txt").read().rstrip()
     return token
 
 if sheet.init(worksheet_name):
