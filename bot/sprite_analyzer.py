@@ -4,7 +4,7 @@ import matplotlib.image as mpimg
 import traceback
 from PIL import Image
 import requests
-from bot.description import Description
+from description import Description
 
 
 BLACK_TRANSPARENCY = (0, 0, 0, 0)
