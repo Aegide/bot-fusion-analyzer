@@ -4,9 +4,9 @@ import discord
 import re
 import os
 
-import bot.sheet as sheet
-import bot.sprite_analyzer as sprite_analyzer
-from bot.description import Description
+import sheet
+import sprite_analyzer
+import description as Description
 
 bot = discord.Client()
 # bot = commands.Bot(command_prefix='$')
