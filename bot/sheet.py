@@ -34,7 +34,7 @@ def get_creds(scope):
     else:
         keyfile = "bot/gsheet.json"
         create_json_token(token_data, keyfile)
-        creds = ServiceAccountCredentials.from_json_keyfile_name("gsheet.json", scope)
+        creds = ServiceAccountCredentials.from_json_keyfile_name(keyfile, scope)
     return creds
 
 def init(worksheet_name):
