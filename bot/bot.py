@@ -6,7 +6,7 @@ import os
 
 import sheet
 import sprite_analyzer
-import description as Description
+from description import Description
 
 bot = discord.Client()
 # bot = commands.Bot(command_prefix='$')
@@ -179,10 +179,10 @@ def extract_data(message):
         description = Description.missing_file.value
     return valid_fusion, description, attachment_url, autogen_url, fusion_id, warning
 
-async def send_bot_logs(embed, have_warning):
+async def send_bot_logs(embed, ping_aegide):
     for log_channel in log_channels:
         # print(">", log_channel.guild.name, ":", log_channel.name, ":", have_warning)
-        if(have_warning and log_channel==aegide_log_channel):
+        if(ping_aegide and log_channel==aegide_log_channel):
             await log_channel.send(content=aegide_id, embed=embed)
         else:
             await log_channel.send(embed=embed)
@@ -191,7 +191,7 @@ async def send_test_embed(message):
     print(">>", message.author.name, ":", message.content)
     embed = discord.Embed(title="Title test", colour=gray_colour, description=Description.test.value)
     embed.set_thumbnail(url=avatar_url)
-    await send_bot_logs(embed)
+    await send_bot_logs(embed, True)
 
 async def add_log_channel(channel):
     global log_channels
