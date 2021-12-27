@@ -154,6 +154,20 @@ def handle_zero_value(message):
         description = Description.missing_fusion_id.value
     return description
 
+def is_invalid_fusion_id(fusion_id:str):
+    head_id, body_id = fusion_id.split(".")
+    head_id, body_id = int(head_id), int(body_id)
+    return head_id > 420 or body_id > 420 or head_id < 1 or body_id < 1
+
+def handle_verification(fusion_id:str, valid_fusion, autogen_url, description, warning):
+    if fusion_id is not None:
+        if is_invalid_fusion_id(fusion_id):
+            valid_fusion = False
+            autogen_url = None
+            description = Description.invalid_fusion_id.value
+            warning = f"{fusion_id} is not in the IF Pokedex"
+    return valid_fusion, autogen_url, description, warning
+
 def extract_data(message):
     valid_fusion = False
     description = Description.error.value
@@ -177,11 +191,14 @@ def extract_data(message):
     # Missing file + spoilers
     else:
         description = Description.missing_file.value
+    
+    # Check fusion id
+    valid_fusion, autogen_url, description, warning = handle_verification(fusion_id, valid_fusion, autogen_url, description, warning)
+
     return valid_fusion, description, attachment_url, autogen_url, fusion_id, warning
 
 async def send_bot_logs(embed, ping_aegide):
     for log_channel in log_channels:
-        # print(">", log_channel.guild.name, ":", log_channel.name, ":", have_warning)
         if(ping_aegide and log_channel==aegide_log_channel):
             await log_channel.send(content=aegide_id, embed=embed)
         else:
