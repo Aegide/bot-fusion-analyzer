@@ -38,6 +38,9 @@ infinite_fusion_log_channel = None
 # katten_log_id = 750734964823294036
 # katten_log_channel = None
 
+# Output - files
+sprite_stash_id = 925495677264486460
+sprite_stash_channel = None
 
 # Output - regular
 log_channels = set()
@@ -230,13 +233,19 @@ def log_message(symbol, message):
 def interesting_results(results):
     return results[1] is not None
 
-def generate_embed(message):
+async def generate_embed(message):
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
     
     if valid_fusion:
         results = sprite_analyzer.test_sprite(attachment_url)
         if interesting_results(results):
-            valid_fusion, description, warning = results
+            valid_fusion, description, warning, file_name = results
+            if file_name is not None:
+                file_path = os.path.join(os.getcwd(), "tmp", file_name)
+                file = discord.File(file_path, filename="image.png")
+                message_file = await sprite_stash_channel.send(file=file)
+                os.remove(file_path)
+                autogen_url = message_file.attachments[0].url
     
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
@@ -257,7 +266,7 @@ async def handle_sprite_gallery(message):
 
 async def handle_test_sprite_gallery(message):
     log_message("]>", message)
-    embed, warning, valid_fusion, fusion_id = generate_embed(message)
+    embed, warning, valid_fusion, fusion_id = await generate_embed(message)
     if warning is None:
         await aegide_log_channel.send(embed=embed)
     else:
@@ -315,9 +324,10 @@ async def on_ready():
     # owner = app_info.owner
     avatar_url = bot.user.avatar_url_as(static_format='png', size=256)
 
-    global aegide_log_channel
+    global aegide_log_channel, sprite_stash_channel
     aegide_server = bot.get_guild(aegide_server_id)
     aegide_log_channel = aegide_server.get_channel(aegide_log_id)
+    sprite_stash_channel = aegide_server.get_channel(sprite_stash_id)
     log_channels.add(aegide_log_channel)
 
     global infinite_fusion_log_channel

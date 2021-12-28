@@ -1,8 +1,11 @@
 from os.path import join
+from os import sep as os_sep
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import traceback
 from PIL import Image
+from PIL import PyAccess
+from PIL.PngImagePlugin import PngImageFile
 import requests
 from description import Description
 
@@ -164,10 +167,12 @@ class sprite_analysis():
 
     warning = ""
     valid_fusion = True
+    file_name = None
 
-    def __init__(self, image, pixels):
+    def __init__(self, image: PngImageFile, pixels: PyAccess, url: str):
         self.image = image
         self.pixels = pixels
+        self.file_name = url.split("/")[-1]
 
     def test_size(self):
         try:
@@ -196,8 +201,9 @@ class sprite_analysis():
         try:
             half_transparent_pixels = detect_half_transparency(self.pixels)
             if half_transparent_pixels > HALF_TRANSPARENCY_LIMIT:
-                self.warning += f"Having {half_transparent_pixels} half-transparent pixels is weird" + "\n"
+                self.warning += f"Contains {half_transparent_pixels} half-transparent pixels" + "\n"
                 self.valid_fusion = False
+                self.image.save(f"tmp{os_sep}{self.file_name}")
         except Exception as e:
             print("test_half_transparency()", e)
             if str(e) != "image index out of range":
@@ -210,12 +216,12 @@ class sprite_analysis():
                 description = str(Description.sprite_issue.value)
             else:
                 description = str(Description.sprite_error.value)
-        return self.valid_fusion, description, self.warning
+        return self.valid_fusion, description, self.warning, self.file_name
 
 def get_data(url):
     image = Image.open(requests.get(url, stream=True).raw)
     pixels = image.load()
-    analysis = sprite_analysis(image, pixels)
+    analysis = sprite_analysis(image, pixels, url)
     return analysis
 
 def test_sprite(url):
@@ -228,5 +234,5 @@ def test_sprite(url):
     return results
     
 if __name__ == "__main__":
-    url = "https://cdn.discordapp.com/attachments/543958354377179176/599989522540789803/138.154.png"
+    url = "https://cdn.discordapp.com/attachments/858107956326826004/925366536292687872/209.246.png"
     test_sprite(url)

@@ -3,3 +3,4 @@ token.json
 __pycache__
 TODO.txt
 venv/*
+tmp/*
