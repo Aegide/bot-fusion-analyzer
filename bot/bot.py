@@ -61,14 +61,14 @@ def apply_display_mode(embed, attachment_url, autogen_url):
 
 def create_embed(valid_fusion, description, jump_url, fusion_id, warning):
     if valid_fusion:
-        title = title_accepted + " : " + fusion_id
+        title = f"__{title_accepted} : {fusion_id}__"
         colour = green_colour
     else:
         if warning is not None:
-            title = title_refused + " : " + description + "\n( " + warning + " )"
+            title = f"__{title_refused} : {description}__\n{warning}"
             colour = red_colour
         else:
-            title = title_ignored + " : " + description
+            title = f"__{title_ignored} :  {description}__"
             colour = orange_colour
 
     return discord.Embed(title=title, colour=colour, description="[Link to message](" + jump_url + ")")
@@ -228,19 +228,16 @@ def log_message(symbol, message):
     print(symbol, message.author.name, ":", message.content)
 
 def interesting_results(results):
-    description = results[1]
-    print("interesting_results", description, description is not None)
-    return description is not None
+    return results[1] is not None
 
 def generate_embed(message):
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
-    """
+    
     if valid_fusion:
         results = sprite_analyzer.test_sprite(attachment_url)
-        print("sprite_analyzer.test_sprite", results)
         if interesting_results(results):
             valid_fusion, description, warning = results
-    """
+    
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
