@@ -203,12 +203,12 @@ def extract_data(message):
 async def send_bot_logs(embed, ping_aegide):
     for log_channel in log_channels:
         if(ping_aegide and log_channel==aegide_log_channel):
-            await log_channel.send(content=aegide_id, embed=embed)
+            await log_channel.send(embed=embed, content=aegide_id)
         else:
             await log_channel.send(embed=embed)
 
 async def send_test_embed(message):
-    print(">>", message.author.name, ":", message.content)
+    print(")>", message.author.name, ":", message.content)
     embed = discord.Embed(title="Title test", colour=gray_colour, description=Description.test.value)
     embed.set_thumbnail(url=avatar_url)
     await send_bot_logs(embed, True)
@@ -235,7 +235,7 @@ def interesting_results(results):
 
 async def generate_embed(message):
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
-    
+
     if valid_fusion:
         results = sprite_analyzer.test_sprite(attachment_url)
         if interesting_results(results):
@@ -255,11 +255,7 @@ async def generate_embed(message):
 
 async def handle_sprite_gallery(message):
     log_message(">>", message)
-    valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
-    embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
-    embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
-    embed.set_footer(text=message.content)
-    embed = apply_display_mode(embed, attachment_url, autogen_url)
+    embed, warning, valid_fusion, fusion_id = await generate_embed(message)
     await send_bot_logs(embed, warning is not None)
     if valid_fusion:
         sheet.validate_fusion(fusion_id)
