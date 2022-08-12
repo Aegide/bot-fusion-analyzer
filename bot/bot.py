@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import discord
+from discord.message import Message
 import re
 import os
 
@@ -8,14 +9,17 @@ import sheet
 import sprite_analyzer
 from description import Description
 
+
 bot = discord.Client()
 # bot = commands.Bot(command_prefix='$')
 bot_id = None
 avatar_url = None
 
+
 autogen_fusion_url = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Battlers/"
-aegide_id = "<@!293496911275622410>"
+ping_aegide = "<@!293496911275622410>"
 worksheet_name = "Full dex"
+
 
 # Servers
 aegide_server_id = 293500383769133056
@@ -32,6 +36,7 @@ aegide_log_channel = None
 
 # Output - IF
 infinite_fusion_log_id = 703351286019653762
+# infinite_fusion_log_id = 999653562202214450
 infinite_fusion_log_channel = None
 
 # Output - katten
@@ -62,6 +67,7 @@ def apply_display_mode(embed, attachment_url, autogen_url):
         embed.set_image(url=autogen_url)
     return embed
 
+
 def create_embed(valid_fusion, description, jump_url, fusion_id, warning):
     if valid_fusion:
         title = f"__{title_accepted} : {fusion_id}__"
@@ -75,16 +81,19 @@ def create_embed(valid_fusion, description, jump_url, fusion_id, warning):
             colour = orange_colour
 
     return discord.Embed(title=title, colour=colour, description="[Link to message](" + jump_url + ")")
-        
+
+
 def have_icon_in_message(message):
     pattern = '[iI]con'
     result = re.search(pattern, message.content)
     return result is not None
 
+
 def have_custom_in_message(message):
     pattern = '[cC]ustom'
     result = re.search(pattern, message.content)
     return result is not None
+
 
 def extract_fusion_id_from_attachment(message):
     fusion_id = None
@@ -96,14 +105,18 @@ def extract_fusion_id_from_attachment(message):
             fusion_id = result[0]
     return fusion_id
 
+
 def get_autogen_url(fusion_id):
     return autogen_fusion_url + fusion_id.split(".")[0] + "/" + fusion_id + ".png"
+
 
 def get_attachment_url(message):
     return message.attachments[0].url
 
+
 def have_attachment(message):
     return len(message.attachments) >= 1
+
 
 def extract_fusion_id_from_content(message):
     fusion_id = None
@@ -112,6 +125,7 @@ def extract_fusion_id_from_content(message):
     if result:
         fusion_id = result[0]
     return fusion_id
+
 
 def handle_two_values(attachment_fusion_id, content_fusion_id):
     autogen_url = get_autogen_url(attachment_fusion_id)
@@ -130,6 +144,7 @@ def handle_two_values(attachment_fusion_id, content_fusion_id):
         warning = attachment_fusion_id + " =/= " + content_fusion_id
     return autogen_url, valid_fusion, fusion_id, description, warning
 
+
 def handle_one_value(attachment_fusion_id, content_fusion_id):
     valid_fusion = False
     warning = None
@@ -140,13 +155,16 @@ def handle_one_value(attachment_fusion_id, content_fusion_id):
         fusion_id = attachment_fusion_id
         description = attachment_fusion_id
         autogen_url = get_autogen_url(attachment_fusion_id)
+    
     # Value from text
     else:
         fusion_id = content_fusion_id
         description = Description.missing_file_name.value
         autogen_url = get_autogen_url(content_fusion_id)
-        warning = "File name should be " + content_fusion_id + ".png"
+        warning = "File name should be \"" + content_fusion_id + ".png\""
+    
     return autogen_url, valid_fusion, fusion_id, description, warning
+
 
 def handle_zero_value(message):
     if have_icon_in_message(message):
@@ -157,10 +175,12 @@ def handle_zero_value(message):
         description = Description.missing_fusion_id.value
     return description
 
+
 def is_invalid_fusion_id(fusion_id:str):
     head_id, body_id = fusion_id.split(".")
     head_id, body_id = int(head_id), int(body_id)
     return head_id > 420 or body_id > 420 or head_id < 1 or body_id < 1
+
 
 def handle_verification(fusion_id:str, valid_fusion, autogen_url, description, warning):
     if fusion_id is not None:
@@ -170,6 +190,7 @@ def handle_verification(fusion_id:str, valid_fusion, autogen_url, description, w
             description = Description.invalid_fusion_id.value
             warning = f"{fusion_id} is not in the IF Pokedex"
     return valid_fusion, autogen_url, description, warning
+
 
 def extract_data(message):
     valid_fusion = False
@@ -184,10 +205,13 @@ def extract_data(message):
         attachment_url = get_attachment_url(message)
         attachment_fusion_id = extract_fusion_id_from_attachment(message)
         content_fusion_id = extract_fusion_id_from_content(message)
+
         if attachment_fusion_id is not None and content_fusion_id is not None:
             autogen_url, valid_fusion, fusion_id, description, warning = handle_two_values(attachment_fusion_id, content_fusion_id)
+
         elif attachment_fusion_id is not None or content_fusion_id is not None:
             autogen_url, valid_fusion, fusion_id, description, warning = handle_one_value(attachment_fusion_id, content_fusion_id)
+        
         else:
             description = handle_zero_value(message)
     
@@ -200,18 +224,25 @@ def extract_data(message):
 
     return valid_fusion, description, attachment_url, autogen_url, fusion_id, warning
 
-async def send_bot_logs(embed, ping_aegide):
-    for log_channel in log_channels:
-        if(ping_aegide and log_channel==aegide_log_channel):
-            await log_channel.send(embed=embed, content=aegide_id)
-        else:
-            await log_channel.send(embed=embed)
+
+async def send_bot_logs(embed, have_warning, author_id:str):
+
+    if have_warning:
+        ping_owner = f"<@!{author_id}>" 
+        await aegide_log_channel.send(embed=embed, content=ping_aegide)
+        await infinite_fusion_log_channel.send(embed=embed, content=ping_owner)
+    
+    else:
+        await aegide_log_channel.send(embed=embed)
+        await infinite_fusion_log_channel.send(embed=embed)
+
 
 async def send_test_embed(message):
     print(")>", message.author.name, ":", message.content)
     embed = discord.Embed(title="Title test", colour=gray_colour, description=Description.test.value)
     embed.set_thumbnail(url=avatar_url)
-    await send_bot_logs(embed, True)
+    await aegide_log_channel.send(embed=embed)
+
 
 async def add_log_channel(channel):
     global log_channels
@@ -220,6 +251,7 @@ async def add_log_channel(channel):
     embed.set_thumbnail(url=channel.guild.icon_url)
     await aegide_log_channel.send(embed=embed)
 
+
 async def remove_log_channel(channel):
     global log_channels
     log_channels.remove(channel)
@@ -227,15 +259,19 @@ async def remove_log_channel(channel):
     embed.set_thumbnail(url=channel.guild.icon_url)
     await aegide_log_channel.send(embed=embed)
 
-def log_message(symbol, message):
+
+def log_message(symbol, message:Message):
     print(symbol, message.author.name, ":", message.content)
+
 
 def interesting_results(results):
     return results[1] is not None
 
+
 async def generate_embed(message):
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
 
+    """
     if valid_fusion:
         results = sprite_analyzer.test_sprite(attachment_url)
         if interesting_results(results):
@@ -246,29 +282,29 @@ async def generate_embed(message):
                 message_file = await sprite_stash_channel.send(file=file)
                 os.remove(file_path)
                 autogen_url = message_file.attachments[0].url
-    
+    """
+
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
     embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
     embed.set_footer(text=message.content)
     embed = apply_display_mode(embed, attachment_url, autogen_url)
     return embed, warning, valid_fusion, fusion_id
 
-async def handle_sprite_gallery(message):
+
+async def handle_sprite_gallery(message:Message):
     log_message(">>", message)
     embed, warning, valid_fusion, fusion_id = await generate_embed(message)
-    await send_bot_logs(embed, warning is not None)
-    if valid_fusion:
-        sheet.validate_fusion(fusion_id)
+    await send_bot_logs(embed, warning is not None, message.author.id)
 
-async def handle_test_sprite_gallery(message):
+
+async def handle_test_sprite_gallery(message:Message):
     log_message("]>", message)
     embed, warning, valid_fusion, fusion_id = await generate_embed(message)
     if warning is None:
         await aegide_log_channel.send(embed=embed)
     else:
-        await aegide_log_channel.send(embed=embed, content=aegide_id)
-    if valid_fusion:
-        sheet.validate_fusion(fusion_id, update_sheet=False)
+        await aegide_log_channel.send(embed=embed, content=ping_aegide)
+
 
 def get_help_content():
     help_content = """
@@ -281,6 +317,7 @@ aegide - pings Aegide
 help - shows this information
     """
     return help_content
+
 
 async def handle_command(message):
     content = message.content
@@ -297,7 +334,7 @@ async def handle_command(message):
         elif(content.startswith("%" + "update")):
             pass
         elif(content.startswith("%" + "aegide")):
-            await message.channel.send(content=aegide_id)
+            await message.channel.send(content=ping_aegide)
         elif(content.startswith("%" + "help")):
             await message.channel.send(content=get_help_content())
     else:
@@ -305,8 +342,10 @@ async def handle_command(message):
             await message.channel.send(content="Channel added")
             await add_log_channel(message.channel)
 
-def is_message_not_from_bot(message):
+
+def is_message_from_human(message):
     return message.author.id != bot_id
+
 
 @bot.event
 async def on_ready():
@@ -331,7 +370,8 @@ async def on_ready():
     infinite_fusion_log_channel = infinite_fusion_server.get_channel(infinite_fusion_log_id)
     log_channels.add(infinite_fusion_log_channel)
 
-    print("Ready! bot invite:\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot")
+    print("\n\nReady! bot invite:\n\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot\n\n")
+
 
 @bot.event
 async def on_guild_join(guild):
@@ -339,32 +379,49 @@ async def on_guild_join(guild):
     embed.set_thumbnail(url=guild.icon_url)
     await aegide_log_channel.send(embed=embed)
 
+
 @bot.event
 async def on_guild_remove(guild):
     embed = discord.Embed(title="Removed from server", colour=red_colour, description=guild.name+"\n"+str(guild.id))
     embed.set_thumbnail(url=guild.icon_url)
     await aegide_log_channel.send(embed=embed)
 
+
 @bot.event
-async def on_message(message):
-    if is_message_not_from_bot(message):
+async def on_message(message:Message):
+
+    if is_message_from_human(message):
         if(message.channel.id == infinite_fusion_sprite_gallery_id):
             await handle_sprite_gallery(message)
+        
         elif(message.channel.id == aegide_sprite_gallery_id):
             await handle_test_sprite_gallery(message)
+        
         else:
             await handle_command(message)
 
-def get_token():
+
+def get_discord_token():
     token = None
     try:
-        token = os.environ['DISCORD_KEY']
+        # Heroku
+        token = os.environ["DISCORD_KEY"]
     except:
-        token = open("bot/token.txt").read().rstrip()
+        # Local
+        token = open("../token/discord.txt").read().rstrip()
     return token
 
-if sheet.init(worksheet_name):
-    token = get_token()
-    bot.run(token)
+
+
+if __name__== "__main__" :
+    discord_token = get_discord_token()
+    bot.run(discord_token)
+
+
+
+
+"""
+if sheet_disabled or sheet.init(worksheet_name):
 else:
     print("FAILED TO CONNECT TO GSHEET")
+"""
