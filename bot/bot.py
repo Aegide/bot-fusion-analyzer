@@ -35,8 +35,8 @@ aegide_log_id = 616239403957747742
 aegide_log_channel = None
 
 # Output - IF
-infinite_fusion_log_id = 703351286019653762
-# infinite_fusion_log_id = 999653562202214450
+# infinite_fusion_log_id = 703351286019653762
+infinite_fusion_log_id = 999653562202214450
 infinite_fusion_log_channel = None
 
 # Output - katten
