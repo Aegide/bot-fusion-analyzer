@@ -412,20 +412,26 @@ async def delete_original_message(thread: Thread):
         pass
 
 
-async def kill_thread(message:Message):
+def can_manage_thread(thread:Thread, message:Message):
+    is_owner = thread.owner_id != message.author.id
+    is_sprite_manager = False
+    return is_owner or is_sprite_manager
+
+
+async def handle_thread(message:Message):
     thread = get_thread(message)
-    
-    if (thread.owner_id != message.author.id):
-        await thread.send(f"<@!{message.author.id}> you are not allowed to close this thread")
+    if can_manage_thread(thread, message):
+        await thread.send(f"<@!{message.author.id}> you are not allowed to archive this thread")
     else:
-        log_message(f"[[[{thread.name}]]] : THREAD CLOSED :", message)
+        log_message(f"[[[{thread.name}]]] : THREAD ARCHIVED :", message)
+        await thread.send("== THREAD ARCHIVED ==")
         await delete_original_message(thread)
         await close_thread(thread)
 
 
 async def handle_spritework(message:Message):
     if is_command(message):
-        await kill_thread(message)
+        await handle_thread(message)
     else:
         log_message(f"[{message.channel.name}]>", message)
 
