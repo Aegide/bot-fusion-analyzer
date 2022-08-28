@@ -437,12 +437,12 @@ def can_manage_thread(message:Message, thread:Thread):
 async def handle_thread(message:Message):
     thread = get_thread(message)
     if can_manage_thread(message, thread):
-        await thread.send(f"<@!{message.author.id}> you are not allowed to archive this thread")
-    else:
         log_message(f"[[[{thread.name}]]] : THREAD ARCHIVED :", message)
         await thread.send("== THREAD ARCHIVED ==")
         await delete_original_message(thread)
         await close_thread(thread)
+    else:
+        await thread.send(f"<@!{message.author.id}> you are not allowed to archive this thread")
 
 
 async def handle_spritework(message:Message):
