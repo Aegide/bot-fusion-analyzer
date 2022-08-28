@@ -401,11 +401,16 @@ def get_thread(message:Message) -> Thread:
 
 
 async def delete_thread(thread: Thread):
-    await thread.delete()
+    await thread.edit(locked=True)
+    # await thread.edit(archived==True)
+    # await thread.delete()
 
 
 async def delete_original_message(thread: Thread):
-    await thread.guild.get_channel(thread.parent_id).get_partial_message(thread.id).delete()
+    try:
+        await thread.guild.get_channel(thread.parent_id).get_partial_message(thread.id).delete()
+    except:
+        pass
 
 
 async def kill_thread(message:Message):
