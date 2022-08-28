@@ -12,3 +12,10 @@ class Description(Enum):
     custom = "Custom sprite"
     error = "Please contact Aegide"
     test = "Description test"
+
+
+
+class Title(Enum):
+    ignored = "Ignored"
+    accepted = "Accepted"
+    refused = "Refused"

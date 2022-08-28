@@ -5,9 +5,8 @@ from discord.message import Message
 import re
 import os
 
-import sheet
-import sprite_analyzer
-from description import Description
+from bot_enum import Title, Description
+import bot_sprite as bs
 
 
 bot = discord.Client()
@@ -55,10 +54,6 @@ orange_colour = discord.Colour(0xe67e22)
 red_colour = discord.Colour(0xe74c3c)
 gray_colour = discord.Colour(0xcdcdcd)
 
-title_ignored = "Ignored"
-title_accepted = "Accepted"
-title_refused = "Refused"
-
 
 def apply_display_mode(embed, attachment_url, autogen_url):
     if attachment_url:
@@ -70,14 +65,14 @@ def apply_display_mode(embed, attachment_url, autogen_url):
 
 def create_embed(valid_fusion, description, jump_url, fusion_id, warning):
     if valid_fusion:
-        title = f"__{title_accepted} : {fusion_id}__"
+        title = f"__{Title.accepted.value} : {fusion_id}__"
         colour = green_colour
     else:
         if warning is not None:
-            title = f"__{title_refused} : {description}__\n{warning}"
+            title = f"__{Title.refused.value} : {description}__\n{warning}"
             colour = red_colour
         else:
-            title = f"__{title_ignored} :  {description}__"
+            title = f"__{Title.ignored.value} :  {description}__"
             colour = orange_colour
 
     return discord.Embed(title=title, colour=colour, description="[Link to message](" + jump_url + ")")
