@@ -366,7 +366,7 @@ async def on_ready():
     global bot_id
     app_info = await bot.application_info()
     bot_id = app_info.id
-    permission_id = "19327478784"
+    permission_id = "17179929600"
 
     global bot_avatar_url
     # owner = app_info.owner
@@ -403,19 +403,20 @@ def get_thread(message:Message) -> Thread:
 async def delete_thread(thread: Thread):
     await thread.delete()
 
+
 async def delete_original_message(thread: Thread):
-    await ctx().pif_spritework().get_partial_message(thread.id).delete()
+    await thread.guild.get_channel(thread.parent_id).get_partial_message(thread.id).delete()
 
 
 async def kill_thread(message:Message):
     thread = get_thread(message)
-    log_message(f"[[[{thread.name}]]] : THREAD CLOSED :", message)
-
+    
     if (thread.owner_id != message.author.id):
         await thread.send(f"<@!{message.author.id}> you are not allowed to close this thread")
-
-    await delete_thread(thread)
-    await delete_original_message(thread)
+    else:
+        log_message(f"[[[{thread.name}]]] : THREAD CLOSED :", message)
+        await delete_original_message(thread)
+        await delete_thread(thread)
 
 
 async def handle_spritework(message:Message):
