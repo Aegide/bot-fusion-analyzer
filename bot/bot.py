@@ -15,7 +15,7 @@ from bot_enum import Title, Description, Colour
 intents = discord.Intents.default()
 intents.guild_messages = True
 intents.members = True
-
+intents.message_content = True
 
 bot = discord.Client(intents=intents)
 # bot = commands.Bot(command_prefix='$')
