@@ -56,6 +56,10 @@ id_channel_logs_pif = 999653562202214450
 id_channel_spritework_pif = 307020509856530434
 
 
+# Role
+id_sprite_manager = 900867033175040101
+
+
 # Type autocompletion at all cost
 class BotContext:
 
@@ -412,15 +416,27 @@ async def delete_original_message(thread: Thread):
         pass
 
 
-def can_manage_thread(thread:Thread, message:Message):
-    is_owner = thread.owner_id != message.author.id
-    is_sprite_manager = False
-    return is_owner or is_sprite_manager
+
+def is_sprite_manager(message:Message):
+    result = False
+    roles_author = message.author.roles
+    for role in roles_author:
+        if role.id == id_sprite_manager:
+            result = True
+    return result
+
+
+def is_owner(message:Message, thread:Thread):
+    return message.author.id != thread.owner_id
+
+
+def can_manage_thread(message:Message, thread:Thread):
+    return is_owner(message, thread) or is_sprite_manager(message)
 
 
 async def handle_thread(message:Message):
     thread = get_thread(message)
-    if can_manage_thread(thread, message):
+    if can_manage_thread(message, thread):
         await thread.send(f"<@!{message.author.id}> you are not allowed to archive this thread")
     else:
         log_message(f"[[[{thread.name}]]] : THREAD ARCHIVED :", message)
