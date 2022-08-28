@@ -26,8 +26,8 @@ worksheet_name = "Full dex"
 
 # Aegide
 id_server_aegide = 293500383769133056
-id_channel_gallery_aegide = 616239403957747742
-id_channel_logs_aegide = 858107956326826004
+id_channel_gallery_aegide = 858107956326826004
+id_channel_logs_aegide = 616239403957747742
 
 
 # Pokémon Infinite Fusion
