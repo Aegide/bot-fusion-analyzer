@@ -6,6 +6,7 @@ from discord.client import Client, ClientUser
 from discord.message import Message
 from discord.channel import TextChannel as Channel
 from discord.threads import Thread
+from discord.guild import Guild
 from discord import Asset
 
 import re
@@ -61,16 +62,20 @@ class BotContext:
     def __init__(self, bot:Client):
 
         # Aegide
-        server_aegide = bot.get_guild(id_server_aegide)
-        self.__aegide_gallery = server_aegide.get_channel(id_channel_gallery_aegide)
-        self.__aegide_logs = server_aegide.get_channel(id_channel_logs_aegide)
-        self.__aegide_spritework = server_aegide.get_channel(id_channel_spritework_aegide)
+        self.__server_aegide = bot.get_guild(id_server_aegide)
+        self.__aegide_gallery = self.__server_aegide.get_channel(id_channel_gallery_aegide)
+        self.__aegide_logs = self.__server_aegide.get_channel(id_channel_logs_aegide)
+        self.__aegide_spritework = self.__server_aegide.get_channel(id_channel_spritework_aegide)
 
         # Pokémon Infinite Fusion
-        server_pif = bot.get_guild(id_server_pif)
-        self.__pif_gallery = server_pif.get_channel(id_channel_gallery_pif)
-        self.__pif_logs = server_pif.get_channel(id_channel_logs_pif)
-        self.__pif_spritework = server_pif.get_channel(id_channel_spritework_pif)
+        self.__server_pif = bot.get_guild(id_server_pif)
+        self.__pif_gallery = self.__server_pif.get_channel(id_channel_gallery_pif)
+        self.__pif_logs = self.__server_pif.get_channel(id_channel_logs_pif)
+        self.__pif_spritework = self.__server_pif.get_channel(id_channel_spritework_pif)
+
+    # Aegide
+    def aegide_server(self)->Guild:
+        return self.__aegide_gallery
 
     def aegide_gallery(self)->Channel:
         return self.__aegide_gallery
@@ -80,6 +85,10 @@ class BotContext:
 
     def aegide_spritework(self)->Channel:
         return self.__aegide_spritework
+
+    # Pokémon Infinite Fusion
+    def pif_server(self)->Guild:
+        return self.__server_pif
 
     def pif_gallery(self)->Channel:
         return self.__pif_gallery
@@ -391,14 +400,22 @@ def get_thread(message:Message) -> Thread:
     return message.channel
 
 
+async def delete_thread(thread: Thread):
+    await thread.delete()
+
+async def delete_original_message(thread: Thread):
+    await ctx().pif_spritework().get_partial_message(thread.id).delete()
+
+
 async def kill_thread(message:Message):
     thread = get_thread(message)
     log_message(f"[[[{thread.name}]]] : THREAD CLOSED :", message)
-    
-    if (thread.owner_id == message.author.id):
-        await thread.send("== THREAD CLOSED ==")
-    else:
+
+    if (thread.owner_id != message.author.id):
         await thread.send(f"<@!{message.author.id}> you are not allowed to close this thread")
+
+    await delete_thread(thread)
+    await delete_original_message(thread)
 
 
 async def handle_spritework(message:Message):
