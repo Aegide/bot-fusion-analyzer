@@ -400,10 +400,8 @@ def get_thread(message:Message) -> Thread:
     return message.channel
 
 
-async def delete_thread(thread: Thread):
-    await thread.edit(locked=True)
-    # await thread.edit(archived==True)
-    # await thread.delete()
+async def close_thread(thread: Thread):
+    await thread.edit(archived=True)
 
 
 async def delete_original_message(thread: Thread):
@@ -421,7 +419,7 @@ async def kill_thread(message:Message):
     else:
         log_message(f"[[[{thread.name}]]] : THREAD CLOSED :", message)
         await delete_original_message(thread)
-        await delete_thread(thread)
+        await close_thread(thread)
 
 
 async def handle_spritework(message:Message):
