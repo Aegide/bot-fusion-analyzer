@@ -358,9 +358,6 @@ async def on_message(message:Message):
         
         elif(message.channel.id == id_channel_gallery_aegide):
             await handle_test_sprite_gallery(message)
-        
-        else:
-            await handle_command(message)
 
 
 def get_discord_token():
