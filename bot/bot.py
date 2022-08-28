@@ -1,9 +1,10 @@
 # coding: utf-8
 
 import discord
-from discord.client import Client
+from discord.client import Client, ClientUser
 from discord.message import Message
 from discord.channel import TextChannel as Channel
+from discord import Asset
 
 import re
 import os
@@ -11,8 +12,12 @@ import os
 from bot_enum import Title, Description, Colour
 
 
+intents = discord.Intents.default()
+intents.guild_messages = True
+intents.members = True
 
-bot = discord.Client()
+
+bot = discord.Client(intents=intents)
 # bot = commands.Bot(command_prefix='$')
 bot_id = None
 avatar_url = None
@@ -317,6 +322,10 @@ def is_message_from_human(message):
     return message.author.id != bot_id
 
 
+
+def get_display_avatar(user:ClientUser) -> Asset:
+    return user.display_avatar.with_format("png").with_size(256)
+
 @bot.event
 async def on_ready():
 
@@ -327,7 +336,7 @@ async def on_ready():
 
     global avatar_url
     # owner = app_info.owner
-    avatar_url = bot.user.avatar_url_as(static_format='png', size=256)
+    avatar_url = get_display_avatar(bot.user).url
 
     global bot_context
     bot_context = BotContext(bot)
