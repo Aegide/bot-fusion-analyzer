@@ -20,7 +20,7 @@ intents.members = True
 bot = discord.Client(intents=intents)
 # bot = commands.Bot(command_prefix='$')
 bot_id = None
-avatar_url = None
+bot_avatar_url = None
 
 bot_context = None
 
@@ -255,7 +255,7 @@ async def send_bot_logs(embed, have_warning, author_id:str):
 async def send_test_embed(message):
     print(")>", message.author.name, ":", message.content)
     embed = discord.Embed(title="Title test", colour=Colour.gray.value, description=Description.test.value)
-    embed.set_thumbnail(url=avatar_url)
+    embed.set_thumbnail(url=bot_avatar_url)
     await ctx().aegide_logs().send(embed=embed)
 
 
@@ -267,7 +267,7 @@ def interesting_results(results):
     return results[1] is not None
 
 
-async def generate_embed(message):
+async def generate_embed(message:Message):
     valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
 
     """
@@ -284,7 +284,8 @@ async def generate_embed(message):
     """
 
     embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
-    embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
+    author_avatar = get_display_avatar(message.author)
+    embed.set_author(name=message.author.name, icon_url=author_avatar.url)
     embed.set_footer(text=message.content)
     embed = apply_display_mode(embed, attachment_url, autogen_url)
     return embed, warning, valid_fusion, fusion_id
@@ -322,9 +323,9 @@ def is_message_from_human(message):
     return message.author.id != bot_id
 
 
-
 def get_display_avatar(user:ClientUser) -> Asset:
     return user.display_avatar.with_format("png").with_size(256)
+
 
 @bot.event
 async def on_ready():
@@ -334,9 +335,9 @@ async def on_ready():
     bot_id = app_info.id
     permission_id = "2048"
 
-    global avatar_url
+    global bot_avatar_url
     # owner = app_info.owner
-    avatar_url = get_display_avatar(bot.user).url
+    bot_avatar_url = get_display_avatar(bot.user).url
 
     global bot_context
     bot_context = BotContext(bot)
