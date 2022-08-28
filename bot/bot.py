@@ -5,8 +5,8 @@ from discord.message import Message
 import re
 import os
 
-from bot_enum import Title, Description
-import bot_sprite as bs
+from bot_enum import Title, Description, Colour
+
 
 
 bot = discord.Client()
@@ -49,12 +49,6 @@ sprite_stash_channel = None
 # Output - regular
 log_channels = set()
 
-green_colour = discord.Colour(0x2ecc71)
-orange_colour = discord.Colour(0xe67e22)
-red_colour = discord.Colour(0xe74c3c)
-gray_colour = discord.Colour(0xcdcdcd)
-
-
 def apply_display_mode(embed, attachment_url, autogen_url):
     if attachment_url:
         embed.set_thumbnail(url=attachment_url)
@@ -66,14 +60,14 @@ def apply_display_mode(embed, attachment_url, autogen_url):
 def create_embed(valid_fusion, description, jump_url, fusion_id, warning):
     if valid_fusion:
         title = f"__{Title.accepted.value} : {fusion_id}__"
-        colour = green_colour
+        colour = Colour.green.value
     else:
         if warning is not None:
             title = f"__{Title.refused.value} : {description}__\n{warning}"
-            colour = red_colour
+            colour = Colour.red.value
         else:
             title = f"__{Title.ignored.value} :  {description}__"
-            colour = orange_colour
+            colour = Colour.orange.value
 
     return discord.Embed(title=title, colour=colour, description="[Link to message](" + jump_url + ")")
 
@@ -234,7 +228,7 @@ async def send_bot_logs(embed, have_warning, author_id:str):
 
 async def send_test_embed(message):
     print(")>", message.author.name, ":", message.content)
-    embed = discord.Embed(title="Title test", colour=gray_colour, description=Description.test.value)
+    embed = discord.Embed(title="Title test", colour=Colour.gray.value, description=Description.test.value)
     embed.set_thumbnail(url=avatar_url)
     await aegide_log_channel.send(embed=embed)
 
@@ -242,7 +236,7 @@ async def send_test_embed(message):
 async def add_log_channel(channel):
     global log_channels
     log_channels.add(channel)
-    embed = discord.Embed(title="Added log channel", colour=green_colour, description=channel.name+"\n"+str(channel.id))
+    embed = discord.Embed(title="Added log channel", colour=Colour.green.value, description=channel.name+"\n"+str(channel.id))
     embed.set_thumbnail(url=channel.guild.icon_url)
     await aegide_log_channel.send(embed=embed)
 
@@ -250,7 +244,7 @@ async def add_log_channel(channel):
 async def remove_log_channel(channel):
     global log_channels
     log_channels.remove(channel)
-    embed = discord.Embed(title="Removed log channel", colour=red_colour, description=channel.name+"\n"+str(channel.id))
+    embed = discord.Embed(title="Removed log channel", colour=Colour.red.value, description=channel.name+"\n"+str(channel.id))
     embed.set_thumbnail(url=channel.guild.icon_url)
     await aegide_log_channel.send(embed=embed)
 
@@ -370,14 +364,14 @@ async def on_ready():
 
 @bot.event
 async def on_guild_join(guild):
-    embed = discord.Embed(title="Joined the server", colour=green_colour, description=guild.name+"\n"+str(guild.id))
+    embed = discord.Embed(title="Joined the server", colour=Colour.green.value, description=guild.name+"\n"+str(guild.id))
     embed.set_thumbnail(url=guild.icon_url)
     await aegide_log_channel.send(embed=embed)
 
 
 @bot.event
 async def on_guild_remove(guild):
-    embed = discord.Embed(title="Removed from server", colour=red_colour, description=guild.name+"\n"+str(guild.id))
+    embed = discord.Embed(title="Removed from server", colour=Colour.red.value, description=guild.name+"\n"+str(guild.id))
     embed.set_thumbnail(url=guild.icon_url)
     await aegide_log_channel.send(embed=embed)
 
