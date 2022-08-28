@@ -1,7 +1,10 @@
 # coding: utf-8
 
 import discord
+from discord.client import Client
 from discord.message import Message
+from discord.channel import TextChannel as Channel
+
 import re
 import os
 
@@ -14,40 +17,58 @@ bot = discord.Client()
 bot_id = None
 avatar_url = None
 
+bot_context = None
 
 autogen_fusion_url = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Battlers/"
 ping_aegide = "<@!293496911275622410>"
 worksheet_name = "Full dex"
 
 
-# Servers
-aegide_server_id = 293500383769133056
-infinite_fusion_server_id = 302153478556352513
-# katten_server_id = 750734964823294033
+# Aegide
+id_server_aegide = 293500383769133056
+id_channel_gallery_aegide = 616239403957747742
+id_channel_logs_aegide = 858107956326826004
 
-# Input(s)
-infinite_fusion_sprite_gallery_id = 543958354377179176
-aegide_sprite_gallery_id = 858107956326826004
 
-# Output - aegide
-aegide_log_id = 616239403957747742
-aegide_log_channel = None
+# Pokémon Infinite Fusion
+id_server_pif = 302153478556352513
+id_channel_gallery_if = 543958354377179176
+id_channel_logs_if = 999653562202214450
+id_channel_spritework_if = 307020509856530434
 
-# Output - IF
-# infinite_fusion_log_id = 703351286019653762
-infinite_fusion_log_id = 999653562202214450
-infinite_fusion_log_channel = None
 
-# Output - katten
-# katten_log_id = 750734964823294036
-# katten_log_channel = None
+# Type autocompletion at all cost
+class BotContext:
 
-# Output - files
-sprite_stash_id = 925495677264486460
-sprite_stash_channel = None
+    def __init__(self, bot:Client):
 
-# Output - regular
-log_channels = set()
+        # Aegide
+        server_aegide = bot.get_guild(id_server_aegide)
+        self.__aegide_gallery = server_aegide.get_channel(id_channel_gallery_aegide)
+        self.__aegide_logs = server_aegide.get_channel(id_channel_logs_aegide)
+
+        # Pokémon Infinite Fusion
+        server_pif = bot.get_guild(id_server_pif)
+        self.__pif_gallery = server_pif.get_channel(id_channel_gallery_if)
+        self.__pif_logs = server_pif.get_channel(id_channel_logs_if)
+        # self.pif_spritework = server_pif.get_channel(id_channel_spritework_if)
+
+    def aegide_gallery(self)->Channel:
+        return self.__aegide_gallery
+    
+    def aegide_logs(self)->Channel:
+        return self.__aegide_logs
+
+    def pif_gallery(self)->Channel:
+        return self.__pif_gallery
+
+    def pif_logs(self)->Channel:
+        return self.__pif_logs
+    
+
+def ctx()->BotContext:
+    return bot_context
+
 
 def apply_display_mode(embed, attachment_url, autogen_url):
     if attachment_url:
@@ -217,36 +238,20 @@ def extract_data(message):
 async def send_bot_logs(embed, have_warning, author_id:str):
 
     if have_warning:
-        ping_owner = f"<@!{author_id}>" 
-        await aegide_log_channel.send(embed=embed, content=ping_aegide)
-        await infinite_fusion_log_channel.send(embed=embed, content=ping_owner)
+        ping_owner = f"<@!{author_id}>"
+        await ctx().aegide_logs().send(embed=embed, content=ping_aegide)
+        await ctx().pif_logs().send(embed=embed, content=ping_owner)
     
     else:
-        await aegide_log_channel.send(embed=embed)
-        await infinite_fusion_log_channel.send(embed=embed)
+        await ctx().pif_logs().send(embed=embed)
+        await ctx().aegide_logs().send(embed=embed)
 
 
 async def send_test_embed(message):
     print(")>", message.author.name, ":", message.content)
     embed = discord.Embed(title="Title test", colour=Colour.gray.value, description=Description.test.value)
     embed.set_thumbnail(url=avatar_url)
-    await aegide_log_channel.send(embed=embed)
-
-
-async def add_log_channel(channel):
-    global log_channels
-    log_channels.add(channel)
-    embed = discord.Embed(title="Added log channel", colour=Colour.green.value, description=channel.name+"\n"+str(channel.id))
-    embed.set_thumbnail(url=channel.guild.icon_url)
-    await aegide_log_channel.send(embed=embed)
-
-
-async def remove_log_channel(channel):
-    global log_channels
-    log_channels.remove(channel)
-    embed = discord.Embed(title="Removed log channel", colour=Colour.red.value, description=channel.name+"\n"+str(channel.id))
-    embed.set_thumbnail(url=channel.guild.icon_url)
-    await aegide_log_channel.send(embed=embed)
+    await ctx().aegide_logs().send(embed=embed)
 
 
 def log_message(symbol, message:Message):
@@ -290,9 +295,9 @@ async def handle_test_sprite_gallery(message:Message):
     log_message("]>", message)
     embed, warning, valid_fusion, fusion_id = await generate_embed(message)
     if warning is None:
-        await aegide_log_channel.send(embed=embed)
+        await ctx().aegide_logs().send(embed=embed)
     else:
-        await aegide_log_channel.send(embed=embed, content=ping_aegide)
+        await ctx().aegide_logs().send(embed=embed, content=ping_aegide)
 
 
 def get_help_content():
@@ -306,30 +311,6 @@ aegide - pings Aegide
 help - shows this information
     """
     return help_content
-
-
-async def handle_command(message):
-    content = message.content
-    if(message.channel in log_channels):
-        if(content.startswith("%" + "hello")):
-            await message.channel.send(content=content)
-        elif(content.startswith("%" + "test")):
-            await send_test_embed(message)
-        elif(content.startswith("%" + "remove")):
-            await message.channel.send(content="Channel removed")
-            await remove_log_channel(message.channel)
-        elif(content.startswith("%" + "add")):
-            await message.channel.send(content="Channel already added")
-        elif(content.startswith("%" + "update")):
-            pass
-        elif(content.startswith("%" + "aegide")):
-            await message.channel.send(content=ping_aegide)
-        elif(content.startswith("%" + "help")):
-            await message.channel.send(content=get_help_content())
-    else:
-        if(content.startswith("%" + "add")):
-            await message.channel.send(content="Channel added")
-            await add_log_channel(message.channel)
 
 
 def is_message_from_human(message):
@@ -348,16 +329,8 @@ async def on_ready():
     # owner = app_info.owner
     avatar_url = bot.user.avatar_url_as(static_format='png', size=256)
 
-    global aegide_log_channel, sprite_stash_channel
-    aegide_server = bot.get_guild(aegide_server_id)
-    aegide_log_channel = aegide_server.get_channel(aegide_log_id)
-    sprite_stash_channel = aegide_server.get_channel(sprite_stash_id)
-    log_channels.add(aegide_log_channel)
-
-    global infinite_fusion_log_channel
-    infinite_fusion_server = bot.get_guild(infinite_fusion_server_id)
-    infinite_fusion_log_channel = infinite_fusion_server.get_channel(infinite_fusion_log_id)
-    log_channels.add(infinite_fusion_log_channel)
+    global bot_context
+    bot_context = BotContext(bot)
 
     print("\n\nReady! bot invite:\n\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot\n\n")
 
@@ -366,24 +339,24 @@ async def on_ready():
 async def on_guild_join(guild):
     embed = discord.Embed(title="Joined the server", colour=Colour.green.value, description=guild.name+"\n"+str(guild.id))
     embed.set_thumbnail(url=guild.icon_url)
-    await aegide_log_channel.send(embed=embed)
+    await ctx().aegide_logs().send(embed=embed)
 
 
 @bot.event
 async def on_guild_remove(guild):
     embed = discord.Embed(title="Removed from server", colour=Colour.red.value, description=guild.name+"\n"+str(guild.id))
     embed.set_thumbnail(url=guild.icon_url)
-    await aegide_log_channel.send(embed=embed)
+    await ctx().aegide_logs().send(embed=embed)
 
 
 @bot.event
 async def on_message(message:Message):
 
     if is_message_from_human(message):
-        if(message.channel.id == infinite_fusion_sprite_gallery_id):
+        if(message.channel.id == id_channel_gallery_if):
             await handle_sprite_gallery(message)
         
-        elif(message.channel.id == aegide_sprite_gallery_id):
+        elif(message.channel.id == id_channel_gallery_aegide):
             await handle_test_sprite_gallery(message)
         
         else:
