@@ -427,7 +427,7 @@ def is_sprite_manager(message:Message):
 
 
 def is_owner(message:Message, thread:Thread):
-    return message.author.id != thread.owner_id
+    return message.author.id == thread.owner_id
 
 
 def can_manage_thread(message:Message, thread:Thread):
