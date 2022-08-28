@@ -366,7 +366,7 @@ async def on_ready():
     global bot_id
     app_info = await bot.application_info()
     bot_id = app_info.id
-    permission_id = "2048"
+    permission_id = "19327478784"
 
     global bot_avatar_url
     # owner = app_info.owner
