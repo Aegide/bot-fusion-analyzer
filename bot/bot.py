@@ -401,8 +401,8 @@ def get_thread(message:Message) -> Thread:
 
 
 async def close_thread(thread: Thread):
-    # await thread.edit(archived=True)  # makes the thread "old"
-    await thread.edit(locked=True)
+    await thread.edit(archived=True)  # makes the thread "old"
+    # await thread.edit(locked=True)  # makes the thread "locked" + "old"
 
 
 async def delete_original_message(thread: Thread):
