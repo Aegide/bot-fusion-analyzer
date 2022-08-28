@@ -1,5 +1,6 @@
 # coding: utf-8
 
+
 import discord
 from discord.client import Client, ClientUser
 from discord.message import Message
@@ -13,13 +14,23 @@ import os
 from bot_enum import Title, Description, Colour
 
 
+prefix = "//"
+
+
+commands = []
+commands.append("kill")
+commands.append("close")
+commands.append("end")
+commands.append("destroy")
+
+
 intents = discord.Intents.default()
 intents.guild_messages = True
 intents.members = True
 intents.message_content = True
-
 bot = discord.Client(intents=intents)
-# bot = commands.Bot(command_prefix='$')
+
+
 bot_id = None
 bot_avatar_url = None
 
@@ -372,22 +383,47 @@ async def on_guild_remove(guild):
     await ctx().aegide_logs().send(embed=embed)
 
 
+def is_command(message:Message):
+    return prefix == message.content[0:2] and message.content[2:] in commands
+
+
+def get_thread(message:Message) -> Thread:
+    return message.channel
+
+
+async def kill_thread(message:Message):
+    thread = get_thread(message)
+    log_message(f"[[[{thread.name}]]] : THREAD CLOSED :", message)
+    
+    if (thread.owner_id == message.author.id):
+        await thread.send("== THREAD CLOSED ==")
+    else:
+        await thread.send(f"<@!{message.author.id}> you are not allowed to close this thread")
+
+
 async def handle_spritework(message:Message):
-    log_message(f"T/{message.channel.name}>>", message)
+    if is_command(message):
+        await kill_thread(message)
+    else:
+        log_message(f"[{message.channel.name}]>", message)
 
 
-def is_message_from_spritework(message:Message):
+def is_message_from_thread_from_spritework(message:Message):
     result = False
     is_thread = isinstance(message.channel, Thread)
     if is_thread:
-        is_spritework_pif = message.channel.parent_id == id_channel_spritework_aegide
-        is_spritework_aegide = message.channel.parent_id == id_channel_spritework_pif
-        result = is_spritework_pif or is_spritework_aegide
+        result = is_message_from_spritework(message)
     return result
 
 
+def is_message_from_spritework(thread:Thread):
+    is_spritework_pif = thread.channel.parent_id == id_channel_spritework_aegide
+    is_spritework_aegide = thread.channel.parent_id == id_channel_spritework_pif
+    return is_spritework_pif or is_spritework_aegide
+
+
 async def handle_rest(message:Message):
-    if is_message_from_spritework(message):
+    if(is_message_from_thread_from_spritework(message)):
         await handle_spritework(message)
     else:
         # log_message(f"[{message.channel.name}]>", message)
@@ -408,6 +444,7 @@ async def on_message(message:Message):
             await handle_rest(message)
 
 
+
 def get_discord_token():
     token = None
     try:
@@ -417,6 +454,9 @@ def get_discord_token():
         # Local
         token = open("../token/discord.txt").read().rstrip()
     return token
+
+
+
 
 
 if __name__== "__main__" :
