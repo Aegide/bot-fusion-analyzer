@@ -4,6 +4,7 @@ import discord
 from discord.client import Client, ClientUser
 from discord.message import Message
 from discord.channel import TextChannel as Channel
+from discord.threads import Thread
 from discord import Asset
 
 import re
@@ -33,13 +34,14 @@ worksheet_name = "Full dex"
 id_server_aegide = 293500383769133056
 id_channel_gallery_aegide = 858107956326826004
 id_channel_logs_aegide = 616239403957747742
+id_channel_spritework_aegide = 1013429382213279783
 
 
 # Pokémon Infinite Fusion
 id_server_pif = 302153478556352513
-id_channel_gallery_if = 543958354377179176
-id_channel_logs_if = 999653562202214450
-id_channel_spritework_if = 307020509856530434
+id_channel_gallery_pif = 543958354377179176
+id_channel_logs_pif = 999653562202214450
+id_channel_spritework_pif = 307020509856530434
 
 
 # Type autocompletion at all cost
@@ -51,12 +53,13 @@ class BotContext:
         server_aegide = bot.get_guild(id_server_aegide)
         self.__aegide_gallery = server_aegide.get_channel(id_channel_gallery_aegide)
         self.__aegide_logs = server_aegide.get_channel(id_channel_logs_aegide)
+        self.__aegide_spritework = server_aegide.get_channel(id_channel_spritework_aegide)
 
         # Pokémon Infinite Fusion
         server_pif = bot.get_guild(id_server_pif)
-        self.__pif_gallery = server_pif.get_channel(id_channel_gallery_if)
-        self.__pif_logs = server_pif.get_channel(id_channel_logs_if)
-        # self.pif_spritework = server_pif.get_channel(id_channel_spritework_if)
+        self.__pif_gallery = server_pif.get_channel(id_channel_gallery_pif)
+        self.__pif_logs = server_pif.get_channel(id_channel_logs_pif)
+        self.__pif_spritework = server_pif.get_channel(id_channel_spritework_pif)
 
     def aegide_gallery(self)->Channel:
         return self.__aegide_gallery
@@ -64,12 +67,18 @@ class BotContext:
     def aegide_logs(self)->Channel:
         return self.__aegide_logs
 
+    def aegide_spritework(self)->Channel:
+        return self.__aegide_spritework
+
     def pif_gallery(self)->Channel:
         return self.__pif_gallery
 
     def pif_logs(self)->Channel:
         return self.__pif_logs
     
+    def pif_spritework(self)->Channel:
+        return self.__pif_spritework
+
 
 def ctx()->BotContext:
     return bot_context
@@ -259,8 +268,12 @@ async def send_test_embed(message):
     await ctx().aegide_logs().send(embed=embed)
 
 
-def log_message(symbol, message:Message):
-    print(symbol, message.author.name, ":", message.content)
+def log_message(symbol, element:Message|Thread):
+    if isinstance(element, Thread):
+        thread_owner = bot.get_user(element.owner_id).name
+        print(symbol, thread_owner, ":", element.name)
+    else:
+        print(symbol, element.author.name, ":", element.content)
 
 
 def interesting_results(results):
@@ -292,13 +305,13 @@ async def generate_embed(message:Message):
 
 
 async def handle_sprite_gallery(message:Message):
-    log_message(">>", message)
+    log_message("sg>", message)
     embed, warning, valid_fusion, fusion_id = await generate_embed(message)
     await send_bot_logs(embed, warning is not None, message.author.id)
 
 
 async def handle_test_sprite_gallery(message:Message):
-    log_message("]>", message)
+    log_message("t/sg>", message)
     embed, warning, valid_fusion, fusion_id = await generate_embed(message)
     if warning is None:
         await ctx().aegide_logs().send(embed=embed)
@@ -359,15 +372,40 @@ async def on_guild_remove(guild):
     await ctx().aegide_logs().send(embed=embed)
 
 
+async def handle_spritework(message:Message):
+    log_message(f"T/{message.channel.name}>>", message)
+
+
+def is_message_from_spritework(message:Message):
+    result = False
+    is_thread = isinstance(message.channel, Thread)
+    if is_thread:
+        is_spritework_pif = message.channel.parent_id == id_channel_spritework_aegide
+        is_spritework_aegide = message.channel.parent_id == id_channel_spritework_pif
+        result = is_spritework_pif or is_spritework_aegide
+    return result
+
+
+async def handle_rest(message:Message):
+    if is_message_from_spritework(message):
+        await handle_spritework(message)
+    else:
+        # log_message(f"[{message.channel.name}]>", message)
+        pass
+
+
 @bot.event
 async def on_message(message:Message):
 
     if is_message_from_human(message):
-        if(message.channel.id == id_channel_gallery_if):
+        if(message.channel.id == id_channel_gallery_pif):
             await handle_sprite_gallery(message)
         
         elif(message.channel.id == id_channel_gallery_aegide):
             await handle_test_sprite_gallery(message)
+
+        else:
+            await handle_rest(message)
 
 
 def get_discord_token():
@@ -381,12 +419,9 @@ def get_discord_token():
     return token
 
 
-
 if __name__== "__main__" :
     discord_token = get_discord_token()
     bot.run(discord_token)
-
-
 
 
 """
