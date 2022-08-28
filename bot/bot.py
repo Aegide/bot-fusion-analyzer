@@ -397,7 +397,7 @@ async def on_guild_remove(guild):
 
 
 def is_command(message:Message):
-    return prefix == message.content[0:2] and message.content[2:] in commands
+    return prefix == message.content[0:2] and message.content[2:] == "kill"
 
 
 def get_thread(message:Message) -> Thread:
@@ -493,7 +493,6 @@ async def on_message(message:Message):
             await handle_rest(message)
 
 
-
 def get_discord_token():
     token = None
     try:
@@ -503,9 +502,6 @@ def get_discord_token():
         # Local
         token = open("../token/discord.txt").read().rstrip()
     return token
-
-
-
 
 
 if __name__== "__main__" :
