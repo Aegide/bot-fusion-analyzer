@@ -438,7 +438,12 @@ async def handle_thread(message:Message):
     thread = get_thread(message)
     if can_manage_thread(message, thread):
         log_message(f"[[[{thread.name}]]] : THREAD ARCHIVED :", message)
-        await thread.send("== THREAD ARCHIVED ==")
+
+        if is_sprite_manager(message):
+            await thread.send("**== THREAD ARCHIVED ==**")
+        else:
+            await thread.send("== THREAD ARCHIVED ==")
+
         await delete_original_message(thread)
         await close_thread(thread)
     else:
