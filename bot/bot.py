@@ -20,7 +20,8 @@ PREFIX = "//"
 
 PATTERN_ICON = r'[iI]con'
 PATTERN_CUSTOM = r'[cC]ustom'
-PATTERN_FUSION = r'[0-9]+\.[0-9]+'
+PATTERN_MESSAGE = r'[0-9]+\.[0-9]+'
+PATTERN_FILENAME = r'[0-9]+\.[0-9]+'
 
 
 commands = []
@@ -155,11 +156,13 @@ def extract_fusion_id(text:str):
     return fusion_id
 
 
-def extract_fusion_id_from_attachment(message):
+def extract_fusion_id_from_filename(message):
     fusion_id = None
     if len(message.attachments) >= 1:
         filename = message.attachments[0].filename
-        fusion_id = extract_fusion_id(filename)
+        result = re.search(PATTERN_FILENAME, filename)
+        if result:
+            fusion_id = result[0]
     return fusion_id
 
 
@@ -179,34 +182,34 @@ def extract_fusion_id_from_content(message):
     return extract_fusion_id(message.content)
 
 
-def handle_two_values(attachment_fusion_id, content_fusion_id):
-    autogen_url = get_autogen_url(attachment_fusion_id)
+def handle_two_values(filename_fusion_id, content_fusion_id):
+    autogen_url = get_autogen_url(filename_fusion_id)
     warning = None
     valid_fusion = False
     
     # Same values
-    if attachment_fusion_id == content_fusion_id:
+    if filename_fusion_id == content_fusion_id:
         valid_fusion = True
-        fusion_id = attachment_fusion_id
-        description = attachment_fusion_id
+        fusion_id = filename_fusion_id
+        description = filename_fusion_id
     # Different values
     else:
-        fusion_id = attachment_fusion_id
+        fusion_id = filename_fusion_id
         description = Description.different_fusion_id.value
-        warning = attachment_fusion_id + " =/= " + content_fusion_id
+        warning = filename_fusion_id + " =/= " + content_fusion_id
     return autogen_url, valid_fusion, fusion_id, description, warning
 
 
-def handle_one_value(attachment_fusion_id, content_fusion_id):
+def handle_one_value(filename_fusion_id, content_fusion_id):
     valid_fusion = False
     warning = None
 
     # Value from file
-    if attachment_fusion_id is not None:
+    if filename_fusion_id is not None:
         valid_fusion = True
-        fusion_id = attachment_fusion_id
-        description = attachment_fusion_id
-        autogen_url = get_autogen_url(attachment_fusion_id)
+        fusion_id = filename_fusion_id
+        description = filename_fusion_id
+        autogen_url = get_autogen_url(filename_fusion_id)
     
     # Value from text
     else:
@@ -255,14 +258,14 @@ def extract_data(message):
     # Existing file
     if have_attachment(message):
         attachment_url = get_attachment_url(message)
-        attachment_fusion_id = extract_fusion_id_from_attachment(message)
+        filename_fusion_id = extract_fusion_id_from_filename(message)
         content_fusion_id = extract_fusion_id_from_content(message)
 
-        if attachment_fusion_id is not None and content_fusion_id is not None:
-            autogen_url, valid_fusion, fusion_id, description, warning = handle_two_values(attachment_fusion_id, content_fusion_id)
+        if filename_fusion_id is not None and content_fusion_id is not None:
+            autogen_url, valid_fusion, fusion_id, description, warning = handle_two_values(filename_fusion_id, content_fusion_id)
 
-        elif attachment_fusion_id is not None or content_fusion_id is not None:
-            autogen_url, valid_fusion, fusion_id, description, warning = handle_one_value(attachment_fusion_id, content_fusion_id)
+        elif filename_fusion_id is not None or content_fusion_id is not None:
+            autogen_url, valid_fusion, fusion_id, description, warning = handle_one_value(filename_fusion_id, content_fusion_id)
         
         else:
             description = handle_zero_value(message)
