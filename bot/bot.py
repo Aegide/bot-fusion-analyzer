@@ -147,13 +147,19 @@ def have_custom_in_message(message):
     return result is not None
 
 
+def get_fusion_id(pattern:str, text:str):
+    fusion_id = None
+    result = re.search(pattern, text)
+    if result:
+        fusion_id = result[0]
+    return fusion_id
+
+
 def extract_fusion_id_from_filename(message):
     fusion_id = None
     if len(message.attachments) >= 1:
         filename = message.attachments[0].filename
-        result = re.search(PATTERN_FILENAME, filename)
-        if result:
-            fusion_id = result[0]
+        fusion_id = get_fusion_id(PATTERN_FILENAME, filename)
     return fusion_id
 
 
@@ -170,11 +176,7 @@ def have_attachment(message):
 
 
 def extract_fusion_id_from_content(message):
-    fusion_id = None
-    result = re.search(PATTERN_MESSAGE, message.content)
-    if result:
-        fusion_id = result[0]
-    return fusion_id
+    return get_fusion_id(PATTERN_MESSAGE, message.content)
 
 
 def handle_two_values(filename_fusion_id, content_fusion_id):
