@@ -15,7 +15,12 @@ import os
 from bot_enum import Title, Description, Colour
 
 
-prefix = "//"
+PREFIX = "//"
+
+
+PATTERN_ICON = r'[iI]con'
+PATTERN_CUSTOM = r'[cC]ustom'
+PATTERN_FUSION = r'[0-9]+\.[0-9]+'
 
 
 commands = []
@@ -34,8 +39,8 @@ bot = discord.Client(intents=intents)
 
 bot_id = None
 bot_avatar_url = None
-
 bot_context = None
+
 
 autogen_fusion_url = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Battlers/"
 ping_aegide = "<@!293496911275622410>"
@@ -132,14 +137,12 @@ def create_embed(valid_fusion, description, jump_url, fusion_id, warning):
 
 
 def have_icon_in_message(message):
-    pattern = '[iI]con'
-    result = re.search(pattern, message.content)
+    result = re.search(PATTERN_ICON, message.content)
     return result is not None
 
 
 def have_custom_in_message(message):
-    pattern = '[cC]ustom'
-    result = re.search(pattern, message.content)
+    result = re.search(PATTERN_CUSTOM, message.content)
     return result is not None
 
 
@@ -147,8 +150,7 @@ def extract_fusion_id_from_attachment(message):
     fusion_id = None
     if len(message.attachments) >= 1:
         filename = message.attachments[0].filename
-        pattern = '[0-9]+\.[0-9]+'
-        result = re.search(pattern, filename)
+        result = re.search(PATTERN_FUSION, filename)
         if result:
             fusion_id = result[0]
     return fusion_id
@@ -168,8 +170,7 @@ def have_attachment(message):
 
 def extract_fusion_id_from_content(message):
     fusion_id = None
-    pattern = '[0-9]+\.[0-9]+'
-    result = re.search(pattern, message.content)
+    result = re.search(PATTERN_FUSION, message.content)
     if result:
         fusion_id = result[0]
     return fusion_id
@@ -397,7 +398,7 @@ async def on_guild_remove(guild):
 
 
 def is_command(message:Message):
-    return prefix == message.content[0:2] and message.content[2:] == "kill"
+    return PREFIX == message.content[0:2] and message.content[2:] == "kill"
 
 
 def get_thread(message:Message) -> Thread:
