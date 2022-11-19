@@ -20,15 +20,16 @@ PREFIX = "//"
 
 PATTERN_ICON = r'[iI]con'
 PATTERN_CUSTOM = r'[cC]ustom'
-PATTERN_MESSAGE = r'[0-9]+\.[0-9]+'
-PATTERN_FILENAME = r'[0-9]+\.[0-9]+'
+PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+'
 
 
+"""
 commands = []
 commands.append("kill")
 commands.append("close")
 commands.append("end")
 commands.append("destroy")
+"""
 
 
 intents = discord.Intents.default()
@@ -147,19 +148,34 @@ def have_custom_in_message(message):
     return result is not None
 
 
-def get_fusion_id(pattern:str, text:str):
+def has_attachments(message:Message):
+    return len(message.attachments) >= 1
+
+
+def get_filename(message:Message):
+    return message.attachments[0].filename
+
+
+def get_fusion_id_from_filename(filename:str):
     fusion_id = None
-    result = re.search(pattern, text)
+    result = re.match(PATTERN_FUSION_ID, filename)
+    if result:
+        fusion_id = result[0]
+    return fusion_id
+
+def get_fusion_id_from_content(filename:str):
+    fusion_id = None
+    result = re.search(PATTERN_FUSION_ID, filename)
     if result:
         fusion_id = result[0]
     return fusion_id
 
 
-def extract_fusion_id_from_filename(message):
+def extract_fusion_id_from_filename(message:Message):
     fusion_id = None
-    if len(message.attachments) >= 1:
-        filename = message.attachments[0].filename
-        fusion_id = get_fusion_id(PATTERN_FILENAME, filename)
+    if has_attachments(message):
+        filename = get_filename(message)
+        fusion_id = get_fusion_id_from_filename(filename)
     return fusion_id
 
 
@@ -176,7 +192,7 @@ def have_attachment(message):
 
 
 def extract_fusion_id_from_content(message):
-    return get_fusion_id(PATTERN_MESSAGE, message.content)
+    return get_fusion_id_from_content(message.content)
 
 
 def handle_two_values(filename_fusion_id, content_fusion_id):
@@ -193,7 +209,7 @@ def handle_two_values(filename_fusion_id, content_fusion_id):
     else:
         fusion_id = filename_fusion_id
         description = Description.different_fusion_id.value
-        warning = filename_fusion_id + " =/= " + content_fusion_id
+        warning = f"{filename_fusion_id} =/= {content_fusion_id}"
     return autogen_url, valid_fusion, fusion_id, description, warning
 
 
@@ -213,7 +229,7 @@ def handle_one_value(filename_fusion_id, content_fusion_id):
         fusion_id = content_fusion_id
         description = Description.missing_file_name.value
         autogen_url = get_autogen_url(content_fusion_id)
-        warning = "File name should be \"" + content_fusion_id + ".png\""
+        warning = f'File name should be "{content_fusion_id}.png"'
     
     return autogen_url, valid_fusion, fusion_id, description, warning
 
