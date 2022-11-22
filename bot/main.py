@@ -88,7 +88,6 @@ class BotContext:
         # Pokémon Infinite Fusion
         self.__server_pif = bot.get_guild(id_server_pif)
         if self.__server_pif is not None:
-            print(EMOJI)
             self.__pif_gallery = self.__server_pif.get_channel(id_channel_gallery_pif)
             self.__pif_logs = self.__server_pif.get_channel(id_channel_logs_pif)
             self.__pif_spritework = self.__server_pif.get_channel(id_channel_spritework_pif)
