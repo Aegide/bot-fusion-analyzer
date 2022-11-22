@@ -8,7 +8,7 @@ from discord.message import Message
 from discord.channel import TextChannel as Channel
 from discord.threads import Thread
 from discord.guild import Guild
-from discord import Asset, Client, ClientUser, Emoji, Reaction
+from discord import Asset, Client, ClientUser, Emoji, PartialEmoji, Reaction
 
 import re
 import os
@@ -24,8 +24,9 @@ PATTERN_CUSTOM = r'[cC]ustom'
 PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+'
 
 
-EMOJI_ID = 770390673664114689
-
+EMOJI_NAME = "NANI"
+EMOJI_ID = f"<:{EMOJI_NAME}:770390673664114689>"
+EMOJI = PartialEmoji(name=EMOJI_NAME).from_str(EMOJI_ID)
 
 
 """
@@ -87,7 +88,7 @@ class BotContext:
         # Pokémon Infinite Fusion
         self.__server_pif = bot.get_guild(id_server_pif)
         if self.__server_pif is not None:
-            print(self.__server_pif.emojis)
+            print(EMOJI)
             self.__pif_gallery = self.__server_pif.get_channel(id_channel_gallery_pif)
             self.__pif_logs = self.__server_pif.get_channel(id_channel_logs_pif)
             self.__pif_spritework = self.__server_pif.get_channel(id_channel_spritework_pif)
@@ -301,7 +302,7 @@ def extract_data(message):
     return valid_fusion, description, attachment_url, autogen_url, fusion_id, warning
 
 
-async def send_bot_logs(embed, have_warning, author_id:str):
+async def send_bot_logs(embed, have_warning, author_id:int):
 
     if have_warning:
         ping_owner = f"<@!{author_id}>"
@@ -359,6 +360,7 @@ async def generate_embed(message:Message):
 async def handle_sprite_gallery(message:Message):
     log_message("sg>", message)
     embed, warning, valid_fusion, fusion_id = await generate_embed(message)
+    await message.add_reaction(EMOJI)
     await send_bot_logs(embed, warning is not None, message.author.id)
 
 
