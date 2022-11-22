@@ -2,12 +2,13 @@
 
 
 import discord
-from discord.client import Client, ClientUser
+from discord.member import Member
+from discord.user import User
 from discord.message import Message
 from discord.channel import TextChannel as Channel
 from discord.threads import Thread
 from discord.guild import Guild
-from discord import Asset
+from discord import Asset, ClientUser
 
 import re
 import os
@@ -380,7 +381,7 @@ def is_message_from_human(message):
     return message.author.id != bot_id
 
 
-def get_display_avatar(user:ClientUser) -> Asset:
+def get_display_avatar(user: User|Member|ClientUser) -> Asset:
     return user.display_avatar.with_format("png").with_size(256)
 
 
@@ -394,7 +395,10 @@ async def on_ready():
 
     global bot_avatar_url
     # owner = app_info.owner
-    bot_avatar_url = get_display_avatar(bot.user).url
+
+    bot_user = bot.user
+    if bot_user is not None:
+        bot_avatar_url = get_display_avatar(bot_user).url
 
     global bot_context
     bot_context = BotContext(bot)
