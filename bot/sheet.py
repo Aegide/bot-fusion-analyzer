@@ -2,16 +2,22 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import os
 
+
 spreadsheet_name = "Pokemon IF Sprite Completion (main sheet)"
+
+
 # white square before the data
 row_fusion_init = 9
 col_fusion_init = 8
 
+
 pokemon_amount = 420
+
 
 no_fusion = ""
 valid_fusion = "x"
 approved_fusion = "✓"
+
 
 scope = None
 creds = None
@@ -24,17 +30,19 @@ def create_json_token(token_data, keyfile):
     with open(keyfile, "w") as json_file: 
         json_file.write(token_data)
 
+
 def get_creds(scope):
     try:
         token_data = os.environ["GSHEET_KEY"]
     except:
-        keyfile = "bot/token.json"
+        keyfile = "token/gsheet.json"
         creds = ServiceAccountCredentials.from_json_keyfile_name(keyfile, scope)
     else:
-        keyfile = "bot/gsheet.json"
+        keyfile = "token/gsheet.json"
         create_json_token(token_data, keyfile)
         creds = ServiceAccountCredentials.from_json_keyfile_name(keyfile, scope)
     return creds
+
 
 def init(worksheet_name):
     successful_init = True
@@ -50,6 +58,7 @@ def init(worksheet_name):
         successful_init = False
     return successful_init
 
+
 def get_fusion_data_by_fusion_id(fusion_id):
     split_fusion_id = fusion_id.split(".")
     if len(split_fusion_id) == 2:
@@ -58,6 +67,7 @@ def get_fusion_data_by_fusion_id(fusion_id):
     else:
         print("ERROR", "get_fusion_data_by_fusion_id", fusion_id)
 
+
 def get_valid_cell_by_fusion_id(fusion_id):
     split_fusion_id = fusion_id.split(".")
     if len(split_fusion_id) == 2:
@@ -65,6 +75,7 @@ def get_valid_cell_by_fusion_id(fusion_id):
         return get_valid_cell(head_id, body_id)
     else:
         print("ERROR", "get_cell_by_fusion_id", fusion_id)
+
 
 def get_valid_cell(head_id, body_id):
     row, col = row_fusion_init + body_id, col_fusion_init + head_id
@@ -75,6 +86,7 @@ def get_valid_cell(head_id, body_id):
         result = "API ERROR"
     return result
 
+
 def get_fusion_data(head_id, body_id):
     row, col = row_fusion_init + body_id, col_fusion_init + head_id
     try:
@@ -83,6 +95,7 @@ def get_fusion_data(head_id, body_id):
         print(e)
         result = "API ERROR"
     return result
+
 
 def set_fusion_data(head_id, body_id, new_value):
     head_id = int(head_id)
@@ -95,8 +108,10 @@ def set_fusion_data(head_id, body_id, new_value):
     else:
         print("set_fusion_data", head_id, body_id)
 
+
 def set_fusion_data_from_list(list_cells):
     wks.update_cells(list_cells)
+
 
 def validate_fusion(fusion_id, update_sheet=True):
     split_fusion_id = fusion_id.split(".")
@@ -107,6 +122,7 @@ def validate_fusion(fusion_id, update_sheet=True):
             set_fusion_data(head_id, body_id, valid_fusion)
     else:
         print("validate_fusion", fusion_id)
+
 
 def get_all_fusion_data():
     first_cell = gspread.utils.rowcol_to_a1(row_fusion_init + 1, col_fusion_init + 1)
@@ -119,4 +135,6 @@ def get_all_fusion_data():
 if __name__ == "__main__":
     scope = ["https://spreadsheets.google.com/feeds","https://www.googleapis.com/auth/drive"]
     creds = get_creds(scope)
-    print(creds)
+    worksheet_name = "Full dex"
+
+    init(worksheet_name)
