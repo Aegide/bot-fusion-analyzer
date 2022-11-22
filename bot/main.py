@@ -8,7 +8,7 @@ from discord.message import Message
 from discord.channel import TextChannel as Channel
 from discord.threads import Thread
 from discord.guild import Guild
-from discord import Asset, Client, ClientUser
+from discord import Asset, Client, ClientUser, Emoji, Reaction
 
 import re
 import os
@@ -22,6 +22,10 @@ PREFIX = "//"
 PATTERN_ICON = r'[iI]con'
 PATTERN_CUSTOM = r'[cC]ustom'
 PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+'
+
+
+EMOJI_ID = 770390673664114689
+
 
 
 """
@@ -83,6 +87,7 @@ class BotContext:
         # Pokémon Infinite Fusion
         self.__server_pif = bot.get_guild(id_server_pif)
         if self.__server_pif is not None:
+            print(self.__server_pif.emojis)
             self.__pif_gallery = self.__server_pif.get_channel(id_channel_gallery_pif)
             self.__pif_logs = self.__server_pif.get_channel(id_channel_logs_pif)
             self.__pif_spritework = self.__server_pif.get_channel(id_channel_spritework_pif)
