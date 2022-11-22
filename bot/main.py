@@ -8,7 +8,7 @@ from discord.message import Message
 from discord.channel import TextChannel as Channel
 from discord.threads import Thread
 from discord.guild import Guild
-from discord import Asset, ClientUser
+from discord import Asset, Client, ClientUser
 
 import re
 import os
@@ -75,19 +75,21 @@ class BotContext:
 
         # Aegide
         self.__server_aegide = bot.get_guild(id_server_aegide)
-        self.__aegide_gallery = self.__server_aegide.get_channel(id_channel_gallery_aegide)
-        self.__aegide_logs = self.__server_aegide.get_channel(id_channel_logs_aegide)
-        self.__aegide_spritework = self.__server_aegide.get_channel(id_channel_spritework_aegide)
+        if self.__server_aegide is not None:
+            self.__aegide_gallery = self.__server_aegide.get_channel(id_channel_gallery_aegide)
+            self.__aegide_logs = self.__server_aegide.get_channel(id_channel_logs_aegide)
+            self.__aegide_spritework = self.__server_aegide.get_channel(id_channel_spritework_aegide)
 
         # Pokémon Infinite Fusion
         self.__server_pif = bot.get_guild(id_server_pif)
-        self.__pif_gallery = self.__server_pif.get_channel(id_channel_gallery_pif)
-        self.__pif_logs = self.__server_pif.get_channel(id_channel_logs_pif)
-        self.__pif_spritework = self.__server_pif.get_channel(id_channel_spritework_pif)
+        if self.__server_pif is not None:
+            self.__pif_gallery = self.__server_pif.get_channel(id_channel_gallery_pif)
+            self.__pif_logs = self.__server_pif.get_channel(id_channel_logs_pif)
+            self.__pif_spritework = self.__server_pif.get_channel(id_channel_spritework_pif)
 
     # Aegide
     def aegide_server(self)->Guild:
-        return self.__aegide_gallery
+        return self.__server_aegide
 
     def aegide_gallery(self)->Channel:
         return self.__aegide_gallery
