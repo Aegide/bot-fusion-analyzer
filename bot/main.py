@@ -359,7 +359,7 @@ async def generate_embed(message:Message):
 async def handle_sprite_gallery(message:Message):
     log_message("sg>", message)
     embed, warning, valid_fusion, fusion_id = await generate_embed(message)
-    await message.add_reaction(EMOJI)
+    # await message.add_reaction(EMOJI)
     await send_bot_logs(embed, warning is not None, message.author.id)
 
 
