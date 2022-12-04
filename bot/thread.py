@@ -11,8 +11,6 @@ NORMAL_THREAD_ARCHIVE = "== THREAD ARCHIVED =="
 async def handle_spritework(message:Message):
     if is_thread_command(message):
         await handle_thread(message)
-    # else:
-    #     utils.log_message(f"[{message.channel.name}]>", message)
 
 
 def is_thread_command(message:Message):
@@ -22,7 +20,7 @@ def is_thread_command(message:Message):
 async def handle_thread(message:Message):
     thread = get_thread(message)
     if can_manage_thread(message, thread):
-        utils.log_message(f"[[[{thread.name}]]] : THREAD ARCHIVED :", message)
+        utils.log_event(f"[[{thread.name}]]", message)
         await archive_thread(message, thread)
     else:
         await thread.send(f"<@!{message.author.id}> you are not allowed to archive this thread.")
