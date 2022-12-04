@@ -9,6 +9,7 @@ from discord.threads import Thread
 from discord.guild import Guild
 from discord import Client, PartialEmoji
 from bot.bot_enum import DiscordColour
+from bot.models import Analysis
 
 from models import GlobalContext, ServerContext
 from bot_enum import Description
@@ -18,9 +19,9 @@ import analyzer
 
 
 
-EMOJI_NAME = "NANI"
-EMOJI_ID = f"<:{EMOJI_NAME}:770390673664114689>"
-EMOJI = PartialEmoji(name=EMOJI_NAME).from_str(EMOJI_ID)
+ERROR_EMOJI_NAME = "NANI"
+ERROR_EMOJI_ID = f"<:{ERROR_EMOJI_NAME}:770390673664114689>"
+ERROR_EMOJI = PartialEmoji(name=ERROR_EMOJI_NAME).from_str(ERROR_EMOJI_ID)
 
 
 intents = discord.Intents.default()
@@ -108,14 +109,14 @@ def ctx()->GlobalContext:
         raise ConnectionError
 
 
-async def send_bot_logs(embed, have_warning, author_id:int):
-    if have_warning:
+async def send_bot_logs(analysis:Analysis, author_id:int):
+    if analysis.have_errors():
         ping_owner = f"<@!{author_id}>"
-        await ctx().aegide.logs.send(embed=embed, content=ping_aegide)
-        await ctx().pif.logs.send(embed=embed, content=ping_owner)
+        await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
+        await ctx().pif.logs.send(embed=analysis.embed, content=ping_owner)
     else:
-        await ctx().aegide.logs.send(embed=embed)
-        await ctx().pif.logs.send(embed=embed)
+        await ctx().aegide.logs.send(embed=analysis.embed)
+        await ctx().pif.logs.send(embed=analysis.embed)
         
 
 async def send_test_embed(message):
@@ -127,19 +128,19 @@ async def send_test_embed(message):
 
 async def handle_sprite_gallery(message:Message):
     utils.log_event("SG>", message)
-    embed, warning, valid_fusion, fusion_id = await analyzer.generate_embed(message)
-    if warning is not None:
-        await message.add_reaction(EMOJI)
-    await send_bot_logs(embed, warning is not None, message.author.id)
+    analysis = await analyzer.generate_analysis(message)
+    if analysis.have_errors():
+        await message.add_reaction(ERROR_EMOJI)
+    await send_bot_logs(analysis, message.author.id)
 
 
 async def handle_test_sprite_gallery(message:Message):
     utils.log_event("T-SG>", message)
-    embed, warning, valid_fusion, fusion_id = await analyzer.generate_embed(message)
-    if warning is None:
-        await ctx().aegide.logs.send(embed=embed)
+    analysis = await analyzer.generate_analysis(message)
+    if analysis.have_errors():
+        await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
     else:
-        await ctx().aegide.logs.send(embed=embed, content=ping_aegide)
+        await ctx().aegide.logs.send(embed=analysis.embed)
 
 
 def is_message_from_spritework_thread(message:Message):

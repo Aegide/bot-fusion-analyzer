@@ -1,4 +1,4 @@
-from discord import Client, Guild
+from discord import Guild
 from pydantic import BaseModel
 
 from discord.channel import TextChannel as Channel
@@ -14,4 +14,7 @@ class ServerContext(BaseModel):
 class GlobalContext(BaseModel):
     aegide: ServerContext
     pif: ServerContext
+
+
+
 

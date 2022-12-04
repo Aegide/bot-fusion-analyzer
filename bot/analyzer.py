@@ -1,34 +1,52 @@
-
-
-from discord import Message
+from discord import Embed, Message
 import discord
 import utils
 from bot.bot_enum import Description, DiscordColour, Title
 
 
-async def generate_embed(message:Message):
-    valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
+class Analysis:
+    embed: Embed
 
-    """
-    if valid_fusion:
-        results = sprite_analyzer.test_sprite(attachment_url)
-        if utils.interesting_results(results):
-            valid_fusion, description, warning, file_name = results
-            if file_name is not None:
-                file_path = os.path.join(os.getcwd(), "tmp", file_name)
-                file = discord.File(file_path, filename="image.png")
-                message_file = await sprite_stash_channel.send(file=file)
-                os.remove(file_path)
-                autogen_url = message_file.attachments[0].url
-    """
+    def have_errors(self):
+        return False
 
-    embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
-    author_avatar = utils.get_display_avatar(message.author)
-    embed.set_author(name=message.author.name, icon_url=author_avatar.url)
-    embed.set_footer(text=message.content)
-    embed = apply_display_mode(embed, attachment_url, autogen_url)
-    return embed, warning, valid_fusion, fusion_id
+    def content_analysis(self, message:Message):
+        pass
 
+    def sprite_analysis(self, message:Message):
+        pass
+
+    def generate_embed(self, message:Message):
+        pass
+
+
+async def generate_analysis(message:Message):
+    analysis = Analysis()
+    analysis.content_analysis(message)
+    analysis.sprite_analysis(message)
+    analysis.generate_embed(message)
+    # valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
+
+    # """
+    # if valid_fusion:
+    #     results = sprite_analyzer.test_sprite(attachment_url)
+    #     if utils.interesting_results(results):
+    #         valid_fusion, description, warning, file_name = results
+    #         if file_name is not None:
+    #             file_path = os.path.join(os.getcwd(), "tmp", file_name)
+    #             file = discord.File(file_path, filename="image.png")
+    #             message_file = await sprite_stash_channel.send(file=file)
+    #             os.remove(file_path)
+    #             autogen_url = message_file.attachments[0].url
+    # """
+
+    # embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
+    # author_avatar = utils.get_display_avatar(message.author)
+    # embed.set_author(name=message.author.name, icon_url=author_avatar.url)
+    # embed.set_footer(text=message.content)
+    # embed = apply_display_mode(embed, attachment_url, autogen_url)
+    # return embed, warning, valid_fusion, fusion_id
+    return analysis
 
 def apply_display_mode(embed, attachment_url, autogen_url):
     if attachment_url:
