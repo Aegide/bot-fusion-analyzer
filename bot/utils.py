@@ -1,6 +1,18 @@
-from discord import Message, Thread
+from discord import Asset, ClientUser, Colour, Member, Message, Thread, User
+import re
 
 from bot.main import get_user
+
+
+PATTERN_ICON = r'[iI]con'
+PATTERN_CUSTOM = r'[cC]ustom'
+PATTERN_BASE = r'[bB]ase'
+
+LAZY_PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+'
+STRICT_PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+[a-z]{0,1}\.png$'
+SPOILER_PATTERN_FUSION_ID = f'SPOILER_{STRICT_PATTERN_FUSION_ID}'
+
+AUTOGEN_FUSION_URL = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Battlers/"
 
 
 def log_event(decorator:str, event:Message|Thread):
@@ -32,4 +44,85 @@ def get_thread(message:Message) -> (Thread | None):
     if isinstance(thread, Thread):
         return thread
     return None
+
+
+def get_filename(message:Message):
+    return message.attachments[0].filename
+
+
+def has_attachments(message:Message):
+    return len(message.attachments) >= 1
+
+
+def get_attachment_url(message):
+    return message.attachments[0].url
+
+
+def interesting_results(results):
+    return results[1] is not None
+
+
+def have_icon_in_message(message):
+    result = re.search(PATTERN_ICON, message.content)
+    return result is not None
+
+
+def have_custom_in_message(message):
+    result = re.search(PATTERN_CUSTOM, message.content)
+    return result is not None
+
+
+def have_base_in_message(message):
+    result = re.search(PATTERN_BASE, message.content)
+    return result is not None
+
+
+def have_attachment(message):
+    return len(message.attachments) >= 1
+
+
+def get_autogen_url(fusion_id):
+    return AUTOGEN_FUSION_URL + fusion_id.split(".")[0] + "/" + fusion_id + ".png"
+
+
+def is_invalid_fusion_id(fusion_id:str):
+    head_id, body_id = fusion_id.split(".")
+    head_id, body_id = int(head_id), int(body_id)
+    return head_id > 420 or body_id > 420 or head_id < 1 or body_id < 1
+
+
+def get_display_avatar(user: User|Member|ClientUser) -> Asset:
+    return user.display_avatar.with_format("png").with_size(256)
+
+
+def get_fusion_id_from_filename(filename:str):
+    fusion_id = None
+    result = re.match(STRICT_PATTERN_FUSION_ID, filename)
+    if result is not None:
+        fusion_id = result[0]
+    else:
+        result = re.match(SPOILER_PATTERN_FUSION_ID, filename)
+        if result is not None:
+            fusion_id = result[0]
+    return fusion_id
+
+
+def get_fusion_id_from_content(filename:str):
+    fusion_id = None
+    result = re.search(LAZY_PATTERN_FUSION_ID, filename)
+    if result:
+        fusion_id = result[0]
+    return fusion_id
+
+
+def extract_fusion_id_from_filename(message:Message):
+    fusion_id = None
+    if has_attachments(message):
+        filename = get_filename(message)
+        fusion_id = get_fusion_id_from_filename(filename)
+    return fusion_id
+
+
+def extract_fusion_id_from_content(message):
+    return get_fusion_id_from_content(message.content)
 

@@ -20,7 +20,7 @@ class Title(Enum):
     accepted = "Accepted"
     refused = "Refused"
 
-class Colour(Enum):
+class DiscordColour(Enum):
     green = discord.Colour(0x2ecc71)
     orange = discord.Colour(0xe67e22)
     red = discord.Colour(0xe74c3c)
