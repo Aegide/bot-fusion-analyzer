@@ -11,6 +11,7 @@ class Description(Enum):
     sprite_issue = "Controversial sprite"
     icon = "Fusion icon"
     custom = "Custom sprite"
+    base = "Custom base"
     error = "Please contact Aegide"
     test = "Description test"
 

@@ -1,6 +1,8 @@
 # coding: utf-8
 
 
+import re
+import os
 import discord
 from discord.member import Member
 from discord.user import User
@@ -8,19 +10,16 @@ from discord.message import Message
 from discord.channel import TextChannel as Channel
 from discord.threads import Thread
 from discord.guild import Guild
-from discord import Asset, Client, ClientUser, Emoji, PartialEmoji, Reaction
+from discord import Asset, Client, ClientUser, PartialEmoji
 
-import re
-import os
 
 from bot_enum import Title, Description, Colour
-
-
-PREFIX = "//"
+import utils
 
 
 PATTERN_ICON = r'[iI]con'
 PATTERN_CUSTOM = r'[cC]ustom'
+PATTERN_BASE = r'[bB]ase'
 LAZY_PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+'
 STRICT_PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+[a-z]{0,1}\.png$'
 SPOILER_PATTERN_FUSION_ID = f'SPOILER_{STRICT_PATTERN_FUSION_ID}'
@@ -69,9 +68,6 @@ id_channel_gallery_pif = 543958354377179176
 id_channel_logs_pif = 999653562202214450
 id_channel_spritework_pif = 307020509856530434
 
-
-# Role
-id_sprite_manager = 900867033175040101
 
 
 # Type autocompletion at all cost
@@ -154,6 +150,11 @@ def have_icon_in_message(message):
 
 def have_custom_in_message(message):
     result = re.search(PATTERN_CUSTOM, message.content)
+    return result is not None
+
+
+def have_base_in_message(message):
+    result = re.search(PATTERN_BASE, message.content)
     return result is not None
 
 
@@ -252,6 +253,8 @@ def handle_zero_value(message):
         description = Description.icon.value
     elif have_custom_in_message(message):
         description = Description.custom.value
+    elif have_base_in_message(message):
+        description = Description.base.value
     else:
         description = Description.missing_fusion_id.value
     return description
@@ -325,13 +328,6 @@ async def send_test_embed(message):
     await ctx().aegide_logs().send(embed=embed)
 
 
-def log_message(symbol, element:Message|Thread):
-    if isinstance(element, Thread):
-        thread_owner = bot.get_user(element.owner_id).name
-        print(symbol, thread_owner, ":", element.name)
-    else:
-        print(symbol, element.author.name, ":", element.content)
-
 
 def interesting_results(results):
     return results[1] is not None
@@ -362,7 +358,7 @@ async def generate_embed(message:Message):
 
 
 async def handle_sprite_gallery(message:Message):
-    log_message("sg>", message)
+    utils.log_event("SG>", message)
     embed, warning, valid_fusion, fusion_id = await generate_embed(message)
     if warning is not None:
         await message.add_reaction(EMOJI)
@@ -370,12 +366,34 @@ async def handle_sprite_gallery(message:Message):
 
 
 async def handle_test_sprite_gallery(message:Message):
-    log_message("t/sg>", message)
+    utils.log_event("T-SG>", message)
     embed, warning, valid_fusion, fusion_id = await generate_embed(message)
     if warning is None:
         await ctx().aegide_logs().send(embed=embed)
     else:
         await ctx().aegide_logs().send(embed=embed, content=ping_aegide)
+
+
+    """
+    message.channel => (MessageableChannel)
+
+    PartialMessageableChannel = Union[TextChannel, VoiceChannel, Thread, DMChannel, PartialMessageable]
+    MessageableChannel = Union[PartialMessageableChannel, GroupChannel]
+    """
+
+
+def is_message_from_spritework_thread(message:Message):
+    result = False
+    thread = utils.get_thread(message)
+    if thread is not None:
+        result = is_thread_from_spritework(thread)
+    return result
+
+
+def is_thread_from_spritework(thread:Thread):
+    is_spritework_pif = thread.parent_id == id_channel_spritework_aegide
+    is_spritework_aegide = thread.parent_id == id_channel_spritework_pif
+    return is_spritework_pif or is_spritework_aegide
 
 
 def get_help_content():
@@ -391,8 +409,6 @@ help - shows this information
     return help_content
 
 
-def is_message_from_human(message):
-    return message.author.id != bot_id
 
 
 def get_display_avatar(user: User|Member|ClientUser) -> Asset:
@@ -434,101 +450,33 @@ async def on_guild_remove(guild):
     await ctx().aegide_logs().send(embed=embed)
 
 
-def is_command(message:Message):
-    return PREFIX == message.content[0:2] and message.content[2:] == "kill"
-
-
-def get_thread(message:Message) -> Thread:
-    return message.channel
-
-
-async def close_thread(thread: Thread):
-    await thread.edit(archived=True)  # makes the thread "old"
-    # await thread.edit(locked=True)  # makes the thread "locked" + "old"
-
-
-async def delete_original_message(thread: Thread):
-    try:
-        await thread.guild.get_channel(thread.parent_id).get_partial_message(thread.id).delete()
-    except:
-        pass
-
-
-
-def is_sprite_manager(message:Message):
-    result = False
-    roles_author = message.author.roles
-    for role in roles_author:
-        if role.id == id_sprite_manager:
-            result = True
-    return result
-
-
-def is_owner(message:Message, thread:Thread):
-    return message.author.id == thread.owner_id
-
-
-def can_manage_thread(message:Message, thread:Thread):
-    return is_owner(message, thread) or is_sprite_manager(message)
-
-
-async def handle_thread(message:Message):
-    thread = get_thread(message)
-    if can_manage_thread(message, thread):
-        log_message(f"[[[{thread.name}]]] : THREAD ARCHIVED :", message)
-
-        if is_sprite_manager(message) and not is_owner(message, thread):
-            await thread.send("**== THREAD ARCHIVED ==**")
-        else:
-            await thread.send("== THREAD ARCHIVED ==")
-
-        await delete_original_message(thread)
-        await close_thread(thread)
-    else:
-        await thread.send(f"<@!{message.author.id}> you are not allowed to archive this thread")
-
-
-async def handle_spritework(message:Message):
-    if is_command(message):
-        await handle_thread(message)
-    else:
-        log_message(f"[{message.channel.name}]>", message)
-
-
-def is_message_from_thread_from_spritework(message:Message):
-    result = False
-    is_thread = isinstance(message.channel, Thread)
-    if is_thread:
-        result = is_message_from_spritework(message)
-    return result
-
-
-def is_message_from_spritework(thread:Thread):
-    is_spritework_pif = thread.channel.parent_id == id_channel_spritework_aegide
-    is_spritework_aegide = thread.channel.parent_id == id_channel_spritework_pif
-    return is_spritework_pif or is_spritework_aegide
-
-
-async def handle_rest(message:Message):
-    if(is_message_from_thread_from_spritework(message)):
-        await handle_spritework(message)
-    else:
-        # log_message(f"[{message.channel.name}]>", message)
-        pass
+CHANNEL_HANDLER = {
+    id_channel_gallery_pif:handle_sprite_gallery,
+    id_channel_gallery_aegide:handle_test_sprite_gallery
+}
 
 
 @bot.event
 async def on_message(message:Message):
-
-    if is_message_from_human(message):
-        if(message.channel.id == id_channel_gallery_pif):
-            await handle_sprite_gallery(message)
-        
-        elif(message.channel.id == id_channel_gallery_aegide):
-            await handle_test_sprite_gallery(message)
-
+    if utils.is_message_from_human(message, bot_id):
+        channel_handler = CHANNEL_HANDLER.get(message.channel.id)
+        if channel_handler is not None:
+            await channel_handler(message)
         else:
             await handle_rest(message)
+
+ 
+async def handle_rest(_message:Message):
+    pass
+    # if utils.is_message_from_spritework_thread(message):
+    #     await thread.handle_spritework(message)
+
+
+def get_user(user_id) -> (User | None):
+    return bot.get_user(user_id)
+
+
+
 
 
 def get_discord_token():
