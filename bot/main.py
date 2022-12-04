@@ -28,15 +28,6 @@ EMOJI_ID = f"<:{EMOJI_NAME}:770390673664114689>"
 EMOJI = PartialEmoji(name=EMOJI_NAME).from_str(EMOJI_ID)
 
 
-"""
-commands = []
-commands.append("kill")
-commands.append("close")
-commands.append("end")
-commands.append("destroy")
-"""
-
-
 intents = discord.Intents.default()
 intents.guild_messages = True
 intents.members = True
@@ -66,8 +57,6 @@ id_server_pif = 302153478556352513
 id_channel_gallery_pif = 543958354377179176
 id_channel_logs_pif = 999653562202214450
 id_channel_spritework_pif = 307020509856530434
-
-
 
 
 def get_channel_from_id(server:Guild, channel_id) -> TextChannel :
@@ -123,6 +112,7 @@ def ctx()->GlobalContext:
         return bot_context.context
     else:
         raise ConnectionError
+
 
 def apply_display_mode(embed, attachment_url, autogen_url):
     if attachment_url:
@@ -180,6 +170,7 @@ def get_fusion_id_from_filename(filename:str):
         if result is not None:
             fusion_id = result[0]
     return fusion_id
+
 
 def get_fusion_id_from_content(filename:str):
     fusion_id = None
@@ -402,8 +393,6 @@ help - shows this information
     return help_content
 
 
-
-
 def get_display_avatar(user: User|Member|ClientUser) -> Asset:
     return user.display_avatar.with_format("png").with_size(256)
 
@@ -460,16 +449,13 @@ async def on_message(message:Message):
 
  
 async def handle_rest(_message:Message):
-    pass
     # if utils.is_message_from_spritework_thread(message):
     #     await thread.handle_spritework(message)
+    pass
 
 
 def get_user(user_id) -> (User | None):
     return bot.get_user(user_id)
-
-
-
 
 
 def get_discord_token():
