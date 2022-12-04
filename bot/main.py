@@ -1,18 +1,17 @@
 # coding: utf-8
 
-
 import re
 import os
 import discord
 from discord.member import Member
 from discord.user import User
 from discord.message import Message
-from discord.channel import TextChannel as Channel
+from discord.channel import TextChannel
 from discord.threads import Thread
 from discord.guild import Guild
 from discord import Asset, Client, ClientUser, PartialEmoji
 
-
+from models import GlobalContext, ServerContext
 from bot_enum import Title, Description, Colour
 import utils
 
@@ -70,55 +69,60 @@ id_channel_spritework_pif = 307020509856530434
 
 
 
-# Type autocompletion at all cost
+
+def get_channel_from_id(server:Guild, channel_id) -> TextChannel :
+    channel = server.get_channel(channel_id)
+    if channel is None:
+        raise KeyError(channel_id)
+    if not isinstance(channel, TextChannel):
+        raise TypeError(channel)
+    return channel
+
+
+def get_server_from_id(bot:Client, server_id) -> Guild:
+    server = bot.get_guild(server_id)
+    if server is None:
+        raise KeyError(server_id)
+    return server
+
+
 class BotContext:
-
     def __init__(self, bot:Client):
+        server_aegide = get_server_from_id(bot, id_server_aegide)
+        channel_gallery_aegide = get_channel_from_id(server_aegide, id_channel_gallery_aegide)
+        channel_log_aegide = get_channel_from_id(server_aegide, id_channel_gallery_aegide)
+        channel_spritework_aegide = get_channel_from_id(server_aegide, id_channel_gallery_aegide)
 
-        # Aegide
-        self.__server_aegide = bot.get_guild(id_server_aegide)
-        if self.__server_aegide is not None:
-            self.__aegide_gallery = self.__server_aegide.get_channel(id_channel_gallery_aegide)
-            self.__aegide_logs = self.__server_aegide.get_channel(id_channel_logs_aegide)
-            self.__aegide_spritework = self.__server_aegide.get_channel(id_channel_spritework_aegide)
+        aegide_context = ServerContext(
+            server=server_aegide,
+            gallery=channel_gallery_aegide,
+            logs=channel_log_aegide,
+            spritework=channel_spritework_aegide
+        )
 
-        # Pokémon Infinite Fusion
-        self.__server_pif = bot.get_guild(id_server_pif)
-        if self.__server_pif is not None:
-            self.__pif_gallery = self.__server_pif.get_channel(id_channel_gallery_pif)
-            self.__pif_logs = self.__server_pif.get_channel(id_channel_logs_pif)
-            self.__pif_spritework = self.__server_pif.get_channel(id_channel_spritework_pif)
+        server_pif = get_server_from_id(bot, id_server_pif)
+        channel_gallery_pif = get_channel_from_id(server_pif, id_channel_gallery_pif)
+        channel_log_pif = get_channel_from_id(server_pif, id_channel_gallery_pif)
+        channel_spritework_pif = get_channel_from_id(server_pif, id_channel_gallery_pif)
 
-    # Aegide
-    def aegide_server(self)->Guild:
-        return self.__server_aegide
+        pif_context = ServerContext(
+            server=server_pif,
+            gallery=channel_gallery_pif,
+            logs=channel_log_pif,
+            spritework=channel_spritework_pif
+        )
 
-    def aegide_gallery(self)->Channel:
-        return self.__aegide_gallery
-    
-    def aegide_logs(self)->Channel:
-        return self.__aegide_logs
-
-    def aegide_spritework(self)->Channel:
-        return self.__aegide_spritework
-
-    # Pokémon Infinite Fusion
-    def pif_server(self)->Guild:
-        return self.__server_pif
-
-    def pif_gallery(self)->Channel:
-        return self.__pif_gallery
-
-    def pif_logs(self)->Channel:
-        return self.__pif_logs
-    
-    def pif_spritework(self)->Channel:
-        return self.__pif_spritework
+        self.context = GlobalContext(
+            aegide= aegide_context,
+            pif = pif_context
+        )
 
 
-def ctx()->BotContext:
-    return bot_context
-
+def ctx()->GlobalContext:
+    if bot_context is not None:
+        return bot_context.context
+    else:
+        raise ConnectionError
 
 def apply_display_mode(embed, attachment_url, autogen_url):
     if attachment_url:
@@ -266,7 +270,7 @@ def is_invalid_fusion_id(fusion_id:str):
     return head_id > 420 or body_id > 420 or head_id < 1 or body_id < 1
 
 
-def handle_verification(fusion_id:str, valid_fusion, autogen_url, description, warning):
+def handle_verification(fusion_id:str|None, valid_fusion, autogen_url, description, warning):
     if fusion_id is not None:
         if is_invalid_fusion_id(fusion_id):
             valid_fusion = False
@@ -310,23 +314,20 @@ def extract_data(message):
 
 
 async def send_bot_logs(embed, have_warning, author_id:int):
-
     if have_warning:
         ping_owner = f"<@!{author_id}>"
-        await ctx().aegide_logs().send(embed=embed, content=ping_aegide)
-        await ctx().pif_logs().send(embed=embed, content=ping_owner)
-    
+        await ctx().aegide.logs.send(embed=embed, content=ping_aegide)
+        await ctx().pif.logs.send(embed=embed, content=ping_owner)
     else:
-        await ctx().pif_logs().send(embed=embed)
-        await ctx().aegide_logs().send(embed=embed)
-
+        await ctx().aegide.logs.send(embed=embed)
+        await ctx().pif.logs.send(embed=embed)
+        
 
 async def send_test_embed(message):
     print(")>", message.author.name, ":", message.content)
     embed = discord.Embed(title="Title test", colour=Colour.gray.value, description=Description.test.value)
     embed.set_thumbnail(url=bot_avatar_url)
-    await ctx().aegide_logs().send(embed=embed)
-
+    await ctx().aegide.logs.send(embed=embed)
 
 
 def interesting_results(results):
@@ -369,17 +370,9 @@ async def handle_test_sprite_gallery(message:Message):
     utils.log_event("T-SG>", message)
     embed, warning, valid_fusion, fusion_id = await generate_embed(message)
     if warning is None:
-        await ctx().aegide_logs().send(embed=embed)
+        await ctx().aegide.logs.send(embed=embed)
     else:
-        await ctx().aegide_logs().send(embed=embed, content=ping_aegide)
-
-
-    """
-    message.channel => (MessageableChannel)
-
-    PartialMessageableChannel = Union[TextChannel, VoiceChannel, Thread, DMChannel, PartialMessageable]
-    MessageableChannel = Union[PartialMessageableChannel, GroupChannel]
-    """
+        await ctx().aegide.logs.send(embed=embed, content=ping_aegide)
 
 
 def is_message_from_spritework_thread(message:Message):
@@ -440,14 +433,14 @@ async def on_ready():
 async def on_guild_join(guild):
     embed = discord.Embed(title="Joined the server", colour=Colour.green.value, description=guild.name+"\n"+str(guild.id))
     embed.set_thumbnail(url=guild.icon_url)
-    await ctx().aegide_logs().send(embed=embed)
+    await ctx().aegide.logs.send(embed=embed)
 
 
 @bot.event
 async def on_guild_remove(guild):
     embed = discord.Embed(title="Removed from server", colour=Colour.red.value, description=guild.name+"\n"+str(guild.id))
     embed.set_thumbnail(url=guild.icon_url)
-    await ctx().aegide_logs().send(embed=embed)
+    await ctx().aegide.logs.send(embed=embed)
 
 
 CHANNEL_HANDLER = {
