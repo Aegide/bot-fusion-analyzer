@@ -21,8 +21,9 @@ PREFIX = "//"
 
 PATTERN_ICON = r'[iI]con'
 PATTERN_CUSTOM = r'[cC]ustom'
-PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+'
-
+LAZY_PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+'
+STRICT_PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+[a-z]{0,1}\.png$'
+SPOILER_PATTERN_FUSION_ID = f'SPOILER_{STRICT_PATTERN_FUSION_ID}'
 
 EMOJI_NAME = "NANI"
 EMOJI_ID = f"<:{EMOJI_NAME}:770390673664114689>"
@@ -166,14 +167,18 @@ def get_filename(message:Message):
 
 def get_fusion_id_from_filename(filename:str):
     fusion_id = None
-    result = re.match(PATTERN_FUSION_ID, filename)
-    if result:
+    result = re.match(STRICT_PATTERN_FUSION_ID, filename)
+    if result is not None:
         fusion_id = result[0]
+    else:
+        result = re.match(SPOILER_PATTERN_FUSION_ID, filename)
+        if result is not None:
+            fusion_id = result[0]
     return fusion_id
 
 def get_fusion_id_from_content(filename:str):
     fusion_id = None
-    result = re.search(PATTERN_FUSION_ID, filename)
+    result = re.search(LAZY_PATTERN_FUSION_ID, filename)
     if result:
         fusion_id = result[0]
     return fusion_id
