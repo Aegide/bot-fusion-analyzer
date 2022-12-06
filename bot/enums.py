@@ -15,10 +15,11 @@ class Description(Enum):
     error = "Please contact Aegide"
     test = "Description test"
 
-class Title(Enum):
-    ignored = "Ignored"
+class Severity(Enum):
     accepted = "Accepted"
+    ignored = "Ignored"
     refused = "Refused"
+    
 
 class DiscordColour(Enum):
     green = discord.Colour(0x2ecc71)

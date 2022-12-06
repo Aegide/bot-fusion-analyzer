@@ -7,7 +7,7 @@ from PIL import Image
 from PIL import PyAccess
 from PIL.PngImagePlugin import PngImageFile
 import requests
-from description import Description
+from enums import Description
 
 
 BLACK_TRANSPARENCY = (0, 0, 0, 0)

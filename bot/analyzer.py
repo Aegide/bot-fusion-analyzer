@@ -1,20 +1,13 @@
 from discord import Embed, Message
 import discord
+from issues import Issue
 import utils
-from bot.bot_enum import Description, DiscordColour, Title
+from enums import Description, DiscordColour, Title
+import analysis_content
 
 
 class Analysis:
-    embed: Embed
-
-    def have_errors(self):
-        return False
-
-    def content_analysis(self, message:Message):
-        pass
-
-    def sprite_analysis(self, message:Message):
-        pass
+    issues: list[Issue] = []
 
     def generate_embed(self, message:Message):
         pass
@@ -22,11 +15,14 @@ class Analysis:
 
 async def generate_analysis(message:Message):
     analysis = Analysis()
-    analysis.content_analysis(message)
-    analysis.sprite_analysis(message)
-    analysis.generate_embed(message)
-    # valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
 
+    analysis_content.main(analysis, message)
+    # analysis_sprite.main(analysis, message)
+
+    analysis.generate_embed(message)
+
+
+    # valid_fusion, description, attachment_url, autogen_url, fusion_id, warning = extract_data(message)
     # """
     # if valid_fusion:
     #     results = sprite_analyzer.test_sprite(attachment_url)
@@ -39,13 +35,14 @@ async def generate_analysis(message:Message):
     #             os.remove(file_path)
     #             autogen_url = message_file.attachments[0].url
     # """
-
     # embed = create_embed(valid_fusion, description, message.jump_url, fusion_id, warning)
     # author_avatar = utils.get_display_avatar(message.author)
     # embed.set_author(name=message.author.name, icon_url=author_avatar.url)
     # embed.set_footer(text=message.content)
     # embed = apply_display_mode(embed, attachment_url, autogen_url)
     # return embed, warning, valid_fusion, fusion_id
+
+
     return analysis
 
 def apply_display_mode(embed, attachment_url, autogen_url):
@@ -164,3 +161,14 @@ def handle_verification(fusion_id:str|None, valid_fusion, autogen_url, descripti
             warning = f"{fusion_id} is not in the IF Pokedex"
     return valid_fusion, autogen_url, description, warning
 
+
+
+
+def main():
+    analysis = Analysis()
+
+    print(analysis)
+    print(analysis.issues)
+
+
+main()

@@ -8,11 +8,8 @@ from discord.channel import TextChannel
 from discord.threads import Thread
 from discord.guild import Guild
 from discord import Client, PartialEmoji
-from bot.bot_enum import DiscordColour
-from bot.models import Analysis
-
 from models import GlobalContext, ServerContext
-from bot_enum import Description
+from enums import Description, DiscordColour
 import utils
 import analyzer
 
