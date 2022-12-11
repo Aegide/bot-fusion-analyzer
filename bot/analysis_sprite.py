@@ -1,5 +1,4 @@
 from discord import Message
-
 from analyzer import Analysis
 
 

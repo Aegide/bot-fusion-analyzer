@@ -14,7 +14,3 @@ class ServerContext(BaseModel):
 class GlobalContext(BaseModel):
     aegide: ServerContext
     pif: ServerContext
-
-
-
-

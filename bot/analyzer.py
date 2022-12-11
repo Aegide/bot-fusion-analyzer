@@ -1,11 +1,11 @@
 from discord import Embed, Message
 import discord
 from bot.enums import Severity
-from issues import Issue
-import utils
-from enums import Description, DiscordColour
-import analysis_content
-import analysis_sprite
+from bot.issues import Issue
+from bot.enums import DiscordColour
+import bot.utils as utils
+import bot.analysis_content as analysis_content
+import bot.analysis_sprite as analysis_sprite
 
 
 DICT_SEVERITY_COLOUR = {

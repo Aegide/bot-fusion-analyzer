@@ -1,7 +1,7 @@
 from discord import Asset, ClientUser, Colour, Member, Message, Thread, User
 import re
 
-from main import get_user
+# from bot.main import get_user
 
 
 PATTERN_ICON = r'[iI]con'
@@ -17,18 +17,19 @@ AUTOGEN_FUSION_URL = "https://raw.githubusercontent.com/Aegide/FusionSprites/mas
 
 
 def log_event(decorator:str, event:Message|Thread):
-    if isinstance(event, Thread):
-        _log_thread(decorator, event)
-    else:
+    if isinstance(event, Message):
         _log_message(decorator, event)
+    else:
+        _log_thread(decorator, event)
 
 
 def _log_thread(decorator:str, thread:Thread):
-    thread_owner_name = thread.owner_id
-    thread_owner = get_user(thread.owner_id)
-    if thread_owner is not None:
-        thread_owner_name = thread_owner.name
-    print(decorator, thread_owner_name, ":T:", thread.name)
+    pass
+    # thread_owner_name = thread.owner_id
+    # thread_owner = get_user(thread.owner_id)
+    # if thread_owner is not None:
+    #     thread_owner_name = thread_owner.name
+    # print(decorator, thread_owner_name, ":T:", thread.name)
 
 
 def _log_message(decorator:str, message:Message):

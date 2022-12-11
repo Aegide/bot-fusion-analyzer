@@ -8,14 +8,11 @@ from discord.channel import TextChannel
 from discord.threads import Thread
 from discord.guild import Guild
 from discord import Client, PartialEmoji
+import bot.analyzer as analyzer
 from bot.analyzer import Analysis
-from bot.enums import Severity
-from models import GlobalContext, ServerContext
-from enums import Description, DiscordColour
-import utils
-import analyzer
-
-
+from bot.enums import Severity, Description, DiscordColour
+from bot.models import GlobalContext, ServerContext
+import bot.utils as utils
 
 
 ERROR_EMOJI_NAME = "NANI"

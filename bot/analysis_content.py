@@ -1,7 +1,6 @@
 from discord import Message
-from bot.issues import DifferentSprite, EggSprite, IconSprite, MissingFilename, OutOfDex
-from issues import CustomSprite, IncomprehensibleSprite, MissingSprite
-import utils
+from bot.issues import DifferentSprite, EggSprite, IconSprite, MissingFilename, OutOfDex, CustomSprite, IncomprehensibleSprite, MissingSprite
+import bot.utils as utils
 from analyzer import Analysis
 
 
