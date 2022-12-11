@@ -1,5 +1,5 @@
 from discord import Message
-from analyzer import Analysis
+from bot.analyzer import Analysis
 
 
 def main(analysis:Analysis):
