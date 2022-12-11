@@ -5,3 +5,4 @@ TODO.txt
 venv/*
 tmp/*
 .vscode/settings.json
+bot/.vscode/settings.json
