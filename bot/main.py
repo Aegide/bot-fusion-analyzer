@@ -110,9 +110,9 @@ def ctx()->GlobalContext:
 
 async def send_bot_logs(analysis:Analysis, author_id:int):
     if analysis.severity is Severity.refused:
-        ping_owner = f"<@!{author_id}>"
+        # ping_owner = f"<@!{author_id}>"
         await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
-        await ctx().pif.logs.send(embed=analysis.embed, content=ping_owner)
+        await ctx().pif.logs.send(embed=analysis.embed, content=str(author_id))
     else:
         await ctx().aegide.logs.send(embed=analysis.embed)
         await ctx().pif.logs.send(embed=analysis.embed)
