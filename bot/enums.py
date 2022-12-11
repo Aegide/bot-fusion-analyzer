@@ -1,7 +1,7 @@
 from enum import Enum
 import discord
 
-class Description(Enum):
+class Description(str, Enum):
     missing_file = "Missing sprite"
     missing_file_name = "Missing file name"
     missing_fusion_id = "Unable to identify fusion sprite"
@@ -9,17 +9,18 @@ class Description(Enum):
     invalid_fusion_id = "Invalid fusion ID"
     sprite_error = "Invalid sprite"
     sprite_issue = "Controversial sprite"
-    icon = "Fusion icon"
+    icon = "Icon sprite"
     custom = "Custom sprite"
-    base = "Custom base"
-    error = "Please contact Aegide"
+    egg = "Egg sprite"
+    error = "Incomprehensible sprite"
     test = "Description test"
+
 
 class Severity(Enum):
     accepted = "Accepted"
     ignored = "Ignored"
     refused = "Refused"
-    
+
 
 class DiscordColour(Enum):
     green = discord.Colour(0x2ecc71)

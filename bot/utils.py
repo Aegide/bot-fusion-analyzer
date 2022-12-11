@@ -7,6 +7,7 @@ from main import get_user
 PATTERN_ICON = r'[iI]con'
 PATTERN_CUSTOM = r'[cC]ustom'
 PATTERN_BASE = r'[bB]ase'
+PATTERN_EGG = r'[eE]gg'
 
 LAZY_PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+'
 STRICT_PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+[a-z]{0,1}\.png$'
@@ -74,6 +75,11 @@ def have_custom_in_message(message):
 
 def have_base_in_message(message):
     result = re.search(PATTERN_BASE, message.content)
+    return result is not None
+
+
+def have_egg_in_message(message):
+    result = re.search(PATTERN_EGG, message.content)
     return result is not None
 
 

@@ -8,6 +8,8 @@ from discord.channel import TextChannel
 from discord.threads import Thread
 from discord.guild import Guild
 from discord import Client, PartialEmoji
+from bot.analyzer import Analysis
+from bot.enums import Severity
 from models import GlobalContext, ServerContext
 from enums import Description, DiscordColour
 import utils
@@ -107,7 +109,7 @@ def ctx()->GlobalContext:
 
 
 async def send_bot_logs(analysis:Analysis, author_id:int):
-    if analysis.have_errors():
+    if analysis.severity is Severity.refused:
         ping_owner = f"<@!{author_id}>"
         await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
         await ctx().pif.logs.send(embed=analysis.embed, content=ping_owner)
@@ -117,7 +119,7 @@ async def send_bot_logs(analysis:Analysis, author_id:int):
         
 
 async def send_test_embed(message):
-    print(")>", message.author.name, ":", message.content)
+    utils.log_event("T>", message)
     embed = discord.Embed(title="Title test", colour=DiscordColour.gray.value, description=Description.test.value)
     embed.set_thumbnail(url=bot_avatar_url)
     await ctx().aegide.logs.send(embed=embed)
@@ -125,16 +127,16 @@ async def send_test_embed(message):
 
 async def handle_sprite_gallery(message:Message):
     utils.log_event("SG>", message)
-    analysis = await analyzer.generate_analysis(message)
-    if analysis.have_errors():
+    analysis = analyzer.generate_analysis(message)
+    if analysis.severity is Severity.refused:
         await message.add_reaction(ERROR_EMOJI)
     await send_bot_logs(analysis, message.author.id)
 
 
 async def handle_test_sprite_gallery(message:Message):
     utils.log_event("T-SG>", message)
-    analysis = await analyzer.generate_analysis(message)
-    if analysis.have_errors():
+    analysis = analyzer.generate_analysis(message)
+    if analysis.severity is Severity.refused:
         await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
     else:
         await ctx().aegide.logs.send(embed=analysis.embed)
