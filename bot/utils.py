@@ -19,8 +19,10 @@ AUTOGEN_FUSION_URL = "https://raw.githubusercontent.com/Aegide/FusionSprites/mas
 def log_event(decorator:str, event:Message|Thread):
     if isinstance(event, Message):
         _log_message(decorator, event)
-    else:
+    elif isinstance(event, Thread):
         _log_thread(decorator, event)
+    else:
+        pass
 
 
 def _log_thread(decorator:str, thread:Thread):
