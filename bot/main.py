@@ -71,25 +71,21 @@ class BotContext:
         server_aegide = get_server_from_id(bot, id_server_aegide)
         channel_gallery_aegide = get_channel_from_id(server_aegide, id_channel_gallery_aegide)
         channel_log_aegide = get_channel_from_id(server_aegide, id_channel_gallery_aegide)
-        channel_spritework_aegide = get_channel_from_id(server_aegide, id_channel_gallery_aegide)
 
         aegide_context = ServerContext(
             server=server_aegide,
             gallery=channel_gallery_aegide,
             logs=channel_log_aegide,
-            spritework=channel_spritework_aegide
         )
 
         server_pif = get_server_from_id(bot, id_server_pif)
         channel_gallery_pif = get_channel_from_id(server_pif, id_channel_gallery_pif)
         channel_log_pif = get_channel_from_id(server_pif, id_channel_gallery_pif)
-        channel_spritework_pif = get_channel_from_id(server_pif, id_channel_gallery_pif)
 
         pif_context = ServerContext(
             server=server_pif,
             gallery=channel_gallery_pif,
             logs=channel_log_pif,
-            spritework=channel_spritework_pif
         )
 
         self.context = GlobalContext(

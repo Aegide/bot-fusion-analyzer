@@ -1,15 +1,28 @@
 from discord import Guild
-from pydantic import BaseModel
 from discord.channel import TextChannel as Channel
 
 
-class ServerContext(BaseModel):
+class ServerContext():
     server: Guild
     gallery: Channel
     logs: Channel
     spritework: Channel
+    def __init__(self,
+            server: Guild,
+            gallery: Channel,
+            logs: Channel
+            ) -> None:
+        self.server = server
+        self.gallery = gallery
+        self.logs = logs
 
 
-class GlobalContext(BaseModel):
+class GlobalContext():
     aegide: ServerContext
     pif: ServerContext
+    def __init__(self,
+            aegide: ServerContext,
+            pif: ServerContext
+            ) -> None:
+        self.aegide = aegide
+        self.pif = pif
