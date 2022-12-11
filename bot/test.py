@@ -1,5 +1,5 @@
 import unittest
-from main import get_fusion_id_from_filename as gfiff
+from bot.utils import get_fusion_id_from_filename as gfiff
 
 
 class TestGalleryNames(unittest.TestCase):

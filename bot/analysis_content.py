@@ -1,7 +1,7 @@
 from discord import Message
 from bot.issues import DifferentSprite, EggSprite, IconSprite, MissingFilename, OutOfDex, CustomSprite, IncomprehensibleSprite, MissingSprite
 import bot.utils as utils
-from analyzer import Analysis
+from bot.analyzer import Analysis
 
 
 def exists(value):
