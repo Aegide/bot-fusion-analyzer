@@ -29,6 +29,7 @@ class Analysis:
     def generate_embed(self):
         self.embed = Embed()
         self.apply_title()
+        self.apply_description()
         self.apply_colour()
         self.apply_author()
         self.apply_footer()
