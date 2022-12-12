@@ -42,8 +42,8 @@ def _log_message(decorator:str, message:Message):
 
 
 # is_message_not_from_the_fusion_bot
-def is_message_from_human(message:Message, bot_id:int|None):
-    return message.author.id != bot_id or message.author.id != YAGPDB_ID
+def is_message_from_human(message:Message, fusion_bot_id:int|None):
+    return message.author.id != fusion_bot_id and message.author.id != YAGPDB_ID
 
 
 def get_thread(message:Message) -> (Thread | None):
