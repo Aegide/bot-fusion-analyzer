@@ -14,7 +14,7 @@ DICT_SEVERITY_COLOUR = {
 
 class Analysis:
     message: Message
-    issues: Issues
+    issues: Issues = Issues()
     severity: Severity = Severity.accepted
     embed: Embed
     autogen_url: str|None = None
