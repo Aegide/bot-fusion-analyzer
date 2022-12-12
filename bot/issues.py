@@ -27,7 +27,7 @@ class MissingFilename(Issue):
     severity = Severity.refused
 
 
-class MissingSprite(Issue):
+class MissingSprite(str, Issue):
     description = Description.missing_file
     severity = Severity.ignored
     def __str__(self) -> str:
