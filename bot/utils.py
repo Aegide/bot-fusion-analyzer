@@ -98,7 +98,7 @@ def get_autogen_url(fusion_id):
 
 
 def is_invalid_fusion_id(fusion_id:str):
-    head_id, body_id = fusion_id.split(".")
+    head_id, body_id, _ = fusion_id.split(".")
     head_id, body_id = int(head_id), int(body_id)
     return head_id > 420 or body_id > 420 or head_id < 1 or body_id < 1
 
