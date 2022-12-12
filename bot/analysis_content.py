@@ -39,6 +39,7 @@ class ContentContext():
             analysis.issues.add(MissingFilename())
         else:
             analysis.fusion_id = self.filename_fusion_id
+            analysis.autogen_url = utils.get_autogen_url(analysis.fusion_id)
 
     def handle_two_values(self, analysis:Analysis):
         if self.filename_fusion_id is not None and self.content_fusion_id is not None:
@@ -49,6 +50,7 @@ class ContentContext():
                 self.handle_dex_verification(analysis, self.content_fusion_id)
             else:
                 analysis.fusion_id = self.filename_fusion_id
+                analysis.autogen_url = utils.get_autogen_url(analysis.fusion_id)
             self.handle_dex_verification(analysis, self.filename_fusion_id)
 
     def handle_dex_verification(self, analysis:Analysis, fusion_id:str):
