@@ -40,14 +40,14 @@ worksheet_name = "Full dex"
 id_server_aegide = 293500383769133056
 id_channel_gallery_aegide = 858107956326826004
 id_channel_logs_aegide = 616239403957747742
-id_channel_spritework_aegide = 1013429382213279783
+# id_channel_spritework_aegide = 1013429382213279783
 
 
 # Pokémon Infinite Fusion
 id_server_pif = 302153478556352513
 id_channel_gallery_pif = 543958354377179176
 id_channel_logs_pif = 999653562202214450
-id_channel_spritework_pif = 307020509856530434
+# id_channel_spritework_pif = 307020509856530434
 
 
 def get_channel_from_id(server:Guild, channel_id) -> TextChannel :
@@ -70,7 +70,7 @@ class BotContext:
     def __init__(self, bot:Client):
         server_aegide = get_server_from_id(bot, id_server_aegide)
         channel_gallery_aegide = get_channel_from_id(server_aegide, id_channel_gallery_aegide)
-        channel_log_aegide = get_channel_from_id(server_aegide, id_channel_gallery_aegide)
+        channel_log_aegide = get_channel_from_id(server_aegide, id_channel_logs_aegide)
 
         aegide_context = ServerContext(
             server=server_aegide,
@@ -80,7 +80,7 @@ class BotContext:
 
         server_pif = get_server_from_id(bot, id_server_pif)
         channel_gallery_pif = get_channel_from_id(server_pif, id_channel_gallery_pif)
-        channel_log_pif = get_channel_from_id(server_pif, id_channel_gallery_pif)
+        channel_log_pif = get_channel_from_id(server_pif, id_channel_logs_pif)
 
         pif_context = ServerContext(
             server=server_pif,
@@ -154,10 +154,10 @@ def is_message_from_spritework_thread(message:Message):
 
 
 def is_thread_from_spritework(thread:Thread):
-    is_spritework_pif = thread.parent_id == id_channel_spritework_aegide
-    is_spritework_aegide = thread.parent_id == id_channel_spritework_pif
-    return is_spritework_pif or is_spritework_aegide
-
+    # is_spritework_pif = thread.parent_id == id_channel_spritework_aegide
+    # is_spritework_aegide = thread.parent_id == id_channel_spritework_pif
+    # return is_spritework_pif or is_spritework_aegide
+    return False
 
 def get_help_content():
     help_content = """

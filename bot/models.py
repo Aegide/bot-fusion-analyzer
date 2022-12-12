@@ -6,7 +6,6 @@ class ServerContext():
     server: Guild
     gallery: Channel
     logs: Channel
-    spritework: Channel
     def __init__(self,
             server: Guild,
             gallery: Channel,
