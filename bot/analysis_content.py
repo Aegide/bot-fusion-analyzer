@@ -22,6 +22,7 @@ class ContentContext():
 
     def handle_zero_value(self, analysis:Analysis):
         analysis.severity = Severity.ignored
+        analysis.attachment_url = utils.get_attachment_url(analysis.message)
         if utils.have_egg_in_message(analysis.message):
             analysis.issues.add(EggSprite())
         elif utils.have_icon_in_message(analysis.message):

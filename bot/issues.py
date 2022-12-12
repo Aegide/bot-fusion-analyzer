@@ -67,4 +67,3 @@ class OutOfDex(Issue):
     severity = Severity.refused
     def __init__(self, fusion_id:str) -> None:
         self.fusion_id = fusion_id
-
