@@ -40,9 +40,11 @@ class ContentContext():
         else:
             analysis.fusion_id = self.filename_fusion_id
             analysis.autogen_url = utils.get_autogen_url(analysis.fusion_id)
+            analysis.attachment_url = utils.get_attachment_url(analysis.message)
 
     def handle_two_values(self, analysis:Analysis):
         if self.filename_fusion_id is not None and self.content_fusion_id is not None:
+            analysis.attachment_url = utils.get_attachment_url(analysis.message)
             if self.filename_fusion_id != self.content_fusion_id:
                 analysis.severity = Severity.refused
                 issue = DifferentSprite(self.filename_fusion_id, self.content_fusion_id)
