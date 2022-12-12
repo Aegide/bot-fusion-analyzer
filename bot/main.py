@@ -123,26 +123,16 @@ async def handle_sprite_gallery(message:Message):
     analysis = analyzer.generate_analysis(message)
     if analysis.severity is Severity.refused:
         await message.add_reaction(ERROR_EMOJI)
-    try:
-        await send_bot_logs(analysis, message.author.id)
-    except Exception as e:
-        print("vvv")
-        print(e)
-        print("^^^")
+    await send_bot_logs(analysis, message.author.id)
 
 
 async def handle_test_sprite_gallery(message:Message):
     utils.log_event("T-SG>", message)
     analysis = analyzer.generate_analysis(message)
-    try:
-        if analysis.severity is Severity.refused:
-            await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
-        else:
-            await ctx().aegide.logs.send(embed=analysis.embed)
-    except Exception as e:
-        print("vvv")
-        print(e)
-        print("^^^")
+    if analysis.severity is Severity.refused:
+        await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
+    else:
+        await ctx().aegide.logs.send(embed=analysis.embed)
 
 
 def is_message_from_spritework_thread(message:Message):

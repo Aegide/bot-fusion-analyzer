@@ -43,14 +43,6 @@ def _log_message(decorator:str, message:Message):
 
 # is_message_not_from_the_fusion_bot
 def is_message_from_human(message:Message, fusion_bot_id:int|None):
-
-    print(" ")
-    print("message.author.id", message.author.id)
-    print("fusion_bot_id", fusion_bot_id)
-    print("YAGPDB_ID", YAGPDB_ID)
-    print("message.content", message.content)
-    print(" ")
-
     return message.author.id != fusion_bot_id and message.author.id != YAGPDB_ID
 
 
