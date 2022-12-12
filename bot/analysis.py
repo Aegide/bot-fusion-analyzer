@@ -1,6 +1,6 @@
 from discord import Embed, Message
 from bot.enums import Severity
-from bot.issues import Issue
+from bot.issues import Issue, Issues
 from bot.enums import DiscordColour
 import bot.utils as utils
 
@@ -14,7 +14,7 @@ DICT_SEVERITY_COLOUR = {
 
 class Analysis:
     message: Message
-    issues: list[Issue] = []
+    issues: Issues
     severity: Severity = Severity.accepted
     embed: Embed
     autogen_url: str|None = None

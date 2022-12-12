@@ -23,20 +23,20 @@ class ContentContext():
     def handle_zero_value(self, analysis:Analysis):
         analysis.severity = Severity.ignored
         if utils.have_egg_in_message(analysis.message):
-            analysis.issues.append(EggSprite())
+            analysis.issues.add(EggSprite())
         elif utils.have_icon_in_message(analysis.message):
-            analysis.issues.append(IconSprite())
+            analysis.issues.add(IconSprite())
         elif utils.have_custom_in_message(analysis.message):
-            analysis.issues.append(CustomSprite())
+            analysis.issues.add(CustomSprite())
         elif utils.have_base_in_message(analysis.message):
-            analysis.issues.append(CustomSprite())
+            analysis.issues.add(CustomSprite())
         else:
-            analysis.issues.append(IncomprehensibleSprite())
+            analysis.issues.add(IncomprehensibleSprite())
 
     def handle_one_value(self, analysis:Analysis):
         if self.filename_fusion_id is None:
             analysis.severity = Severity.refused
-            analysis.issues.append(MissingFilename())
+            analysis.issues.add(MissingFilename())
         else:
             analysis.fusion_id = self.filename_fusion_id
 
@@ -45,7 +45,7 @@ class ContentContext():
             if self.filename_fusion_id != self.content_fusion_id:
                 analysis.severity = Severity.refused
                 issue = DifferentSprite(self.filename_fusion_id, self.content_fusion_id)
-                analysis.issues.append(issue)
+                analysis.issues.add(issue)
                 self.handle_dex_verification(analysis, self.content_fusion_id)
             else:
                 analysis.fusion_id = self.filename_fusion_id
@@ -54,7 +54,7 @@ class ContentContext():
     def handle_dex_verification(self, analysis:Analysis, fusion_id:str):
         if utils.is_invalid_fusion_id(fusion_id):
             analysis.severity = Severity.refused
-            analysis.issues.append(OutOfDex(fusion_id))
+            analysis.issues.add(OutOfDex(fusion_id))
 
 
 def main(analysis:Analysis):
@@ -76,4 +76,4 @@ def handle_some_content(analysis:Analysis):
 
 def handle_no_content(analysis:Analysis):
     analysis.severity = Severity.ignored
-    analysis.issues.append(MissingSprite())
+    analysis.issues.add(MissingSprite())

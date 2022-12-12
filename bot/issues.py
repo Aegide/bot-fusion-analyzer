@@ -1,4 +1,4 @@
-from bot.enums import Description, Severity
+from enums import Description, Severity
 
 
 class Issue():
@@ -7,6 +7,17 @@ class Issue():
     mention_aegide: bool = False
     def __str__(self) -> str:
         return self.description.value
+
+
+class Issues():
+    issues: list[Issue] = []
+    def __str__(self) -> str:
+        result = ""
+        for issue in self.issues:
+            result += f"- {issue}\n"
+        return result
+    def add(self, issue:Issue):
+        self.issues.append(issue)
 
 
 class DifferentSprite(Issue):
@@ -30,9 +41,6 @@ class MissingFilename(Issue):
 class MissingSprite(Issue):
     description = Description.missing_file
     severity = Severity.ignored
-    def __str__(self) -> str:
-        return str(self.description.value)
-
 
 class IconSprite(Issue):
     description = Description.icon

@@ -1,5 +1,6 @@
 import unittest
-from bot.utils import get_fusion_id_from_filename as gfiff
+from issues import MissingSprite, Issues, IncomprehensibleSprite
+from utils import get_fusion_id_from_filename as gfiff
 
 
 class TestGalleryNames(unittest.TestCase):
@@ -23,4 +24,11 @@ class TestGalleryNames(unittest.TestCase):
         self.assertIsNone(gfiff("299.287.jpeg"))
 
 if __name__ == '__main__':
-    unittest.main()
+    # unittest.main()
+
+    issues = Issues()
+    issues.add(MissingSprite())
+    issues.add(IncomprehensibleSprite())
+
+    print(issues)
+
