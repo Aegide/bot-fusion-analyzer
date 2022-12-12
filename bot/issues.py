@@ -68,13 +68,3 @@ class OutOfDex(Issue):
     def __init__(self, fusion_id:str) -> None:
         self.fusion_id = fusion_id
 
-
-
-def main():
-    issue = DifferentSprite("100", "200")
-    print(issue)
-
-
-main()
-
-
