@@ -22,7 +22,7 @@ class EggSprite(Issue):
     severity = Severity.ignored
 
 
-class MissingFilename(Issue):
+class MissingFilename(str, Issue):
     description = Description.missing_file_name
     severity = Severity.refused
 
