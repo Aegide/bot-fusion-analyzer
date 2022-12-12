@@ -122,7 +122,8 @@ async def handle_sprite_gallery(message:Message):
     utils.log_event("SG>", message)
     analysis = analyzer.generate_analysis(message)
     if analysis.severity is Severity.refused:
-        await message.add_reaction(ERROR_EMOJI)
+        # await message.add_reaction(ERROR_EMOJI)
+        pass
     await send_bot_logs(analysis, message.author.id)
 
 
