@@ -16,6 +16,9 @@ SPOILER_PATTERN_FUSION_ID = f'SPOILER_{STRICT_PATTERN_FUSION_ID}'
 AUTOGEN_FUSION_URL = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Battlers/"
 
 
+YAGPDB_ID = 204255221017214977
+
+
 def log_event(decorator:str, event:Message|Thread):
     if isinstance(event, Message):
         _log_message(decorator, event)
@@ -40,7 +43,7 @@ def _log_message(decorator:str, message:Message):
 
 # is_message_not_from_the_fusion_bot
 def is_message_from_human(message:Message, bot_id:int|None):
-    return message.author.id != bot_id
+    return message.author.id != bot_id or message.author.id != YAGPDB_ID
 
 
 def get_thread(message:Message) -> (Thread | None):
