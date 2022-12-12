@@ -6,7 +6,7 @@ class Issue():
     severity: Severity
     mention_aegide: bool = False
     def __str__(self) -> str:
-        return self.description
+        return self.description.value
 
 
 class DifferentSprite(Issue):
