@@ -75,4 +75,5 @@ def handle_some_content(analysis:Analysis):
 
 
 def handle_no_content(analysis:Analysis):
+    analysis.severity = Severity.ignored
     analysis.issues.append(MissingSprite())
