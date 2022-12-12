@@ -10,7 +10,9 @@ class Issue():
 
 
 class Issues():
-    issues: list[Issue] = []
+    issues: list[Issue]
+    def __init__(self):
+        self.issues = []
     def __str__(self) -> str:
         result = ""
         for issue in self.issues:
