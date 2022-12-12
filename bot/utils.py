@@ -137,4 +137,3 @@ def extract_fusion_id_from_filename(message:Message):
 
 def extract_fusion_id_from_content(message):
     return get_fusion_id_from_content(message.content)
-
