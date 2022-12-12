@@ -14,9 +14,12 @@ class Issues():
     def __init__(self):
         self.issues = []
     def __str__(self) -> str:
-        result = ""
-        for issue in self.issues:
-            result += f"- {issue}\n"
+        if len(self.issues) == 1:
+            result = str(self.issues[0])
+        else:
+            result = ""
+            for issue in self.issues:
+                result += f"- {issue}\n"
         return result
     def add(self, issue:Issue):
         self.issues.append(issue)
