@@ -98,14 +98,8 @@ def get_autogen_url(fusion_id):
 
 
 def is_invalid_fusion_id(fusion_id:str):
-    elements = fusion_id.split(".")
-    if len(elements) == 2:
-        head_id, body_id = elements
-    elif len(elements) == 3:
-        head_id, body_id, _ = elements
-    else:
-        head_id, body_id = 0, 0
-    head_id, body_id = int(head_id), int(body_id)
+    head, body = fusion_id.split(".")
+    head_id, body_id = int(head), int(body)
     return head_id > 420 or body_id > 420 or head_id < 1 or body_id < 1
 
 
@@ -117,17 +111,17 @@ def get_fusion_id_from_filename(filename:str):
     fusion_id = None
     result = re.match(STRICT_PATTERN_FUSION_ID, filename)
     if result is not None:
-        fusion_id = result[0]
+        fusion_id = get_fusion_id_from_text(result[0])
     else:
         result = re.match(SPOILER_PATTERN_FUSION_ID, filename)
         if result is not None:
-            fusion_id = result[0]
+            fusion_id = get_fusion_id_from_text(result[0])
     return fusion_id
 
 
-def get_fusion_id_from_content(filename:str):
+def get_fusion_id_from_text(text:str):
     fusion_id = None
-    result = re.search(LAZY_PATTERN_FUSION_ID, filename)
+    result = re.search(LAZY_PATTERN_FUSION_ID, text)
     if result:
         fusion_id = result[0]
     return fusion_id
@@ -142,4 +136,5 @@ def extract_fusion_id_from_filename(message:Message):
 
 
 def extract_fusion_id_from_content(message):
-    return get_fusion_id_from_content(message.content)
+    return get_fusion_id_from_text(message.content)
+
