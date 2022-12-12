@@ -14,8 +14,8 @@ DICT_SEVERITY_COLOUR = {
 
 class Analysis:
     message: Message
-    issues: Issues = Issues()
-    severity: Severity = Severity.accepted
+    issues: Issues 
+    severity: Severity
     embed: Embed
     autogen_url: str|None = None
     attachment_url: str|None = None
@@ -23,6 +23,8 @@ class Analysis:
 
     def __init__(self, message:Message) -> None:
         self.message = message
+        self.issues = Issues()
+        self.severity = Severity.accepted
 
     def generate_embed(self):
         self.embed = Embed()
