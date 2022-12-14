@@ -1,11 +1,10 @@
-from PIL import Image
 import requests
+from discord import Message
+from PIL import Image
 
 from bot.analyzer import Analysis
 from bot.enums import Severity
-from discord import Message
-
-from bot.issues import OutOfDex
+from bot.issues import InvalidSize
 
 VALID_SIZE = (288,288)
 
@@ -16,15 +15,10 @@ class SpriteContext():
         raw_data = requests.get(first_attachment, stream=True).raw
         self.image = Image.open(raw_data)
 
-        
-
-
-
 
 def main(analysis:Analysis):
     if analysis.severity is Severity.accepted:
         handle_valid_sprite(analysis)
-
 
 
 def handle_valid_sprite(analysis:Analysis):
@@ -32,9 +26,7 @@ def handle_valid_sprite(analysis:Analysis):
     size = content_context.image.size
     if size != VALID_SIZE:
         analysis.severity = Severity.refused
-        analysis.issues.add(OutOfDex(size))
-
-
+        analysis.issues.add(InvalidSize(size))
 
 
     # """
