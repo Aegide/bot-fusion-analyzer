@@ -1,9 +1,26 @@
-from pathlib import Path
-from discord import Message
-import discord
+from PIL import Image
+import requests
+
 from bot.analyzer import Analysis
 from bot.enums import Severity
-import tempfile
+from discord import Message
+
+
+
+
+class SpriteContext():
+    def __init__(self, message:Message):
+        first_attachment = message.attachments[0].url
+        raw_data = requests.get(first_attachment, stream=True).raw
+        image = Image.open(raw_data)
+        pixels = image.load
+
+        print(image)
+        print(pixels)
+        print(image.size)
+
+
+
 
 def main(analysis:Analysis):
     if analysis.severity is Severity.accepted:
@@ -12,12 +29,11 @@ def main(analysis:Analysis):
 
 
 def handle_valid_sprite(analysis:Analysis):
+    content_context = SpriteContext(analysis.message)
 
 
-    # file = discord.File(file_path, filename="image.png")
 
-    with tempfile.TemporaryFile() as tmp:
-        print(tmp)
+
 
 
     # """
