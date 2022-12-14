@@ -22,7 +22,6 @@ class ContentContext():
 
     def handle_zero_value(self, analysis:Analysis):
         analysis.severity = Severity.ignored
-        analysis.attachment_url = utils.get_attachment_url(analysis.message)
         if utils.have_egg_in_message(analysis.message):
             analysis.issues.add(EggSprite())
         elif utils.have_icon_in_message(analysis.message):
@@ -41,11 +40,9 @@ class ContentContext():
         else:
             analysis.fusion_id = self.filename_fusion_id
             analysis.autogen_url = utils.get_autogen_url(analysis.fusion_id)
-            analysis.attachment_url = utils.get_attachment_url(analysis.message)
 
     def handle_two_values(self, analysis:Analysis):
         if self.filename_fusion_id is not None and self.content_fusion_id is not None:
-            analysis.attachment_url = utils.get_attachment_url(analysis.message)
             if self.filename_fusion_id != self.content_fusion_id:
                 analysis.severity = Severity.refused
                 issue = DifferentSprite(self.filename_fusion_id, self.content_fusion_id)
@@ -71,6 +68,7 @@ def main(analysis:Analysis):
 
 def handle_some_content(analysis:Analysis):
     content_context = ContentContext(analysis.message)
+    analysis.attachment_url = utils.get_attachment_url(analysis.message)
     if content_context.have_two_values():
         content_context.handle_two_values(analysis)
     elif content_context.have_one_value():
@@ -82,3 +80,4 @@ def handle_some_content(analysis:Analysis):
 def handle_no_content(analysis:Analysis):
     analysis.severity = Severity.ignored
     analysis.issues.add(MissingSprite())
+

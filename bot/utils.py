@@ -57,43 +57,39 @@ def get_filename(message:Message):
     return message.attachments[0].filename
 
 
-def has_attachments(message:Message):
-    return len(message.attachments) >= 1
-
-
-def get_attachment_url(message):
+def get_attachment_url(message:Message):
     return message.attachments[0].url
 
 
-def interesting_results(results):
+def interesting_results(results:list):
     return results[1] is not None
 
 
-def have_icon_in_message(message):
+def have_icon_in_message(message:Message):
     result = re.search(PATTERN_ICON, message.content)
     return result is not None
 
 
-def have_custom_in_message(message):
+def have_custom_in_message(message:Message):
     result = re.search(PATTERN_CUSTOM, message.content)
     return result is not None
 
 
-def have_base_in_message(message):
+def have_base_in_message(message:Message):
     result = re.search(PATTERN_BASE, message.content)
     return result is not None
 
 
-def have_egg_in_message(message):
+def have_egg_in_message(message:Message):
     result = re.search(PATTERN_EGG, message.content)
     return result is not None
 
 
-def have_attachment(message):
+def have_attachment(message:Message):
     return len(message.attachments) >= 1
 
 
-def get_autogen_url(fusion_id):
+def get_autogen_url(fusion_id:str):
     return AUTOGEN_FUSION_URL + fusion_id.split(".")[0] + "/" + fusion_id + ".png"
 
 
@@ -129,7 +125,7 @@ def get_fusion_id_from_text(text:str):
 
 def extract_fusion_id_from_filename(message:Message):
     fusion_id = None
-    if has_attachments(message):
+    if have_attachment(message):
         filename = get_filename(message)
         fusion_id = get_fusion_id_from_filename(filename)
     return fusion_id
