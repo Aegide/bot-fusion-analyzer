@@ -2,18 +2,18 @@ from enum import Enum
 import discord
 
 class Description(str, Enum):
-    missing_file = "Missing sprite"
-    missing_file_name = "Missing file name"
-    missing_fusion_id = "Unable to identify fusion sprite"
-    different_fusion_id = "Different fusion IDs"
-    invalid_fusion_id = "Invalid fusion ID"
-    sprite_error = "Invalid sprite"
-    sprite_issue = "Controversial sprite"
-    icon = "Icon sprite"
-    custom = "Custom sprite"
-    egg = "Egg sprite"
-    error = "Incomprehensible sprite"
-    test = "Description test"
+    missing_file        = "Missing sprite"
+    missing_file_name   = "Missing file name"
+    missing_fusion_id   = "Unable to identify fusion sprite"
+    different_fusion_id = "Different IDs"
+    invalid_fusion_id   = "Invalid fusion ID"
+    sprite_error        = "Invalid sprite"
+    sprite_issue        = "Controversial sprite"
+    icon                = "Icon sprite"
+    custom              = "Custom sprite"
+    egg                 = "Egg sprite"
+    error               = "Incomprehensible sprite"
+    test                = "Description test"
 
 
 class Severity(Enum):
