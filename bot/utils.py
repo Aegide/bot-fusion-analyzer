@@ -38,7 +38,7 @@ def _log_thread(decorator:str, thread:Thread):
 
 
 def _log_message(decorator:str, message:Message):
-    print(decorator, message.author.name, ":M:", message.content)
+    print(decorator, message.author.name, message.content)
 
 
 # is_message_not_from_the_fusion_bot
