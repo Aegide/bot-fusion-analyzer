@@ -8,6 +8,7 @@ class Description(str, Enum):
     different_fusion_id = "Different ID"
     invalid_fusion_id   = "Invalid fusion ID"
     sprite_error        = "Invalid sprite"
+    invalid_size        = "Invalid size"
     sprite_issue        = "Controversial sprite"
     icon                = "Icon sprite"
     custom              = "Custom sprite"

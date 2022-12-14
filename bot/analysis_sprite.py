@@ -5,20 +5,18 @@ from bot.analyzer import Analysis
 from bot.enums import Severity
 from discord import Message
 
+from bot.issues import OutOfDex
 
+VALID_SIZE = (288,288)
 
 
 class SpriteContext():
     def __init__(self, message:Message):
         first_attachment = message.attachments[0].url
         raw_data = requests.get(first_attachment, stream=True).raw
-        image = Image.open(raw_data)
-        size = image.size
+        self.image = Image.open(raw_data)
 
-        print(image)
-        print(size)
-        print(type(size))
-        print(size==(288,288))
+        
 
 
 
@@ -31,8 +29,10 @@ def main(analysis:Analysis):
 
 def handle_valid_sprite(analysis:Analysis):
     content_context = SpriteContext(analysis.message)
-
-
+    size = content_context.image.size
+    if size != VALID_SIZE:
+        analysis.severity = Severity.refused
+        analysis.issues.add(OutOfDex(size))
 
 
 

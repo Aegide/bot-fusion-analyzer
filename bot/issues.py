@@ -73,3 +73,12 @@ class OutOfDex(Issue):
         self.fusion_id = fusion_id
     def __str__(self) -> str:
         return f"{self.description.value} ({self.fusion_id})"
+
+
+class InvalidSize(Issue):
+    description = Description.invalid_size
+    severity = Severity.refused
+    def __init__(self, size:tuple) -> None:
+        self.size = size
+    def __str__(self) -> str:
+        return f"{self.description.value} {self.size}"
