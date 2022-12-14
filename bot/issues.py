@@ -49,6 +49,7 @@ class MissingSprite(Issue):
     description = Description.missing_file
     severity = Severity.ignored
 
+
 class IconSprite(Issue):
     description = Description.icon
     severity = Severity.ignored

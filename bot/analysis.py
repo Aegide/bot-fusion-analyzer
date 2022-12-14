@@ -19,7 +19,7 @@ class Analysis:
     embed: Embed
     autogen_url: str|None = None
     attachment_url: str|None = None
-    fusion_id = str = "DEFAULT_VALUE"
+    fusion_id: str = "DEFAULT_VALUE"
 
     def __init__(self, message:Message) -> None:
         self.message = message

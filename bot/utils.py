@@ -96,7 +96,7 @@ def get_autogen_url(fusion_id:str):
 def is_invalid_fusion_id(fusion_id:str):
     head, body = fusion_id.split(".")
     head_id, body_id = int(head), int(body)
-    return head_id > 420 or body_id > 420 or head_id < 1 or body_id < 1
+    return head_id > 420 or body_id > 420
 
 
 def get_display_avatar(user: User|Member|ClientUser) -> Asset:

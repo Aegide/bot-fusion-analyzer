@@ -34,24 +34,35 @@ class ContentContext():
             analysis.issues.add(IncomprehensibleSprite())
 
     def handle_one_value(self, analysis:Analysis):
-        if self.filename_fusion_id is None:
+        if self.content_fusion_id is not None:
             analysis.severity = Severity.refused
             analysis.issues.add(MissingFilename())
-        else:
+            self.handle_dex_verification(analysis, self.content_fusion_id)
+        elif self.filename_fusion_id is not None:
             analysis.fusion_id = self.filename_fusion_id
             analysis.autogen_url = utils.get_autogen_url(analysis.fusion_id)
+            self.handle_dex_verification(analysis, self.filename_fusion_id)
 
     def handle_two_values(self, analysis:Analysis):
-        if self.filename_fusion_id is not None and self.content_fusion_id is not None:
             if self.filename_fusion_id != self.content_fusion_id:
-                analysis.severity = Severity.refused
-                issue = DifferentSprite(self.filename_fusion_id, self.content_fusion_id)
-                analysis.issues.add(issue)
-                self.handle_dex_verification(analysis, self.content_fusion_id)
+                self.handle_two_different_values(analysis)
             else:
-                analysis.fusion_id = self.filename_fusion_id
-                analysis.autogen_url = utils.get_autogen_url(analysis.fusion_id)
-            self.handle_dex_verification(analysis, self.filename_fusion_id)
+                self.handle_two_same_values(analysis)
+            if self.filename_fusion_id is not None:
+                self.handle_dex_verification(analysis, self.filename_fusion_id)
+
+    def handle_two_different_values(self, analysis:Analysis):
+        if self.filename_fusion_id is not None and self.content_fusion_id is not None:
+            analysis.severity = Severity.refused
+            issue = DifferentSprite(self.filename_fusion_id, self.content_fusion_id)
+            analysis.issues.add(issue)
+            self.handle_dex_verification(analysis, self.content_fusion_id)
+
+    def handle_two_same_values(self, analysis:Analysis):
+        if self.filename_fusion_id is not None:
+            analysis.fusion_id = self.filename_fusion_id
+        if analysis.fusion_id is not None:
+            analysis.autogen_url = utils.get_autogen_url(analysis.fusion_id)
 
     def handle_dex_verification(self, analysis:Analysis, fusion_id:str):
         if utils.is_invalid_fusion_id(fusion_id):
