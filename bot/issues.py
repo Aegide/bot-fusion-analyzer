@@ -67,7 +67,9 @@ class IncomprehensibleSprite(Issue):
 
 
 class OutOfDex(Issue):
-    description = Description.error
+    description = Description.invalid_fusion_id
     severity = Severity.refused
     def __init__(self, fusion_id:str) -> None:
         self.fusion_id = fusion_id
+    def __str__(self) -> str:
+        return f"{self.description.value} ({self.fusion_id})"
