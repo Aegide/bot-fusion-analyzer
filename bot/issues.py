@@ -32,7 +32,7 @@ class DifferentSprite(Issue):
         self.filename_fusion_id = filename_fusion_id
         self.content_fusion_id = content_fusion_id
     def __str__(self) -> str:
-        return f"{self.description.value}: ({self.filename_fusion_id}) ({self.content_fusion_id})"
+        return f"{self.description.value} ({self.filename_fusion_id}) ({self.content_fusion_id})"
 
 
 class EggSprite(Issue):
