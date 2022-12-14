@@ -1,9 +1,23 @@
+from pathlib import Path
 from discord import Message
+import discord
 from bot.analyzer import Analysis
-
+from bot.enums import Severity
+import tempfile
 
 def main(analysis:Analysis):
-    pass
+    if analysis.severity is Severity.accepted:
+        handle_valid_sprite(analysis)
+
+
+
+def handle_valid_sprite(analysis:Analysis):
+
+
+    # file = discord.File(file_path, filename="image.png")
+
+    with tempfile.TemporaryFile() as tmp:
+        print(tmp)
 
 
     # """
