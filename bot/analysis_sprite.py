@@ -13,11 +13,12 @@ class SpriteContext():
         first_attachment = message.attachments[0].url
         raw_data = requests.get(first_attachment, stream=True).raw
         image = Image.open(raw_data)
-        pixels = image.load
+        size = image.size
 
         print(image)
-        print(pixels)
-        print(image.size)
+        print(size)
+        print(type(size))
+        print(size==(288,288))
 
 
 
