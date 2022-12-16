@@ -4,7 +4,7 @@ from PIL import Image
 
 from bot.analyzer import Analysis
 from bot.enums import Severity
-from bot.issues import InvalidSize
+from bot.issues import ColorExcess, InvalidSize
 
 
 VALID_SIZE = (288,288)
@@ -24,10 +24,11 @@ class SpriteContext():
             analysis.severity = Severity.refused
             analysis.issues.add(InvalidSize(size))
 
-    def handle_sprite_colours(self, _analysis:Analysis):
-        colours = self.image.getcolors(UPPER_COLOR_LIMIT)
-        print(len(colours))
-        print(colours)
+    def handle_sprite_colours(self, analysis:Analysis):
+        color_amount = len(self.image.getcolors(UPPER_COLOR_LIMIT))
+        if color_amount > COLOR_LIMIT:
+            analysis.severity = Severity.refused
+            analysis.issues.add(ColorExcess(color_amount))
 
 def main(analysis:Analysis):
     if analysis.severity is Severity.accepted:

@@ -82,3 +82,12 @@ class InvalidSize(Issue):
         self.size = size
     def __str__(self) -> str:
         return f"{self.description.value} {self.size}"
+
+
+class ColorExcess(Issue):
+    description = Description.colour_excess
+    severity = Severity.refused
+    def __init__(self, amount:int) -> None:
+        self.amount = amount
+    def __str__(self) -> str:
+        return f"{self.description.value} ({self.amount})"
