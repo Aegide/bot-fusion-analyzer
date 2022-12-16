@@ -31,7 +31,7 @@ class SpriteContext():
             analysis.issues.add(ColorExcess(color_amount))
 
 def main(analysis:Analysis):
-    if analysis.severity is Severity.accepted:
+    if analysis.severity == Severity.accepted:
         handle_valid_sprite(analysis)
 
 
