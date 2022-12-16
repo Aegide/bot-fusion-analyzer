@@ -6,7 +6,10 @@ from bot.analyzer import Analysis
 from bot.enums import Severity
 from bot.issues import InvalidSize
 
+
 VALID_SIZE = (288,288)
+UPPER_COLOR_LIMIT = 1000
+COLOR_LIMIT = 100
 
 
 class SpriteContext():
@@ -15,6 +18,16 @@ class SpriteContext():
         raw_data = requests.get(first_attachment, stream=True).raw
         self.image = Image.open(raw_data)
 
+    def handle_sprite_size(self, analysis:Analysis):
+        size = self.image.size
+        if size != VALID_SIZE:
+            analysis.severity = Severity.refused
+            analysis.issues.add(InvalidSize(size))
+
+    def handle_sprite_colours(self, _analysis:Analysis):
+        colours = self.image.getcolors(UPPER_COLOR_LIMIT)
+        print(len(colours))
+        print(colours)
 
 def main(analysis:Analysis):
     if analysis.severity is Severity.accepted:
@@ -23,11 +36,12 @@ def main(analysis:Analysis):
 
 def handle_valid_sprite(analysis:Analysis):
     content_context = SpriteContext(analysis.message)
-    size = content_context.image.size
-    if size != VALID_SIZE:
-        analysis.severity = Severity.refused
-        analysis.issues.add(InvalidSize(size))
+    content_context.handle_sprite_size(analysis)
+    content_context.handle_sprite_colours(analysis)
+    # content_context.handle_sprite_transparency(analysis)
 
+    
+    
 
     # """
     # if valid_fusion:
