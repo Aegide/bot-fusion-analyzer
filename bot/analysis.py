@@ -38,10 +38,9 @@ class Analysis:
 
     def apply_title(self):
         if self.severity == Severity.accepted:
-            details = f": {self.fusion_id}__"
+            self.embed.title = f"__{self.severity.value}: {self.fusion_id}__\n{str(self.issues)}"
         else:
-            details = f":\n__{str(self.issues)}"
-        self.embed.title = f"__{self.severity.value}{details}"
+            self.embed.title = f"__{self.severity.value}:__\n{str(self.issues)}"
 
     def apply_colour(self):
         self.embed.colour = DICT_SEVERITY_COLOUR.get(self.severity, DiscordColour.gray).value
