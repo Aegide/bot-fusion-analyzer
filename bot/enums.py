@@ -1,5 +1,7 @@
 from enum import Enum
+
 import discord
+
 
 class Description(str, Enum):
     missing_file        = "Missing sprite"
@@ -16,6 +18,7 @@ class Description(str, Enum):
     egg                 = "Egg sprite"
     error               = "Incomprehensible sprite"
     test                = "Description test"
+    aseprite_user       = "Asesprite user detected"
 
 
 class Severity(Enum):

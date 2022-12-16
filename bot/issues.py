@@ -100,3 +100,12 @@ class ColorExcess(Issue):
         self.max = max
     def __str__(self) -> str:
         return f"{self.description.value} (max: {self.max})"
+
+
+class AsepriteUser(Issue):
+    description = Description.aseprite_user
+    severity = Severity.refused
+    def __init__(self, ratio:str) -> None:
+        self.ratio = ratio
+    def __str__(self) -> str:
+        return f"{self.description.value} ({self.ratio})"

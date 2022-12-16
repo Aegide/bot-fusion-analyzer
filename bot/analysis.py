@@ -1,8 +1,8 @@
 from discord import Embed, Message
-from bot.enums import Severity
-from bot.issues import Issue, Issues
-from bot.enums import DiscordColour
-import bot.utils as utils
+from enums import Severity
+from issues import Issues
+from enums import DiscordColour
+import utils as utils
 
 
 DICT_SEVERITY_COLOUR = {

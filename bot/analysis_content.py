@@ -1,8 +1,8 @@
 from discord import Message
-from bot.enums import Severity
-from bot.issues import DifferentSprite, EggSprite, IconSprite, MissingFilename, OutOfDex, CustomSprite, IncomprehensibleSprite, MissingSprite
-import bot.utils as utils
-from bot.analyzer import Analysis
+from enums import Severity
+from issues import DifferentSprite, EggSprite, IconSprite, MissingFilename, OutOfDex, CustomSprite, IncomprehensibleSprite, MissingSprite
+import utils as utils
+from analyzer import Analysis
 
 
 def exists(value):
