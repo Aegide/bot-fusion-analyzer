@@ -50,7 +50,7 @@ class SpriteContext():
     def handle_aseprite(self, analysis:Analysis):
         asesprite_ratio = self.useless_amount/self.useful_amount
         if asesprite_ratio > ASESPRITE_RATIO:
-            analysis.issues.add(AsepriteUser(str(asesprite_ratio)))
+            analysis.issues.add(AsepriteUser(asesprite_ratio))
 
 def remove_useless_colors(old_colors:list):
     new_colors = []

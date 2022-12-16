@@ -105,7 +105,7 @@ class ColorExcess(Issue):
 class AsepriteUser(Issue):
     description = Description.aseprite_user
     severity = Severity.refused
-    def __init__(self, ratio:str) -> None:
+    def __init__(self, ratio:float) -> None:
         self.ratio = ratio
     def __str__(self) -> str:
-        return f"{self.description.value} ({self.ratio})"
+        return f"{self.description.value} ({self.ratio:.2f})"
