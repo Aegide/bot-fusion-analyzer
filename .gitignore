@@ -6,3 +6,4 @@ venv/*
 tmp/*
 .vscode/settings.json
 bot/.vscode/settings.json
+fixtures/*.png
