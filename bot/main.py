@@ -105,25 +105,17 @@ async def send_bot_logs(analysis:Analysis, author_id:int):
         await send_with_content(analysis, author_id)
     else:
         await send_without_content(analysis)
-        
+
 
 async def send_with_content(analysis:Analysis, author_id:int):
     ping_owner = f"<@!{author_id}>"
-    if analysis.file is None:
-        await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
-        await ctx().pif.logs.send(embed=analysis.embed, content=ping_owner)
-    else:
-        await ctx().aegide.logs.send(file=analysis.file, embed=analysis.embed, content=ping_aegide)
-        await ctx().pif.logs.send(file=analysis.file, embed=analysis.embed, content=ping_owner)
+    await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
+    await ctx().pif.logs.send(embed=analysis.embed, content=ping_owner)
 
 
 async def send_without_content(analysis:Analysis):
-    if analysis.file is None:
-        await ctx().aegide.logs.send(embed=analysis.embed)
-        await ctx().pif.logs.send(embed=analysis.embed)
-    else:
-        await ctx().aegide.logs.send(file=analysis.file, embed=analysis.embed)
-        await ctx().pif.logs.send(file=analysis.file, embed=analysis.embed)
+    await ctx().aegide.logs.send(embed=analysis.embed)
+    await ctx().pif.logs.send(embed=analysis.embed)
 
 
 async def send_test_embed(message):
