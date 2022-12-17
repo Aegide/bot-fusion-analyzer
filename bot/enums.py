@@ -9,6 +9,7 @@ class Description(str, Enum):
     missing_fusion_id   = "Unable to identify fusion sprite"
     different_fusion_id = "Different ID"
     colour_excess       = "Too many colours"
+    transparency_amount = "Transparency"
     colour_amount       = "Colours"
     invalid_fusion_id   = "Invalid fusion ID"
     sprite_error        = "Invalid sprite"

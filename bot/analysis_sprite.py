@@ -4,24 +4,31 @@ import requests
 from analysis import Analysis
 from discord import Message
 from enums import Severity
-from issues import AsepriteUser, ColorAmount, ColorExcess, InvalidSize
-from PIL import Image
+from issues import (AsepriteUser, ColorAmount, ColorExcess, InvalidSize,
+                    TransparencyAmount)
+from PIL.Image import Image, open
+from PIL.PyAccess import PyAccess
 
 VALID_SIZE = (288,288)
 UPPER_COLOR_LIMIT = 1000
 COLOR_LIMIT = 100
-
+TRANSPARENCY_LIMIT = 0
 
 colorType = int|tuple
 
 ASESPRITE_RATIO = 2
 
+PINK = (255, 0, 255, 255)
+BLACK = (0, 0, 0, 255)
+WHITE = (255, 255, 255, 255)
+
 
 class SpriteContext():
     def __init__(self, message:Message):
-        first_attachment = message.attachments[0].url
-        raw_data = requests.get(first_attachment, stream=True).raw
-        self.image = Image.open(raw_data)
+        attachment_url = message.attachments[0].url
+        raw_data = requests.get(attachment_url, stream=True).raw
+        self.image = open(raw_data)
+        self.pixels = get_pixels(self.image)
 
     def handle_sprite_size(self, analysis:Analysis):
         size = self.image.size
@@ -52,6 +59,43 @@ class SpriteContext():
         if asesprite_ratio > ASESPRITE_RATIO:
             analysis.issues.add(AsepriteUser(asesprite_ratio))
 
+    def handle_sprite_transparency(self, analysis:Analysis):
+        transparency_amount = self.highlight_transparency()
+        if transparency_amount > TRANSPARENCY_LIMIT:
+            analysis.transparent = True
+            analysis.issues.add(TransparencyAmount(transparency_amount))
+
+    def highlight_transparency(self) -> int:
+        transparency_amount = 0
+        first_pixel = self.pixels[0, 0]
+        if is_indexed(first_pixel):
+            return transparency_amount
+        for i in range(0, 288):
+            for j in range(0, 288):
+                color = self.pixels[i, j]
+                alpha = get_alpha(color)
+                if is_half_transparent(alpha):
+                    self.pixels[i, j] = PINK
+                    transparency_amount += 1
+                elif not is_transparent(alpha):
+                    self.pixels[i, j] = BLACK
+                else:
+                    self.pixels[i, j] = WHITE
+        return transparency_amount
+
+
+def is_half_transparent(alpha):
+    return alpha != 0 and alpha != 255
+
+
+def is_transparent(alpha:int) -> bool:
+    return alpha == 0
+
+
+def get_pixels(image:Image) -> PyAccess:
+    return image.load()  # type: ignore
+
+
 def remove_useless_colors(old_colors:list):
     new_colors = []
     for old_color in old_colors:
@@ -60,29 +104,34 @@ def remove_useless_colors(old_colors:list):
             new_colors.append(old_color)
     return new_colors
 
-def is_useless_color(color:colorType):
-    if is_palette(color):
-        return False
-    return is_invisible(color)  # type: ignore
 
-def is_palette(color:colorType):
+def is_useless_color(color:colorType):
+    if is_indexed(color):
+        return False
+    alpha = get_alpha(color)        # type: ignore
+    return is_transparent(alpha)    # type: ignore
+
+
+def get_alpha(color:tuple) -> int:
+    _r, _g, _b, alpha = color
+    return alpha
+
+
+def is_indexed(color:colorType) -> bool:
     return isinstance(color, int)
 
-def is_invisible(color:tuple):
-    return alpha(color) == 0
-
-def alpha(color:tuple):
-    return color[3]
 
 def main(analysis:Analysis):
     if analysis.severity == Severity.accepted:
         handle_valid_sprite(analysis)
 
+
 def handle_valid_sprite(analysis:Analysis):
     content_context = SpriteContext(analysis.message)
     content_context.handle_sprite_size(analysis)
     content_context.handle_sprite_colours(analysis)
-    # content_context.handle_sprite_transparency(analysis)
+    content_context.handle_sprite_transparency(analysis)
+
 
     # """
     # if valid_fusion:

@@ -86,7 +86,7 @@ class InvalidSize(Issue):
 
 class ColorAmount(Issue):
     description = Description.colour_amount
-    severity = Severity.refused
+    severity = Severity.accepted
     def __init__(self, amount:int) -> None:
         self.amount = amount
     def __str__(self) -> str:
@@ -108,4 +108,14 @@ class AsepriteUser(Issue):
     def __init__(self, ratio:float) -> None:
         self.ratio = ratio
     def __str__(self) -> str:
-        return f"{self.description.value} ({self.ratio:.2f})"
+        return f"{self.description.value} (r: {self.ratio:.2f})"
+
+
+class TransparencyAmount(Issue):
+    description = Description.transparency_amount
+    severity = Severity.accepted
+    def __init__(self, amount:int) -> None:
+        self.amount = amount
+    def __str__(self) -> str:
+        return f"{self.description.value} : {self.amount}"
+

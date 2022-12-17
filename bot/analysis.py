@@ -18,6 +18,7 @@ class Analysis:
     autogen_url: str|None = None
     attachment_url: str|None = None
     fusion_id: str = "DEFAULT_VALUE"
+    transparent: bool = False
 
     def __init__(self, message:Message) -> None:
         self.message = message
