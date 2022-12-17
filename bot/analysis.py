@@ -58,6 +58,12 @@ class Analysis:
     def apply_image(self):
         if self.image is not None:
             bytes = self.image.tobytes()
+            
+            print("image", self.image)
+            print("bytes", bytes)
+
+
+
             self.file = File(bytes, filename="image.png")
             self.embed.set_image(url="attachment://image.png")
         elif self.autogen_url is not None:
