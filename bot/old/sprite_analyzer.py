@@ -1,14 +1,13 @@
-from os.path import join
-from os import sep as os_sep
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import traceback
-from PIL import Image
-from PIL import PyAccess
-from PIL.PngImagePlugin import PngImageFile
+from os import sep as os_sep
+from os.path import join
+
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
 import requests
 from enums import Description
-
+from PIL import Image, PyAccess
+from PIL.PngImagePlugin import PngImageFile
 
 BLACK_TRANSPARENCY = (0, 0, 0, 0)
 WHITE_TRANSPARENCY = (255, 255, 255, 0)

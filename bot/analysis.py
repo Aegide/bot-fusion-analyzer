@@ -1,9 +1,7 @@
+import utils
 from discord import Embed, Message
-from enums import Severity
+from enums import DiscordColour, Severity
 from issues import Issues
-from enums import DiscordColour
-import utils as utils
-
 
 DICT_SEVERITY_COLOUR = {
     Severity.accepted : DiscordColour.green,

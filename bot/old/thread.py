@@ -1,6 +1,5 @@
+import utils
 from discord import Member, Message, NotFound, TextChannel, Thread
-import bot.utils
-
 
 PREFIX = "//"
 ROLE_ID_SPRITE_MANAGER = 900867033175040101

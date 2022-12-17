@@ -1,6 +1,6 @@
 import json
-import sheet
 
+import sheet
 
 valid_value = "✓"
 no_value = ""

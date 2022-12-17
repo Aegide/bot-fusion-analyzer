@@ -1,19 +1,18 @@
 # coding: utf-8
 
 import os
-import discord
-from discord.user import User
-from discord.message import Message
-from discord.channel import TextChannel
-from discord.threads import Thread
-from discord.guild import Guild
-from discord import Client, PartialEmoji
-import bot.analyzer as analyzer
-from bot.analyzer import Analysis
-from bot.enums import Severity, Description, DiscordColour
-from bot.models import GlobalContext, ServerContext
-import bot.utils as utils
 
+import discord
+import utils
+from analyzer import Analysis, generate_analysis
+from discord import Client, PartialEmoji
+from discord.channel import TextChannel
+from discord.guild import Guild
+from discord.message import Message
+from discord.threads import Thread
+from discord.user import User
+from enums import Description, DiscordColour, Severity
+from models import GlobalContext, ServerContext
 
 ERROR_EMOJI_NAME = "NANI"
 ERROR_EMOJI_ID = f"<:{ERROR_EMOJI_NAME}:770390673664114689>"
@@ -120,7 +119,7 @@ async def send_test_embed(message):
 
 async def handle_sprite_gallery(message:Message):
     utils.log_event("SG>", message)
-    analysis = analyzer.generate_analysis(message)
+    analysis = generate_analysis(message)
     if analysis.severity is Severity.refused:
         # await message.add_reaction(ERROR_EMOJI)
         pass
@@ -129,7 +128,7 @@ async def handle_sprite_gallery(message:Message):
 
 async def handle_test_sprite_gallery(message:Message):
     utils.log_event("T-SG>", message)
-    analysis = analyzer.generate_analysis(message)
+    analysis = generate_analysis(message)
     if analysis.severity is Severity.refused:
         await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
     else:

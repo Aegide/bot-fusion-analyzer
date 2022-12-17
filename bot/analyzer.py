@@ -1,7 +1,7 @@
-from discord import Message
-from analysis import Analysis
 import analysis_content as analysis_content
 import analysis_sprite as analysis_sprite
+from analysis import Analysis
+from discord import Message
 
 
 def generate_analysis(message:Message):

@@ -1,8 +1,5 @@
-import os
 import unittest
 
-from PIL import Image
-from analysis_sprite import remove_useless_colors
 from utils import get_fusion_id_from_filename as gfiff
 
 UPPER_COLOR_LIMIT = 1000
@@ -28,20 +25,14 @@ class TestGalleryNames(unittest.TestCase):
         self.assertIsNone(gfiff("299.287.jpeg"))
 
 
-class TestColourAmount(unittest.TestCase):
-    def test_colour_amount(self):
-        sprites = os.listdir("fixtures")
-        for sprite in sprites:
-            sprite_path = os.path.join("fixtures", sprite)
-            with Image.open(sprite_path) as image:
-                colors = image.getcolors(UPPER_COLOR_LIMIT)
-                useful_colors = remove_useless_colors(colors)
-                amount = len(useful_colors)
-                print(" ")
-                print(sprite, amount, len(colors)/amount)
-                for color in colors:
-                    color_count, color_value = color
-                    print(f"{color_count} => {color_value}")
+# class TestColourAmount(unittest.TestCase):
+#     def test_colour_amount(self):
+#         sprites = os.listdir("fixtures")
+#         for sprite in sprites:
+#             sprite_path = os.path.join("fixtures", sprite)
+#             with Image.open(sprite_path) as image:
+#                 colors = image.getcolors(UPPER_COLOR_LIMIT)
+#                 useful_colors = remove_useless_colors(colors)
 
 if __name__ == '__main__':
     unittest.main()

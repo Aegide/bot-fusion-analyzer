@@ -1,8 +1,10 @@
+import utils
+from analysis import Analysis
 from discord import Message
 from enums import Severity
-from issues import DifferentSprite, EggSprite, IconSprite, MissingFilename, OutOfDex, CustomSprite, IncomprehensibleSprite, MissingSprite
-import utils as utils
-from analyzer import Analysis
+from issues import (CustomSprite, DifferentSprite, EggSprite, IconSprite,
+                    IncomprehensibleSprite, MissingFilename, MissingSprite,
+                    OutOfDex)
 
 
 def exists(value):

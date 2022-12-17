@@ -1,8 +1,6 @@
-from discord import Asset, ClientUser, Colour, Member, Message, Thread, User
 import re
 
-# from bot.main import get_user
-
+from discord import Asset, ClientUser, Member, Message, Thread, User
 
 PATTERN_ICON = r'[iI]con'
 PATTERN_CUSTOM = r'[cC]ustom'
