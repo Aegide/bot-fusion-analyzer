@@ -1,8 +1,8 @@
 import utils
-from discord import Embed, Message
+from discord import Embed, Message, File
 from enums import DiscordColour, Severity
 from issues import Issues
-
+from PIL.Image import Image
 DICT_SEVERITY_COLOUR = {
     Severity.accepted : DiscordColour.green,
     Severity.ignored : DiscordColour.orange,
@@ -15,10 +15,11 @@ class Analysis:
     issues: Issues 
     severity: Severity
     embed: Embed
+    fusion_id: str = "DEFAULT_VALUE"
     autogen_url: str|None = None
     attachment_url: str|None = None
-    fusion_id: str = "DEFAULT_VALUE"
-    transparent: bool = False
+    image: Image
+    file: File|None = None
 
     def __init__(self, message:Message) -> None:
         self.message = message
@@ -32,7 +33,7 @@ class Analysis:
         self.apply_colour()
         self.apply_author()
         self.apply_footer()
-        self.apply_autogen_url()
+        self.apply_image()
         self.apply_attachment_url()
 
     def apply_title(self):
@@ -54,8 +55,12 @@ class Analysis:
     def apply_footer(self):
         self.embed.set_footer(text=self.message.content)
 
-    def apply_autogen_url(self):
-        if self.autogen_url is not None:
+    def apply_image(self):
+        if self.image is not None:
+            bytes = self.image.tobytes()
+            self.file = File(bytes, filename="image.png")
+            self.embed.set_image(url="attachment://image.png")
+        elif self.autogen_url is not None:
             self.embed.set_image(url=self.autogen_url)
 
     def apply_attachment_url(self):

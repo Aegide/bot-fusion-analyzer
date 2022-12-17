@@ -62,7 +62,7 @@ class SpriteContext():
     def handle_sprite_transparency(self, analysis:Analysis):
         transparency_amount = self.highlight_transparency()
         if transparency_amount > TRANSPARENCY_LIMIT:
-            analysis.transparent = True
+            analysis.image = self.image
             analysis.issues.add(TransparencyAmount(transparency_amount))
 
     def highlight_transparency(self) -> int:
