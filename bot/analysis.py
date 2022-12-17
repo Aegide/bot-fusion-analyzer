@@ -18,7 +18,7 @@ class Analysis:
     fusion_id: str = "DEFAULT_VALUE"
     autogen_url: str|None = None
     attachment_url: str|None = None
-    image: Image
+    image: Image|None = None
     file: File|None = None
 
     def __init__(self, message:Message) -> None:
