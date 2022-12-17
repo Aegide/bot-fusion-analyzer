@@ -145,9 +145,15 @@ async def handle_test_sprite_gallery(message:Message):
     utils.log_event("T-SG>", message)
     analysis = generate_analysis(message)
     if analysis.severity is Severity.refused:
-        await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
+        if analysis.file is None:
+            await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
+        else:
+            await ctx().aegide.logs.send(file=analysis.file, embed=analysis.embed, content=ping_aegide)
     else:
-        await ctx().aegide.logs.send(embed=analysis.embed)
+        if analysis.file is None:
+            await ctx().aegide.logs.send(embed=analysis.embed)
+        else:
+            await ctx().aegide.logs.send(file=analysis.file, embed=analysis.embed, content=ping_aegide)
 
 
 def is_message_from_spritework_thread(message:Message):
