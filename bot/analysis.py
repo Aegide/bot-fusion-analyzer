@@ -56,17 +56,23 @@ class Analysis:
         self.embed.set_footer(text=self.message.content)
 
     def apply_image(self):
-        if self.image is not None:
-            bytes = self.image.tobytes()
-            
-            print("image", self.image)
-            print("bytes", bytes)
+        try:
+            if self.image is not None:
+                bytes = self.image.tobytes()
+                
+                print("image", self.image)
+                print("bytes", len(bytes))
+
+                file = File(bytes, filename="image.png")
+                print("file", file)
+                
+        except Exception as e:
+            print("vvv")
+            print(e)
+            print("^^^")
 
 
-
-            self.file = File(bytes, filename="image.png")
-            self.embed.set_image(url="attachment://image.png")
-        elif self.autogen_url is not None:
+        if self.autogen_url is not None:
             self.embed.set_image(url=self.autogen_url)
 
     def apply_attachment_url(self):
