@@ -1,7 +1,7 @@
 from typing import Any
 
 import requests
-from analyzer import Analysis
+from analysis import Analysis
 from discord import Message
 from enums import Severity
 from issues import AsepriteUser, ColorAmount, ColorExcess, InvalidSize
