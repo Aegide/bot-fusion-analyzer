@@ -16,7 +16,7 @@ TRANSPARENCY_LIMIT = 0
 
 colorType = int|tuple
 
-ASESPRITE_RATIO = 2
+ASESPRITE_RATIO = 3
 
 PINK = (255, 0, 255, 255)
 BLACK = (0, 0, 0, 255)

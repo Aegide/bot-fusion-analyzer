@@ -106,9 +106,9 @@ class AsepriteUser(Issue):
     description = Description.aseprite_user
     severity = Severity.refused
     def __init__(self, ratio:float) -> None:
-        self.ratio = ratio
+        self.ratio = int(ratio)
     def __str__(self) -> str:
-        return f"{self.description.value} (r: {self.ratio:.2f})"
+        return f"{self.description.value} (r{self.ratio})"
 
 
 class TransparencyAmount(Issue):
