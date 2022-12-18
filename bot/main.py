@@ -114,7 +114,7 @@ async def send_bot_logs(analysis:Analysis, author_id:int):
     else:
         await send_without_content(analysis)
     if analysis.file is not None:
-        await ctx().aegide.logs.send(file=analysis.file)
+        await ctx().pif.logs.send(file=analysis.file)
 
 
 async def send_with_content(analysis:Analysis, author_id:int):
