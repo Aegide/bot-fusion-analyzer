@@ -209,7 +209,7 @@ async def on_ready():
         await ctx().aegide.logs.send(file=file)
     except Exception as e:
         print(traceback.format_exc())
-        print(type(e))
+        # print(type(e))
 
 
 def get_pixels(image:Image.Image) -> PyAccess:
