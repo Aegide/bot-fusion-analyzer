@@ -114,9 +114,9 @@ async def send_bot_logs(analysis:Analysis, author_id:int):
 
 
 async def send_bonus_content(analysis:Analysis):
-    if analysis.transparency_embed is not None and analysis.file is not None:
-        await ctx().pif.logs.send(embed=analysis.transparency_embed, file=analysis.file)
-        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.file)
+    if analysis.transparency is True:
+        await ctx().pif.logs.send(embed=analysis.transparency_embed, file=analysis.transparency_file)
+        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.transparency_file)
 
 
 async def send_with_content(analysis:Analysis, author_id:int):
@@ -152,9 +152,9 @@ async def handle_test_sprite_gallery(message:Message):
         await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
     else:
         await ctx().aegide.logs.send(embed=analysis.embed)
-    if analysis.transparency_embed is not None and analysis.file is not None:
-        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.file)
-
+    if analysis.transparency is True:
+        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.transparency_file)
+ 
 
 
 def is_message_from_spritework_thread(message:Message):

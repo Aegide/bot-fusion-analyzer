@@ -19,8 +19,10 @@ class Analysis:
     autogen_url: str|None = None
     attachment_url: str|None = None
     image: Image|None = None
-    file: File|None = None
-    transparency_embed: Embed|None = None
+
+    transparency: bool = False
+    transparency_file: File
+    transparency_embed: Embed
 
     def __init__(self, message:Message) -> None:
         self.message = message
@@ -39,9 +41,10 @@ class Analysis:
         self.handle_bonus_embed()
 
     def handle_bonus_embed(self):
-        self.transparency_embed = Embed()
-        self.transparency_embed.colour = DiscordColour.pink.value
-        self.transparency_embed.set_image(url="attachment://image.png")
+        if self.transparency is True:
+            self.transparency_embed = Embed()
+            self.transparency_embed.colour = DiscordColour.pink.value
+            self.transparency_embed.set_image(url="attachment://image.png")
 
     def apply_title(self):
         if self.severity == Severity.accepted:
