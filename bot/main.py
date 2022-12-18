@@ -209,7 +209,7 @@ async def on_ready():
         await ctx().aegide.logs.send(file=file)
     except Exception as e:
         # print(traceback.format_exc())
-        print(type(e))
+        print(type(e.errno))  # type: ignore
         print("(ARGH)")
 
 
