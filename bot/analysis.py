@@ -22,7 +22,6 @@ class Analysis:
 
     transparency: bool = False
     transparency_image: Image
-    transparency_file: File
     transparency_embed: Embed
 
     def __init__(self, message:Message) -> None:
@@ -42,7 +41,7 @@ class Analysis:
         self.handle_bonus_embed()
 
 
-    def get_transparency_file(self):
+    def gen_transparency_file(self):
         if self.transparency_image is None:
             raise ValueError
         bytes = BytesIO()
