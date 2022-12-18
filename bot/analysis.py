@@ -1,3 +1,4 @@
+from io import BytesIO
 import utils
 from discord import Embed, Message, File
 from enums import DiscordColour, Severity
@@ -39,6 +40,15 @@ class Analysis:
         self.apply_image()
         self.apply_attachment_url()
         self.handle_bonus_embed()
+
+
+    def get_transparency_file(self) :
+        if self.image is None:
+            raise ValueError
+        bytes = BytesIO()
+        self.image.save(bytes, format="PNG")
+        bytes.seek(0)
+        return File(bytes, filename="image.png")
 
     def handle_bonus_embed(self):
         if self.transparency is True:
