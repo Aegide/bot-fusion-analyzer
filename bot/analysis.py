@@ -42,13 +42,17 @@ class Analysis:
         self.handle_bonus_embed()
 
 
-    def get_transparency_file(self) :
-        if self.image is None:
-            raise ValueError
-        bytes = BytesIO()
-        self.image.save(bytes, format="PNG")
-        bytes.seek(0)
-        return File(bytes, filename="image.png")
+    def get_transparency_file(self):
+        print(self.image)
+        print(self.transparency)
+        print(self.transparency_file)
+        print(self.transparency_embed)
+        # if self.image is None:
+        #     raise ValueError
+        # bytes = BytesIO()
+        # self.image.save(bytes, format="PNG")
+        # bytes.seek(0)
+        # return File(bytes, filename="image.png")
 
     def handle_bonus_embed(self):
         if self.transparency is True:
