@@ -20,9 +20,8 @@ class Analysis:
     autogen_url: str|None = None
     attachment_url: str|None = None
 
-    image: Image|None = None
-
     transparency: bool = False
+    transparency_image: Image
     transparency_file: File
     transparency_embed: Embed
 
@@ -44,16 +43,12 @@ class Analysis:
 
 
     def get_transparency_file(self):
-        print(self.image)
-        print(self.transparency)
-        print(self.transparency_file)
-        print(self.transparency_embed)
-        # if self.image is None:
-        #     raise ValueError
-        # bytes = BytesIO()
-        # self.image.save(bytes, format="PNG")
-        # bytes.seek(0)
-        # return File(bytes, filename="image.png")
+        if self.transparency_image is None:
+            raise ValueError
+        bytes = BytesIO()
+        self.transparency_image.save(bytes, format="PNG")
+        bytes.seek(0)
+        return File(bytes, filename="image.png")
 
     def handle_bonus_embed(self):
         if self.transparency is True:

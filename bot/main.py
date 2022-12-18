@@ -153,10 +153,9 @@ async def handle_test_sprite_gallery(message:Message):
     else:
         await ctx().aegide.logs.send(embed=analysis.embed)
     if analysis.transparency is True:
-        analysis.get_transparency_file()
-        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.transparency_file)
-        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.transparency_file)
-        analysis.get_transparency_file()
+        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.get_transparency_file())
+        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.get_transparency_file())
+        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.get_transparency_file())
 
 
 def is_message_from_spritework_thread(message:Message):
