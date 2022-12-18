@@ -154,6 +154,8 @@ async def handle_test_sprite_gallery(message:Message):
         await ctx().aegide.logs.send(embed=analysis.embed)
     if analysis.transparency is True:
         await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.transparency_file)
+        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.transparency_file)
+        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.transparency_file)
  
 
 
