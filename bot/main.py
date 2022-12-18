@@ -113,6 +113,8 @@ async def send_bot_logs(analysis:Analysis, author_id:int):
         await send_with_content(analysis, author_id)
     else:
         await send_without_content(analysis)
+    if analysis.file is not None:
+        await ctx().aegide.logs.send(file=analysis.file)
 
 
 async def send_with_content(analysis:Analysis, author_id:int):
@@ -139,6 +141,7 @@ async def handle_sprite_gallery(message:Message):
     if analysis.severity is Severity.refused:
         await message.add_reaction(ERROR_EMOJI)
     await send_bot_logs(analysis, message.author.id)
+    
 
 
 async def handle_test_sprite_gallery(message:Message):
