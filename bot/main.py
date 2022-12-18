@@ -2,6 +2,7 @@
 
 import base64
 import os
+import traceback
 
 import discord
 import utils
@@ -195,7 +196,7 @@ async def on_ready():
 
     print("\n\nReady! bot invite:\n\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot\n\n")
 
-    await ctx().aegide.logs.send(content=f"{os.listdir()}")
+    await ctx().aegide.logs.send(content="(OK)")
 
 
     
@@ -207,7 +208,9 @@ async def on_ready():
         file = discord.File(fp=my_string, filename="image.png")
         await ctx().aegide.logs.send(file=file)
     except Exception as e:
-        print(e, type(e))
+        print(traceback.format_exc())
+        print(type(e))
+
 
 def get_pixels(image:Image.Image) -> PyAccess:
     return image.load()  # type: ignore
