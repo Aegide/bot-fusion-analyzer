@@ -19,6 +19,7 @@ class Analysis:
     fusion_id: str = "DEFAULT_VALUE"
     autogen_url: str|None = None
     attachment_url: str|None = None
+
     image: Image|None = None
 
     transparency: bool = False

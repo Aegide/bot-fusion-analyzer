@@ -65,6 +65,7 @@ class SpriteContext():
         transparency_amount = self.highlight_transparency()
         if transparency_amount > TRANSPARENCY_LIMIT:
             analysis.transparency = True
+            analysis.image = self.image
             bytes = BytesIO()
             self.image.save(bytes, format="PNG")
             bytes.seek(0)
