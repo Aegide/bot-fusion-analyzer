@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import base64
+from io import BytesIO
 import os
 import traceback
 
@@ -198,18 +199,16 @@ async def on_ready():
 
     await ctx().aegide.logs.send(content="(OK)")
 
-
-    
-
     try:
         image = Image.open("fixtures/194.170.png")
-        # bytes = image.tobytes()
-        my_string = base64.b64encode(image.tobytes())
-        file = discord.File(fp=my_string, filename="image.png")
+        bytes = BytesIO()
+        image.save(bytes, format="PNG")
+        bytes.seek(0)
+        file = discord.File(bytes, filename="image.png")
         await ctx().aegide.logs.send(file=file)
     except Exception as e:
         # print(traceback.format_exc())
-        print(e.errno)  # type: ignore
+        print(e)  # type: ignore
         print("(ARGH)")
 
 
