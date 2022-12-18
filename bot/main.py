@@ -1,9 +1,6 @@
 # coding: utf-8
 
-import base64
-from io import BytesIO
 import os
-import traceback
 
 import discord
 import utils
@@ -113,7 +110,12 @@ async def send_bot_logs(analysis:Analysis, author_id:int):
         await send_with_content(analysis, author_id)
     else:
         await send_without_content(analysis)
+    await send_bonus_content(analysis)
+
+
+async def send_bonus_content(analysis:Analysis):
     if analysis.file is not None:
+        await ctx().aegide.logs.send(file=analysis.file)
         await ctx().pif.logs.send(file=analysis.file)
 
 
@@ -143,7 +145,6 @@ async def handle_sprite_gallery(message:Message):
     await send_bot_logs(analysis, message.author.id)
     
 
-
 async def handle_test_sprite_gallery(message:Message):
     utils.log_event("T-SG>", message)
     analysis = generate_analysis(message)
@@ -151,8 +152,8 @@ async def handle_test_sprite_gallery(message:Message):
         await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
     else:
         await ctx().aegide.logs.send(embed=analysis.embed)
-    if analysis.file is not None:
-        await ctx().aegide.logs.send(file=analysis.file)
+    if analysis.transparency_embed is not None and analysis.file is not None:
+        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.file)
 
 
 def is_message_from_spritework_thread(message:Message):

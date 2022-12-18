@@ -20,6 +20,7 @@ class Analysis:
     attachment_url: str|None = None
     image: Image|None = None
     file: File|None = None
+    transparency_embed: Embed|None = None
 
     def __init__(self, message:Message) -> None:
         self.message = message
@@ -35,6 +36,12 @@ class Analysis:
         self.apply_footer()
         self.apply_image()
         self.apply_attachment_url()
+        self.handle_bonus_embed()
+
+    def handle_bonus_embed(self):
+        self.transparency_embed = Embed()
+        self.transparency_embed.colour = DiscordColour.pink.value
+        self.transparency_embed.set_image(url="attachment://image.png")
 
     def apply_title(self):
         if self.severity == Severity.accepted:

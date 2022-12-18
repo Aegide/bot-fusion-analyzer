@@ -33,3 +33,4 @@ class DiscordColour(Enum):
     orange = discord.Colour(0xe67e22)
     red = discord.Colour(0xe74c3c)
     gray = discord.Colour(0xcdcdcd)
+    pink = discord.Colour(0xff00ff)
