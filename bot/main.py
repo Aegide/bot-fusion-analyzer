@@ -148,6 +148,8 @@ async def handle_test_sprite_gallery(message:Message):
         await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
     else:
         await ctx().aegide.logs.send(embed=analysis.embed)
+    if analysis.file is not None:
+        await ctx().aegide.logs.send(file=analysis.file)
 
 
 def is_message_from_spritework_thread(message:Message):
@@ -199,17 +201,6 @@ async def on_ready():
 
     await ctx().aegide.logs.send(content="(OK)")
 
-    try:
-        image = Image.open("fixtures/194.170.png")
-        bytes = BytesIO()
-        image.save(bytes, format="PNG")
-        bytes.seek(0)
-        file = discord.File(bytes, filename="image.png")
-        await ctx().aegide.logs.send(file=file)
-    except Exception as e:
-        # print(traceback.format_exc())
-        print(e)  # type: ignore
-        print("(ARGH)")
 
 
 def get_pixels(image:Image.Image) -> PyAccess:

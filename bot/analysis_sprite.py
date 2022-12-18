@@ -1,8 +1,10 @@
+from io import BytesIO
 from typing import Any
 
 import requests
 from analysis import Analysis
-from discord import Message
+from discord.message import Message
+from discord.file import File
 from enums import Severity
 from issues import (AsepriteUser, ColorAmount, ColorExcess, InvalidSize,
                     TransparencyAmount)
@@ -62,7 +64,10 @@ class SpriteContext():
     def handle_sprite_transparency(self, analysis:Analysis):
         transparency_amount = self.highlight_transparency()
         if transparency_amount > TRANSPARENCY_LIMIT:
-            analysis.image = self.image
+            bytes = BytesIO()
+            self.image.save(bytes, format="PNG")
+            bytes.seek(0)
+            analysis.file = File(bytes, filename="image.png")
             analysis.issues.add(TransparencyAmount(transparency_amount))
 
     def highlight_transparency(self) -> int:
