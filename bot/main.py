@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import base64
 import os
 
 import discord
@@ -11,8 +12,13 @@ from discord.guild import Guild
 from discord.message import Message
 from discord.threads import Thread
 from discord.user import User
+from discord.file import File
 from enums import Description, DiscordColour, Severity
 from models import GlobalContext, ServerContext
+
+
+from PIL import Image
+from PIL.PyAccess import PyAccess
 
 ERROR_EMOJI_NAME = "NANI"
 ERROR_EMOJI_ID = f"<:{ERROR_EMOJI_NAME}:770390673664114689>"
@@ -190,6 +196,21 @@ async def on_ready():
     print("\n\nReady! bot invite:\n\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot\n\n")
 
     await ctx().aegide.logs.send(content=f"{os.listdir()}")
+
+
+    
+
+    try:
+        image = Image.open("fixtures/194.170.png")
+        # bytes = image.tobytes()
+        my_string = base64.b64encode(image.tobytes())
+        file = discord.File(fp=my_string, filename="image.png")
+        await ctx().aegide.logs.send(file=file)
+    except Exception as e:
+        print(e)
+
+def get_pixels(image:Image.Image) -> PyAccess:
+    return image.load()  # type: ignore
 
 
 @bot.event
