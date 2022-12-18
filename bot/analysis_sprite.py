@@ -18,7 +18,7 @@ TRANSPARENCY_LIMIT = 0
 
 colorType = int|tuple
 
-ASESPRITE_RATIO = 3
+ASEPRITE_RATIO = 3
 
 PINK = (255, 0, 255, 255)
 BLACK = (0, 0, 0, 255)
@@ -57,9 +57,9 @@ class SpriteContext():
             analysis.issues.add(ColorExcess(COLOR_LIMIT))
 
     def handle_aseprite(self, analysis:Analysis):
-        asesprite_ratio = self.useless_amount/self.useful_amount
-        if asesprite_ratio > ASESPRITE_RATIO:
-            analysis.issues.add(AsepriteUser(asesprite_ratio))
+        aseprite_ratio = self.useless_amount/self.useful_amount
+        if aseprite_ratio > ASEPRITE_RATIO:
+            analysis.issues.add(AsepriteUser(aseprite_ratio))
 
     def handle_sprite_transparency(self, analysis:Analysis):
         transparency_amount = self.highlight_transparency()

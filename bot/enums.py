@@ -19,7 +19,7 @@ class Description(str, Enum):
     egg                 = "Egg sprite"
     error               = "Incomprehensible sprite"
     test                = "Description test"
-    aseprite_user       = "Asesprite user detected"
+    aseprite_user       = "Aseprite user detected"
 
 
 class Severity(Enum):
