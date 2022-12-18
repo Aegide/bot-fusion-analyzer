@@ -189,7 +189,7 @@ async def on_ready():
 
     print("\n\nReady! bot invite:\n\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot\n\n")
 
-    await ctx().aegide.logs.send(content=f"{os.listdir}")
+    await ctx().aegide.logs.send(content=f"{os.listdir()}")
 
 
 @bot.event
