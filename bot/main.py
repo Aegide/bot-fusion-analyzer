@@ -137,15 +137,9 @@ async def handle_test_sprite_gallery(message:Message):
     utils.log_event("T-SG>", message)
     analysis = generate_analysis(message)
     if analysis.severity is Severity.refused:
-        if analysis.file is None:
-            await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
-        else:
-            await ctx().aegide.logs.send(file=analysis.file, embed=analysis.embed, content=ping_aegide)
+        await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
     else:
-        if analysis.file is None:
-            await ctx().aegide.logs.send(embed=analysis.embed)
-        else:
-            await ctx().aegide.logs.send(file=analysis.file, embed=analysis.embed, content=ping_aegide)
+        await ctx().aegide.logs.send(embed=analysis.embed)
 
 
 def is_message_from_spritework_thread(message:Message):
@@ -194,6 +188,8 @@ async def on_ready():
     bot_context = BotContext(bot)
 
     print("\n\nReady! bot invite:\n\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot\n\n")
+
+    await ctx().aegide.logs.send(content="(ok)")
 
 
 @bot.event
