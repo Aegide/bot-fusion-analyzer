@@ -207,7 +207,7 @@ async def on_ready():
         file = discord.File(fp=my_string, filename="image.png")
         await ctx().aegide.logs.send(file=file)
     except Exception as e:
-        print(e)
+        print(e, type(e))
 
 def get_pixels(image:Image.Image) -> PyAccess:
     return image.load()  # type: ignore
