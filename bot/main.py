@@ -208,8 +208,9 @@ async def on_ready():
         file = discord.File(fp=my_string, filename="image.png")
         await ctx().aegide.logs.send(file=file)
     except Exception as e:
-        print(traceback.format_exc())
+        # print(traceback.format_exc())
         # print(type(e))
+        print("(ARGH)")
 
 
 def get_pixels(image:Image.Image) -> PyAccess:
