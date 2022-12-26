@@ -66,6 +66,8 @@ class SpriteContext():
         if transparency_amount > TRANSPARENCY_LIMIT:
             analysis.transparency = True
             analysis.transparency_image = self.image
+            if analysis.severity is not Severity.refused:
+                analysis.severity = Severity.controversial
             analysis.issues.add(TransparencyAmount(transparency_amount))
 
     def highlight_transparency(self) -> int:

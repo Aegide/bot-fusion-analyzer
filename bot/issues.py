@@ -104,7 +104,7 @@ class ColorExcess(Issue):
 
 class AsepriteUser(Issue):
     description = Description.aseprite_user
-    severity = Severity.refused
+    severity = Severity.accepted
     def __init__(self, ratio:float) -> None:
         self.ratio = int(ratio)
     def __str__(self) -> str:
@@ -113,7 +113,7 @@ class AsepriteUser(Issue):
 
 class TransparencyAmount(Issue):
     description = Description.transparency_amount
-    severity = Severity.accepted
+    severity = Severity.controversial
     def __init__(self, amount:int) -> None:
         self.amount = amount
     def __str__(self) -> str:
