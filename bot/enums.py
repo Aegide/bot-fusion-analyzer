@@ -23,14 +23,15 @@ class Description(str, Enum):
 
 
 class Severity(Enum):
-    accepted = "Accepted"
-    ignored = "Ignored"
-    refused = "Refused"
+    accepted        = "Accepted"
+    ignored         = "Ignored"
+    controversial   = "Controversial"
+    refused         = "Refused"
 
 
 class DiscordColour(Enum):
-    green = discord.Colour(0x2ecc71)
-    orange = discord.Colour(0xe67e22)
-    red = discord.Colour(0xe74c3c)
-    gray = discord.Colour(0xcdcdcd)
-    pink = discord.Colour(0xff00ff)
+    green   = discord.Colour(0x2ecc71)
+    orange  = discord.Colour(0xe67e22)
+    red     = discord.Colour(0xe74c3c)
+    gray    = discord.Colour(0xcdcdcd)
+    pink    = discord.Colour(0xff00ff)

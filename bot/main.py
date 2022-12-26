@@ -11,7 +11,6 @@ from discord.guild import Guild
 from discord.message import Message
 from discord.threads import Thread
 from discord.user import User
-from discord.file import File
 from enums import Description, DiscordColour, Severity
 from models import GlobalContext, ServerContext
 
@@ -22,6 +21,7 @@ from PIL.PyAccess import PyAccess
 ERROR_EMOJI_NAME = "NANI"
 ERROR_EMOJI_ID = f"<:{ERROR_EMOJI_NAME}:770390673664114689>"
 ERROR_EMOJI = PartialEmoji(name=ERROR_EMOJI_NAME).from_str(ERROR_EMOJI_ID)
+MAX_SEVERITY = [Severity.refused, Severity.controversial] 
 
 
 intents = discord.Intents.default()
@@ -106,7 +106,7 @@ def ctx()->GlobalContext:
 
 
 async def send_bot_logs(analysis:Analysis, author_id:int):
-    if analysis.severity is Severity.refused:
+    if analysis.severity in MAX_SEVERITY:
         await send_with_content(analysis, author_id)
     else:
         await send_without_content(analysis)
@@ -140,7 +140,7 @@ async def send_test_embed(message):
 async def handle_sprite_gallery(message:Message):
     utils.log_event("SG>", message)
     analysis = generate_analysis(message)
-    if analysis.severity is Severity.refused:
+    if analysis.severity in MAX_SEVERITY:
         await message.add_reaction(ERROR_EMOJI)
     await send_bot_logs(analysis, message.author.id)
     
@@ -148,7 +148,7 @@ async def handle_sprite_gallery(message:Message):
 async def handle_test_sprite_gallery(message:Message):
     utils.log_event("T-SG>", message)
     analysis = generate_analysis(message)
-    if analysis.severity is Severity.refused:
+    if analysis.severity in MAX_SEVERITY:
         await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
     else:
         await ctx().aegide.logs.send(embed=analysis.embed)

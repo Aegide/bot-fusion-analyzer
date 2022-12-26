@@ -7,6 +7,7 @@ from PIL.Image import Image
 DICT_SEVERITY_COLOUR = {
     Severity.accepted : DiscordColour.green,
     Severity.ignored : DiscordColour.orange,
+    Severity.controversial : DiscordColour.pink,
     Severity.refused : DiscordColour.red
 }
 
