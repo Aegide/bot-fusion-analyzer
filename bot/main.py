@@ -140,7 +140,7 @@ async def send_test_embed(message):
 async def handle_sprite_gallery(message:Message):
     utils.log_event("SG>", message)
     analysis = generate_analysis(message)
-    if analysis.severity in MAX_SEVERITY:
+    if analysis.severity is Severity.refused:
         await message.add_reaction(ERROR_EMOJI)
     await send_bot_logs(analysis, message.author.id)
     
