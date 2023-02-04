@@ -140,10 +140,10 @@ async def send_test_embed(message):
 async def handle_sprite_gallery(message:Message):
     utils.log_event("SG>", message)
     analysis = generate_analysis(message)
-    if analysis.severity is Severity.refused:
+    if analysis.severity in MAX_SEVERITY:
         await message.add_reaction(ERROR_EMOJI)
     await send_bot_logs(analysis, message.author.id)
-    
+
 
 async def handle_test_sprite_gallery(message:Message):
     utils.log_event("T-SG>", message)
@@ -240,7 +240,7 @@ async def on_message(message:Message):
         else:
             await handle_rest(message)
 
- 
+
 async def handle_rest(_message:Message):
     # if utils.is_message_from_spritework_thread(message):
     #     await thread.handle_spritework(message)
@@ -272,4 +272,3 @@ if sheet_disabled or sheet.init(worksheet_name):
 else:
     print("FAILED TO CONNECT TO GSHEET")
 """
-
