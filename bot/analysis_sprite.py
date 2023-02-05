@@ -1,10 +1,7 @@
-from io import BytesIO
-from typing import Any
 
 import requests
 from analysis import Analysis
 from discord.message import Message
-from discord.file import File
 from enums import Severity
 from issues import (AsepriteUser, ColorAmount, ColorExcess, InvalidSize,
                     TransparencyAmount)

@@ -5,7 +5,7 @@ import os
 import discord
 import utils
 from analyzer import Analysis, generate_analysis
-from discord import Client, PartialEmoji
+from discord import Client, PartialEmoji, app_commands
 from discord.channel import TextChannel
 from discord.guild import Guild
 from discord.message import Message
@@ -13,8 +13,6 @@ from discord.threads import Thread
 from discord.user import User
 from enums import Description, DiscordColour, Severity
 from models import GlobalContext, ServerContext
-
-
 from PIL import Image
 from PIL.PyAccess import PyAccess
 
@@ -29,6 +27,7 @@ intents.guild_messages = True
 intents.members = True
 intents.message_content = True
 bot = discord.Client(intents=intents)
+tree = app_commands.CommandTree(bot)
 
 
 bot_id = None
@@ -130,13 +129,6 @@ async def send_without_content(analysis:Analysis):
     await ctx().pif.logs.send(embed=analysis.embed)
 
 
-async def send_test_embed(message):
-    utils.log_event("T>", message)
-    embed = discord.Embed(title="Title test", colour=DiscordColour.gray.value, description=Description.test.value)
-    embed.set_thumbnail(url=bot_avatar_url)
-    await ctx().aegide.logs.send(embed=embed)
-
-
 async def handle_sprite_gallery(message:Message):
     utils.log_event("SG>", message)
     analysis = generate_analysis(message)
@@ -170,21 +162,17 @@ def is_thread_from_spritework(thread:Thread):
     # return is_spritework_pif or is_spritework_aegide
     return False
 
-def get_help_content():
-    help_content = """
-    hello - makes the bot say "hello"
-test - sends a test embed message
-add - turns a channel into a "log channel"
-remove - turns a "log channel" into a channel
-update - does nothing, yet
-aegide - pings Aegide
-help - shows this information
-    """
-    return help_content
+
+@tree.command(name="help", description="Get some help")
+async def chat(interaction: discord.Interaction):
+    if interaction.user == bot.user:
+        return
+    await interaction.response.send_message("You can contact Aegide, if you need help with anything related to the fusion bot")
 
 
 @bot.event
 async def on_ready():
+    await tree.sync()
 
     global bot_id
     app_info = await bot.application_info()
@@ -234,9 +222,9 @@ CHANNEL_HANDLER = {
 @bot.event
 async def on_message(message:Message):
     if utils.is_message_from_human(message, bot_id):
-        channel_handler = CHANNEL_HANDLER.get(message.channel.id)
-        if channel_handler is not None:
-            await channel_handler(message)
+        message_handler = CHANNEL_HANDLER.get(message.channel.id)
+        if message_handler is not None:
+            await message_handler(message)
         else:
             await handle_rest(message)
 
