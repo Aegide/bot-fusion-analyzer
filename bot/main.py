@@ -114,18 +114,18 @@ async def send_bot_logs(analysis:Analysis, author_id:int):
 
 async def send_bonus_content(analysis:Analysis):
     if analysis.transparency is True:
-        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
+        # await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
         await ctx().pif.logs.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
 
 
 async def send_with_content(analysis:Analysis, author_id:int):
     ping_owner = f"<@!{author_id}>"
-    await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
+    # await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
     await ctx().pif.logs.send(embed=analysis.embed, content=ping_owner)
 
 
 async def send_without_content(analysis:Analysis):
-    await ctx().aegide.logs.send(embed=analysis.embed)
+    # await ctx().aegide.logs.send(embed=analysis.embed)
     await ctx().pif.logs.send(embed=analysis.embed)
 
 
