@@ -221,12 +221,22 @@ CHANNEL_HANDLER = {
 
 @bot.event
 async def on_message(message:Message):
-    if utils.is_message_from_human(message, bot_id):
-        message_handler = CHANNEL_HANDLER.get(message.channel.id)
-        if message_handler is not None:
-            await message_handler(message)
-        else:
-            await handle_rest(message)
+    try:
+        if utils.is_message_from_human(message, bot_id):
+            message_handler = CHANNEL_HANDLER.get(message.channel.id)
+            if message_handler is not None:
+                await message_handler(message)
+            else:
+                await handle_rest(message)
+    except Exception as message_exception:
+        print(" ")
+        print("message_exception")
+        print(message_exception)
+        print(" ")
+        print("message")
+        print(message)
+        print(" ")
+        raise Exception from message_exception
 
 
 async def handle_rest(_message:Message):
