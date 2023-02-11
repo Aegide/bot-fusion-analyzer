@@ -68,21 +68,25 @@ class SpriteContext():
             analysis.issues.add(TransparencyAmount(transparency_amount))
 
     def highlight_transparency(self) -> int:
+        i, j = -1, -1
         transparency_amount = 0
         first_pixel = self.pixels[0, 0]
         if is_indexed(first_pixel):
             return transparency_amount
-        for i in range(0, 288):
-            for j in range(0, 288):
-                color = self.pixels[i, j]
-                alpha = get_alpha(color)
-                if is_half_transparent(alpha):
-                    self.pixels[i, j] = PINK
-                    transparency_amount += 1
-                elif not is_transparent(alpha):
-                    self.pixels[i, j] = BLACK
-                else:
-                    self.pixels[i, j] = WHITE
+        try:
+            for i in range(0, 288):
+                for j in range(0, 288):
+                    color = self.pixels[i, j]
+                    alpha = get_alpha(color)
+                    if is_half_transparent(alpha):
+                        self.pixels[i, j] = PINK
+                        transparency_amount += 1
+                    elif not is_transparent(alpha):
+                        self.pixels[i, j] = BLACK
+                    else:
+                        self.pixels[i, j] = WHITE
+        except IndexError as index_error:
+            raise IndexError(i, j) from index_error
         return transparency_amount
 
 

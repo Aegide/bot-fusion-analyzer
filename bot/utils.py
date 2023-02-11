@@ -36,10 +36,10 @@ def _log_thread(decorator:str, thread:Thread):
 
 
 def _log_message(decorator:str, message:Message):
-    print(decorator, message.author.name, message.content)
+    print(f"{decorator} [{message.author.name}] {message.content}")
 
 
-# is_message_not_from_the_fusion_bot
+# is_message_not_from_a_bot
 def is_message_from_human(message:Message, fusion_bot_id:int|None):
     return message.author.id != fusion_bot_id and message.author.id != YAGPDB_ID
 
