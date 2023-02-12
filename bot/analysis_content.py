@@ -33,14 +33,15 @@ class ContentContext():
             analysis.issues.add(CustomSprite())
         else:
             analysis.issues.add(IncomprehensibleSprite())
-            filename = analysis.message.attachments[0].filename
+            filename = utils.get_filename(analysis)
             analysis.issues.add(FileName(filename))
             
-
     def handle_one_value(self, analysis:Analysis):
         if self.content_fusion_id is not None:
             analysis.severity = Severity.refused
             analysis.issues.add(MissingFilename())
+            filename = utils.get_filename(analysis)
+            analysis.issues.add(FileName(filename))
             self.handle_dex_verification(analysis, self.content_fusion_id)
         elif self.filename_fusion_id is not None:
             analysis.fusion_id = self.filename_fusion_id

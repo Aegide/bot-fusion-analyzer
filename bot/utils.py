@@ -99,6 +99,14 @@ def get_display_avatar(user: User|Member|ClientUser) -> Asset:
     return user.display_avatar.with_format("png").with_size(256)
 
 
+def extract_fusion_id_from_filename(analysis:Analysis):
+    fusion_id = None
+    if have_attachment(analysis):
+        filename = get_filename(analysis)
+        fusion_id = get_fusion_id_from_filename(filename)
+    return fusion_id
+
+
 def get_fusion_id_from_filename(filename:str):
     fusion_id = None
     result = re.match(STRICT_PATTERN_FUSION_ID, filename)
@@ -111,22 +119,13 @@ def get_fusion_id_from_filename(filename:str):
     return fusion_id
 
 
+def extract_fusion_id_from_content(analysis:Analysis):
+    return get_fusion_id_from_text(analysis.message.content)
+
+
 def get_fusion_id_from_text(text:str):
     fusion_id = None
     result = re.search(LAZY_PATTERN_FUSION_ID, text)
     if result:
         fusion_id = result[0]
     return fusion_id
-
-
-def extract_fusion_id_from_filename(analysis:Analysis):
-    fusion_id = None
-    if have_attachment(analysis):
-        filename = get_filename(analysis)
-        fusion_id = get_fusion_id_from_filename(filename)
-    return fusion_id
-
-
-def extract_fusion_id_from_content(analysis:Analysis):
-    return get_fusion_id_from_text(analysis.message.content)
-
