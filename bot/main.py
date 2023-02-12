@@ -53,6 +53,9 @@ id_channel_logs_pif = 999653562202214450
 # id_channel_spritework_pif = 307020509856530434
 
 
+TICKET_CATEGORY_ID = 1073799466773127178
+
+
 def get_channel_from_id(server:Guild, channel_id) -> TextChannel :
     channel = server.get_channel(channel_id)
     if channel is None:
@@ -213,21 +216,15 @@ async def on_guild_remove(guild):
     await ctx().aegide.logs.send(embed=embed)
 
 
-CHANNEL_HANDLER = {
-    id_channel_gallery_pif:handle_sprite_gallery,
-    id_channel_gallery_aegide:handle_test_sprite_gallery
-}
-
-
 @bot.event
 async def on_message(message:Message):
     try:
         if utils.is_message_from_human(message, bot_id):
-            message_handler = CHANNEL_HANDLER.get(message.channel.id)
-            if message_handler is not None:
-                await message_handler(message)
-            else:
-                await handle_rest(message)
+            if is_sprite_gallery(message):
+                await handle_sprite_gallery(message)
+            elif is_mentioning_ticket(message):
+                await handle_ticket(message)
+
     except Exception as message_exception:
         print(" ")
         print("message_exception")
@@ -239,10 +236,34 @@ async def on_message(message:Message):
         raise Exception from message_exception
 
 
-async def handle_rest(_message:Message):
-    # if utils.is_message_from_spritework_thread(message):
-    #     await thread.handle_spritework(message)
-    pass
+def is_sprite_gallery(message:Message):
+    return message.channel.id == id_channel_gallery_pif
+
+
+def is_mentioning_ticket(message:Message):
+    return is_ticket_category(message) and is_mentioning_bot(message)
+
+
+def is_ticket_category(message:Message):
+    result = False
+    try:
+        result = message.channel.category_id == TICKET_CATEGORY_ID  # type: ignore
+    except:
+        pass
+    return result
+
+
+def is_mentioning_bot(message:Message):
+    result = False
+    for user in message.mentions:
+        if bot_id == user.id:
+            result = True
+            break
+    return result
+
+
+async def handle_ticket(message:Message):
+    print(message)
 
 
 def get_user(user_id) -> (User | None):
