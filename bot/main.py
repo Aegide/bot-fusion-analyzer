@@ -143,10 +143,7 @@ async def handle_sprite_gallery(message:Message):
 async def handle_test_sprite_gallery(message:Message):
     utils.log_event("T-SG>", message)
     analysis = generate_analysis(message)
-    if analysis.severity in MAX_SEVERITY:
-        await ctx().aegide.logs.send(embed=analysis.embed, content=ping_aegide)
-    else:
-        await ctx().aegide.logs.send(embed=analysis.embed)
+    await ctx().aegide.logs.send(embed=analysis.embed)
     if analysis.transparency is True:
         await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
 
@@ -170,7 +167,7 @@ def is_thread_from_spritework(thread:Thread):
 async def chat(interaction: discord.Interaction):
     if interaction.user == bot.user:
         return
-    await interaction.response.send_message("You can contact Aegide, if you need help with anything related to the fusion bot")
+    await interaction.response.send_message("You can contact Aegide, if you need help with anything related to the fusion bot.")
 
 
 @bot.event
@@ -241,7 +238,7 @@ def is_sprite_gallery(message:Message):
 
 
 def is_mentioning_ticket(message:Message):
-    return is_ticket_category(message) and is_mentioning_bot(message)
+    return is_ticket_category(message) and is_reply(message) and is_mentioning_bot(message)
 
 
 def is_ticket_category(message:Message):
@@ -251,6 +248,10 @@ def is_ticket_category(message:Message):
     except:
         pass
     return result
+
+
+def is_reply(message:Message):
+    return message.reference is not None
 
 
 def is_mentioning_bot(message:Message):
@@ -263,7 +264,19 @@ def is_mentioning_bot(message:Message):
 
 
 async def handle_ticket(message:Message):
-    print(message)
+    reply_message = await get_reply_message(message)
+    await handle_test_sprite_gallery(reply_message)
+
+
+async def get_reply_message(message:Message):
+    if message.reference is None:
+        raise RuntimeError(message)
+
+    reply_id = message.reference.message_id
+    if reply_id is None:
+        raise RuntimeError(message)
+
+    return await message.channel.fetch_message(reply_id)
 
 
 def get_user(user_id) -> (User | None):
