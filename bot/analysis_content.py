@@ -4,7 +4,7 @@ from discord import Message
 from enums import Severity
 from issues import (CustomSprite, DifferentSprite, EggSprite, IconSprite,
                     IncomprehensibleSprite, MissingFilename, MissingSprite,
-                    OutOfDex)
+                    OutOfDex, FileName)
 
 
 def exists(value):
@@ -34,6 +34,9 @@ class ContentContext():
             analysis.issues.add(CustomSprite())
         else:
             analysis.issues.add(IncomprehensibleSprite())
+            filename = analysis.message.attachments[0].filename
+            analysis.issues.add(FileName(filename))
+            
 
     def handle_one_value(self, analysis:Analysis):
         if self.content_fusion_id is not None:

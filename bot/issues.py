@@ -4,7 +4,6 @@ from enums import Description, Severity
 class Issue():
     description: Description
     severity: Severity
-    mention_aegide: bool = False
     def __str__(self) -> str:
         return self.description.value
 
@@ -61,9 +60,8 @@ class CustomSprite(Issue):
 
 
 class IncomprehensibleSprite(Issue):
-    description = Description.error
+    description = Description.incomprehensible
     severity = Severity.ignored
-    mention_aegide: bool = True
 
 
 class OutOfDex(Issue):
@@ -82,6 +80,15 @@ class InvalidSize(Issue):
         self.size = size
     def __str__(self) -> str:
         return f"{self.description.value} {self.size}"
+
+
+class FileName(Issue):
+    description = Description.file_name
+    severity = Severity.accepted
+    def __init__(self, filename:str) -> None:
+        self.filename = filename
+    def __str__(self) -> str:
+        return f"{self.description.value} : {self.filename}"
 
 
 class ColorAmount(Issue):
