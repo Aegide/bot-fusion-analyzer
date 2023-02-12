@@ -148,6 +148,14 @@ async def handle_test_sprite_gallery(message:Message):
         await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
 
 
+async def handle_ticket_gallery(message:Message):
+    utils.log_event("T>", message)
+    analysis = generate_analysis(message)
+    await message.channel.send(embed=analysis.embed)
+    if analysis.transparency is True:
+        await message.channel.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
+
+
 def is_message_from_spritework_thread(message:Message):
     result = False
     thread = utils.get_thread(message)
@@ -265,7 +273,7 @@ def is_mentioning_bot(message:Message):
 
 async def handle_ticket(message:Message):
     reply_message = await get_reply_message(message)
-    await handle_test_sprite_gallery(reply_message)
+    await handle_ticket_gallery(reply_message)
 
 
 async def get_reply_message(message:Message):
