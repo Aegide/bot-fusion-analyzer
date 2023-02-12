@@ -32,6 +32,7 @@ class SpriteContext():
     def handle_sprite_size(self, analysis:Analysis):
         size = self.image.size
         if size != VALID_SIZE:
+            analysis.size_issue = True
             analysis.severity = Severity.refused
             analysis.issues.add(InvalidSize(size))
 
@@ -59,13 +60,14 @@ class SpriteContext():
             analysis.issues.add(AsepriteUser(aseprite_ratio))
 
     def handle_sprite_transparency(self, analysis:Analysis):
-        transparency_amount = self.highlight_transparency()
-        if transparency_amount > TRANSPARENCY_LIMIT:
-            analysis.transparency = True
-            analysis.transparency_image = self.image
-            if analysis.severity is not Severity.refused:
-                analysis.severity = Severity.controversial
-            analysis.issues.add(TransparencyAmount(transparency_amount))
+        if analysis.size_issue is False:
+            transparency_amount = self.highlight_transparency()
+            if transparency_amount > TRANSPARENCY_LIMIT:
+                analysis.transparency = True
+                analysis.transparency_image = self.image
+                if analysis.severity is not Severity.refused:
+                    analysis.severity = Severity.controversial
+                analysis.issues.add(TransparencyAmount(transparency_amount))
 
     def highlight_transparency(self) -> int:
         i, j = -1, -1

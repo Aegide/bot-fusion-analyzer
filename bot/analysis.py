@@ -21,6 +21,7 @@ class Analysis:
     autogen_url: str|None = None
     attachment_url: str|None = None
 
+    size_issue: bool = False
     transparency: bool = False
     transparency_image: Image
     transparency_embed: Embed
