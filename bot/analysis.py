@@ -1,6 +1,8 @@
 from io import BytesIO
 import utils
-from discord import Embed, Message, File
+from discord.message import Attachment, Message
+from discord.embeds import Embed
+from discord.file import File
 from enums import DiscordColour, Severity
 from issues import Issues
 from PIL.Image import Image
@@ -18,18 +20,22 @@ class Analysis:
     severity: Severity
     embed: Embed
     fusion_id: str = "DEFAULT_VALUE"
+
     autogen_url: str|None = None
     attachment_url: str|None = None
+    specific_attachment: Attachment|None = None
 
     size_issue: bool = False
     transparency: bool = False
     transparency_image: Image
     transparency_embed: Embed
 
-    def __init__(self, message:Message) -> None:
+    def __init__(self, message:Message, specific_attachment:Attachment|None) -> None:
         self.message = message
+        self.specific_attachment = specific_attachment
         self.issues = Issues()
         self.severity = Severity.accepted
+        
 
     def generate_embed(self):
         self.embed = Embed()
@@ -41,7 +47,6 @@ class Analysis:
         self.apply_image()
         self.apply_attachment_url()
         self.handle_bonus_embed()
-
 
     def gen_transparency_file(self):
         if self.transparency_image is None:

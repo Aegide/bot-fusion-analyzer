@@ -150,10 +150,11 @@ async def handle_test_sprite_gallery(message:Message):
 
 async def handle_ticket_gallery(message:Message):
     utils.log_event("T>", message)
-    analysis = generate_analysis(message)
-    await message.channel.send(embed=analysis.embed)
-    if analysis.transparency is True:
-        await message.channel.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
+    for specific_attachment in message.attachments:
+        analysis = generate_analysis(message, specific_attachment)
+        await message.channel.send(embed=analysis.embed)
+        if analysis.transparency is True:
+            await message.channel.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
 
 
 def is_message_from_spritework_thread(message:Message):
@@ -232,13 +233,9 @@ async def on_message(message:Message):
 
     except Exception as message_exception:
         print(" ")
-        print("message_exception")
-        print(message_exception)
-        print(" ")
-        print("message")
         print(message)
         print(" ")
-        raise Exception from message_exception
+        raise RuntimeError from message_exception
 
 
 def is_sprite_gallery(message:Message):

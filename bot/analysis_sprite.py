@@ -23,9 +23,10 @@ WHITE = (255, 255, 255, 255)
 
 
 class SpriteContext():
-    def __init__(self, message:Message):
-        attachment_url = message.attachments[0].url
-        raw_data = requests.get(attachment_url, stream=True).raw
+    def __init__(self, analysis:Analysis):
+        if analysis.attachment_url is None:
+            raise RuntimeError()
+        raw_data = requests.get(analysis.attachment_url, stream=True).raw
         self.image = open(raw_data)
         self.pixels = get_pixels(self.image)
 
@@ -135,21 +136,7 @@ def main(analysis:Analysis):
 
 
 def handle_valid_sprite(analysis:Analysis):
-    content_context = SpriteContext(analysis.message)
+    content_context = SpriteContext(analysis)
     content_context.handle_sprite_size(analysis)
     content_context.handle_sprite_colours(analysis)
     content_context.handle_sprite_transparency(analysis)
-
-
-    # """
-    # if valid_fusion:
-    #     results = sprite_analyzer.test_sprite(attachment_url)
-    #     if utils.interesting_results(results):
-    #         valid_fusion, description, warning, file_name = results
-    #         if file_name is not None:
-    #             file_path = os.path.join(os.getcwd(), "tmp", file_name)
-    #             file = discord.File(file_path, filename="image.png")
-    #             message_file = await sprite_stash_channel.send(file=file)
-    #             os.remove(file_path)
-    #             autogen_url = message_file.attachments[0].url
-    # """

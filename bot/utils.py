@@ -1,6 +1,13 @@
 import re
 
-from discord import Asset, ClientUser, Member, Message, Thread, User
+from discord.message import Message
+from discord.asset import Asset
+from discord.user import User, ClientUser
+from discord.member import Member
+from discord.threads import Thread
+
+
+from bot.analysis import Analysis
 
 PATTERN_ICON = r'[iI]con'
 PATTERN_CUSTOM = r'[cC]ustom'
@@ -20,19 +27,6 @@ YAGPDB_ID = 204255221017214977
 def log_event(decorator:str, event:Message|Thread):
     if isinstance(event, Message):
         _log_message(decorator, event)
-    elif isinstance(event, Thread):
-        _log_thread(decorator, event)
-    else:
-        pass
-
-
-def _log_thread(decorator:str, thread:Thread):
-    pass
-    # thread_owner_name = thread.owner_id
-    # thread_owner = get_user(thread.owner_id)
-    # if thread_owner is not None:
-    #     thread_owner_name = thread_owner.name
-    # print(decorator, thread_owner_name, ":T:", thread.name)
 
 
 def _log_message(decorator:str, message:Message):
@@ -51,12 +45,16 @@ def get_thread(message:Message) -> (Thread | None):
     return None
 
 
-def get_filename(message:Message):
-    return message.attachments[0].filename
+def get_filename(analysis:Analysis):
+    if analysis.specific_attachment is None:
+        return  analysis.message.attachments[0].filename
+    return analysis.specific_attachment.filename
 
 
-def get_attachment_url(message:Message):
-    return message.attachments[0].url
+def get_attachment_url(analysis:Analysis):
+    if analysis.specific_attachment is None:
+        return  analysis.message.attachments[0].url
+    return analysis.specific_attachment.url
 
 
 def interesting_results(results:list):
@@ -83,8 +81,8 @@ def have_egg_in_message(message:Message):
     return result is not None
 
 
-def have_attachment(message:Message):
-    return len(message.attachments) >= 1
+def have_attachment(analysis:Analysis):
+    return len(analysis.message.attachments) >= 1
 
 
 def get_autogen_url(fusion_id:str):
@@ -121,14 +119,14 @@ def get_fusion_id_from_text(text:str):
     return fusion_id
 
 
-def extract_fusion_id_from_filename(message:Message):
+def extract_fusion_id_from_filename(analysis:Analysis):
     fusion_id = None
-    if have_attachment(message):
-        filename = get_filename(message)
+    if have_attachment(analysis):
+        filename = get_filename(analysis)
         fusion_id = get_fusion_id_from_filename(filename)
     return fusion_id
 
 
-def extract_fusion_id_from_content(message):
-    return get_fusion_id_from_text(message.content)
+def extract_fusion_id_from_content(analysis:Analysis):
+    return get_fusion_id_from_text(analysis.message.content)
 

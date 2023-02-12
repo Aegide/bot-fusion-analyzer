@@ -1,6 +1,5 @@
 import utils
 from analysis import Analysis
-from discord import Message
 from enums import Severity
 from issues import (CustomSprite, DifferentSprite, EggSprite, IconSprite,
                     IncomprehensibleSprite, MissingFilename, MissingSprite,
@@ -12,9 +11,9 @@ def exists(value):
 
 
 class ContentContext():
-    def __init__(self, message:Message):
-        self.filename_fusion_id = utils.extract_fusion_id_from_filename(message)
-        self.content_fusion_id = utils.extract_fusion_id_from_content(message)    
+    def __init__(self, analysis:Analysis):
+        self.filename_fusion_id = utils.extract_fusion_id_from_filename(analysis)
+        self.content_fusion_id = utils.extract_fusion_id_from_content(analysis)    
 
     def have_two_values(self):
         return exists(self.filename_fusion_id) and exists(self.content_fusion_id)
@@ -76,15 +75,17 @@ class ContentContext():
 
 
 def main(analysis:Analysis):
-    if utils.have_attachment(analysis.message):
-        handle_some_content(analysis)
+    if analysis.specific_attachment is None:
+        if utils.have_attachment(analysis):
+            handle_some_content(analysis)
+        else:
+            handle_no_content(analysis)
     else:
-        handle_no_content(analysis)
-
+        handle_some_content(analysis)
 
 def handle_some_content(analysis:Analysis):
-    content_context = ContentContext(analysis.message)
-    analysis.attachment_url = utils.get_attachment_url(analysis.message)
+    content_context = ContentContext(analysis)
+    analysis.attachment_url = utils.get_attachment_url(analysis)
     if content_context.have_two_values():
         content_context.handle_two_values(analysis)
     elif content_context.have_one_value():
