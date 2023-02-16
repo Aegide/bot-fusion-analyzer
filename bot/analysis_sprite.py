@@ -90,9 +90,6 @@ class SpriteContext():
                         self.pixels[i, j] = WHITE
         except IndexError as index_error:
             raise IndexError(i, j) from index_error
-        except ValueError as value_error:
-            color = self.pixels[i, j]
-            raise ValueError(i, j, len(color), color) from value_error
         return transparency_amount
 
 
@@ -125,6 +122,8 @@ def is_useless_color(color:colorType):
 
 
 def get_alpha(color:tuple) -> int:
+    if len(color) != 4:
+        raise ValueError(len(color), color)
     _r, _g, _b, alpha = color
     return alpha
 
