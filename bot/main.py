@@ -11,7 +11,7 @@ from discord.guild import Guild
 from discord.message import Message
 from discord.threads import Thread
 from discord.user import User
-from enums import Description, DiscordColour, Severity
+from enums import DiscordColour, Severity
 from models import GlobalContext, ServerContext
 from PIL import Image
 from PIL.PyAccess import PyAccess
@@ -152,10 +152,13 @@ async def handle_ticket_gallery(message:Message):
     utils.log_event("T>", message)
     for specific_attachment in message.attachments:
         analysis = generate_analysis(message, specific_attachment)
-        await message.channel.send(embed=analysis.embed)
-        if analysis.transparency is True:
-            await message.channel.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
-
+        try:
+            await message.channel.send(embed=analysis.embed)
+            if analysis.transparency is True:
+                await message.channel.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
+        except discord.Forbidden:
+           print("T>> Missing permissions in %s" % message.channel.name)  # type: ignore
+ 
 
 def is_message_from_spritework_thread(message:Message):
     result = False
