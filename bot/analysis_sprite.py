@@ -90,6 +90,9 @@ class SpriteContext():
                         self.pixels[i, j] = WHITE
         except IndexError as index_error:
             raise IndexError(i, j) from index_error
+        except ValueError as value_error:
+            color = self.pixels[i, j]
+            raise ValueError(i, j, len(color), color) from value_error
         return transparency_amount
 
 
