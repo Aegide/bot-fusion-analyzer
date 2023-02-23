@@ -24,10 +24,10 @@ class Description(str, Enum):
 
 
 class Severity(Enum):
-    accepted        = "Accepted"
+    accepted        = "Valid"
     ignored         = "Ignored"
     controversial   = "Controversial"
-    refused         = "Refused"
+    refused         = "Invalid"
 
 
 class DiscordColour(Enum):
