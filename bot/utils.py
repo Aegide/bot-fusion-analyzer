@@ -7,7 +7,7 @@ from discord.member import Member
 from discord.threads import Thread
 
 
-from bot.analysis import Analysis
+from analysis import Analysis
 
 PATTERN_ICON = r'[iI]con'
 PATTERN_CUSTOM = r'[cC]ustom'
