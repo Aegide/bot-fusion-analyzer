@@ -1,6 +1,6 @@
 from enum import Enum
 
-import discord
+from discord.colour import Colour
 
 
 class Description(str, Enum):
@@ -31,8 +31,8 @@ class Severity(Enum):
 
 
 class DiscordColour(Enum):
-    green   = discord.Colour(0x2ecc71)
-    orange  = discord.Colour(0xe67e22)
-    red     = discord.Colour(0xe74c3c)
-    gray    = discord.Colour(0xcdcdcd)
-    pink    = discord.Colour(0xff00ff)
+    green   = Colour(0x2ecc71)
+    orange  = Colour(0xe67e22)
+    red     = Colour(0xe74c3c)
+    gray    = Colour(0xcdcdcd)
+    pink    = Colour(0xff00ff)

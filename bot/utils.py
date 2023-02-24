@@ -1,13 +1,13 @@
-import re
+from re import search, match
 
-from discord.message import Message
 from discord.asset import Asset
-from discord.user import User, ClientUser
 from discord.member import Member
+from discord.message import Message
 from discord.threads import Thread
-
+from discord.user import ClientUser, User
 
 from analysis import Analysis
+
 
 PATTERN_ICON = r'[iI]con'
 PATTERN_CUSTOM = r'[cC]ustom'
@@ -27,14 +27,20 @@ YAGPDB_ID = 204255221017214977
 def log_event(decorator:str, event:Message|Thread):
     if isinstance(event, Message):
         _log_message(decorator, event)
+    else:
+        _log_other(decorator, event)
 
 
 def _log_message(decorator:str, message:Message):
     print(f"{decorator} [{message.author.name}] {message.content}")
 
 
+def _log_other(decorator:str, other):
+    print(f"{decorator} [{other}]")
+
+
 # is_message_not_from_a_bot
-def is_message_from_human(message:Message, fusion_bot_id:int|None):
+def is_message_from_human(message:Message, fusion_bot_id:int):
     return message.author.id != fusion_bot_id and message.author.id != YAGPDB_ID
 
 
@@ -61,23 +67,23 @@ def interesting_results(results:list):
     return results[1] is not None
 
 
-def have_icon_in_message(message:Message):
-    result = re.search(PATTERN_ICON, message.content)
+def have_icon_in_message(analysis:Analysis):
+    result = search(PATTERN_ICON, analysis.message.content)
     return result is not None
 
 
-def have_custom_in_message(message:Message):
-    result = re.search(PATTERN_CUSTOM, message.content)
+def have_custom_in_message(analysis:Analysis):
+    result = search(PATTERN_CUSTOM, analysis.message.content)
     return result is not None
 
 
-def have_base_in_message(message:Message):
-    result = re.search(PATTERN_BASE, message.content)
+def have_base_in_message(analysis:Analysis):
+    result = search(PATTERN_BASE, analysis.message.content)
     return result is not None
 
 
-def have_egg_in_message(message:Message):
-    result = re.search(PATTERN_EGG, message.content)
+def have_egg_in_message(analysis:Analysis):
+    result = search(PATTERN_EGG, analysis.message.content)
     return result is not None
 
 
@@ -109,11 +115,11 @@ def extract_fusion_id_from_filename(analysis:Analysis):
 
 def get_fusion_id_from_filename(filename:str):
     fusion_id = None
-    result = re.match(STRICT_PATTERN_FUSION_ID, filename)
+    result = match(STRICT_PATTERN_FUSION_ID, filename)
     if result is not None:
         fusion_id = get_fusion_id_from_text(result[0])
     else:
-        result = re.match(SPOILER_PATTERN_FUSION_ID, filename)
+        result = match(SPOILER_PATTERN_FUSION_ID, filename)
         if result is not None:
             fusion_id = get_fusion_id_from_text(result[0])
     return fusion_id
@@ -125,7 +131,33 @@ def extract_fusion_id_from_content(analysis:Analysis):
 
 def get_fusion_id_from_text(text:str):
     fusion_id = None
-    result = re.search(LAZY_PATTERN_FUSION_ID, text)
+    result = search(LAZY_PATTERN_FUSION_ID, text)
     if result:
         fusion_id = result[0]
     return fusion_id
+
+
+def is_reply(message:Message):
+    return message.reference is not None
+
+
+def is_mentioning(message:Message, target_id:int):
+    result = False
+    for user in message.mentions:
+        if target_id == user.id:
+            result = True
+            break
+    return result
+
+
+async def get_reply_message(message:Message):
+    if message.reference is None:
+        raise RuntimeError(message)
+    reply_id = message.reference.message_id
+    if reply_id is None:
+        raise RuntimeError(message)
+    return await message.channel.fetch_message(reply_id)
+
+
+def exists(value):
+    return value is not None

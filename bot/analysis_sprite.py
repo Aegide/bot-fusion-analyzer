@@ -1,12 +1,13 @@
 
 import requests
+from PIL.Image import Image, open
+from PIL.PyAccess import PyAccess
+
 from analysis import Analysis
-from discord.message import Message
 from enums import Severity
 from issues import (AsepriteUser, ColorAmount, ColorExcess, InvalidSize,
                     TransparencyAmount)
-from PIL.Image import Image, open
-from PIL.PyAccess import PyAccess
+
 
 VALID_SIZE = (288,288)
 UPPER_COLOR_LIMIT = 1000
@@ -93,7 +94,7 @@ class SpriteContext():
         return transparency_amount
 
 
-def is_half_transparent(alpha):
+def is_half_transparent(alpha:int):
     return alpha != 0 and alpha != 255
 
 
@@ -105,10 +106,10 @@ def get_pixels(image:Image) -> PyAccess:
     return image.load()  # type: ignore
 
 
-def remove_useless_colors(old_colors:list):
+def remove_useless_colors(old_colors:list[tuple[int, int]]):
     new_colors = []
     for old_color in old_colors:
-        _color_amount, color_value = old_color
+        _, color_value = old_color
         if not is_useless_color(color_value):
             new_colors.append(old_color)
     return new_colors

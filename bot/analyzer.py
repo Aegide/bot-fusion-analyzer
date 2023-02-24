@@ -1,7 +1,8 @@
+from discord.message import Attachment, Message
+
 import analysis_content as analysis_content
 import analysis_sprite as analysis_sprite
 from analysis import Analysis
-from discord.message import Message, Attachment
 
 
 def generate_analysis(message:Message, specific_attachment:Attachment|None = None):

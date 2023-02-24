@@ -1,16 +1,20 @@
 from io import BytesIO
-import utils
-from discord.message import Attachment, Message
+
 from discord.embeds import Embed
 from discord.file import File
+from discord.message import Attachment, Message
+from PIL.Image import Image
+
 from enums import DiscordColour, Severity
 from issues import Issues
-from PIL.Image import Image
+from utils import get_display_avatar
+
+
 DICT_SEVERITY_COLOUR = {
-    Severity.accepted : DiscordColour.green,
-    Severity.ignored : DiscordColour.orange,
-    Severity.controversial : DiscordColour.pink,
-    Severity.refused : DiscordColour.red
+    Severity.accepted :         DiscordColour.green,
+    Severity.ignored :          DiscordColour.orange,
+    Severity.controversial :    DiscordColour.pink,
+    Severity.refused :          DiscordColour.red
 }
 
 
@@ -35,7 +39,6 @@ class Analysis:
         self.specific_attachment = specific_attachment
         self.issues = Issues()
         self.severity = Severity.accepted
-        
 
     def generate_embed(self):
         self.embed = Embed()
@@ -75,7 +78,7 @@ class Analysis:
         self.embed.description = f"[Link to message]({self.message.jump_url})"
 
     def apply_author(self):
-        author_avatar = utils.get_display_avatar(self.message.author)
+        author_avatar = get_display_avatar(self.message.author)
         self.embed.set_author(name=self.message.author.name, icon_url=author_avatar.url)
 
     def apply_footer(self):

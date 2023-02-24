@@ -125,4 +125,3 @@ class TransparencyAmount(Issue):
         self.amount = amount
     def __str__(self) -> str:
         return f"{self.description.value} : {self.amount}"
-

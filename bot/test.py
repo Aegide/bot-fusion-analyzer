@@ -3,7 +3,9 @@ import unittest
 
 from PIL.Image import Image, open
 from PIL.PyAccess import PyAccess
+
 from utils import get_fusion_id_from_filename as gfiff
+
 
 UPPER_COLOR_LIMIT = 1000
 
