@@ -1,6 +1,8 @@
 import os
+from typing import Any
 import unittest
 
+from PIL.ImagePalette import ImagePalette
 from PIL.Image import Image, open
 from PIL.PyAccess import PyAccess
 from utils import get_fusion_id_from_filename as gfiff
@@ -15,6 +17,12 @@ WHITE = (255, 255, 255, 255)
 
 MAX_TRANSPARENCY = 0
 MIN_TRANSPARENCY = 255
+
+
+RGB_MODE = "RGB"
+RGBA_MODE = "RGBA"
+PALETTE_MODE = "P"
+
 
 # class TestGalleryNames(unittest.TestCase):
 
@@ -53,38 +61,25 @@ class TestTransparencyAmount(unittest.TestCase):
         for sprite in sprites:
             sprite_path = os.path.join("fixtures", sprite)
             with open(sprite_path) as image:
-                print(sprite)
+                palette = get_palette(image)
                 pixels = get_pixels(image)
-                explore(pixels)
-                print(" ")
-                image.show()
-
-
-def func(value):
-    print(value, type(value))
-    return value
+                update_transparency(pixels, image.mode, palette)
+                # image.show()
 
 
 def get_pixels(image:Image) -> PyAccess:
     return image.load()  # type: ignore
 
 
-def explore(pixels:PyAccess):
-    if isinstance(pixels[0, 0], tuple):
-        explore_rgb(pixels)
-
-
-def explore_rgb(pixels:PyAccess):
-    for i in range(0, 288):
-        for j in range(0, 288):
-            color = pixels[i, j]
-            _r, _g, _b, alpha = color
-            if is_half_transparent(alpha):
-                pixels[i, j] = PINK
-            elif not is_transparent(alpha):
-                pixels[i, j] = BLACK
-            else:
-                pixels[i, j] = WHITE
+def update_transparency(pixels:PyAccess, image_mode:str, palette:ImagePalette|None):
+    if image_mode == RGBA_MODE:
+        update_rgba(pixels)
+    elif image_mode == PALETTE_MODE:
+        update_palette(pixels, palette)  # type: ignore
+    elif image_mode == RGB_MODE:
+        pass
+    else:
+        raise RuntimeError(image_mode)
 
 
 def is_half_transparent(alpha):
@@ -93,6 +88,34 @@ def is_half_transparent(alpha):
 
 def is_transparent(alpha):
     return alpha == 0
+
+
+def get_palette(image:Image) -> ImagePalette:
+    return image.palette
+
+
+def update_rgba(pixels:PyAccess):
+    for i in range(0, 288):
+        for j in range(0, 288):
+            _r, _g, _b, alpha = pixels[i, j]
+            if is_half_transparent(alpha):
+                pixels[i, j] = PINK
+            elif not is_transparent(alpha):
+                pixels[i, j] = BLACK
+            else:
+                pixels[i, j] = WHITE
+
+
+def update_palette(pixels:PyAccess, palette:ImagePalette):
+    color_set = set()
+    inverse_palette = {v: k for k, v in palette.colors.items()}
+    for i in range(0, 288):
+        for j in range(0, 288):
+            palette_index = pixels[i, j]
+            pixel_color = inverse_palette.get(palette_index)
+            if pixel_color not in color_set:
+                color_set.add(pixel_color)
+                # print(palette_index, (i, j), pixel_color)
 
 
 if __name__ == '__main__':
