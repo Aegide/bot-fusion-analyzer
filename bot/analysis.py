@@ -6,6 +6,8 @@ from discord.file import File
 from enums import DiscordColour, Severity
 from issues import Issues
 from PIL.Image import Image
+
+
 DICT_SEVERITY_COLOUR = {
     Severity.accepted : DiscordColour.green,
     Severity.ignored : DiscordColour.orange,

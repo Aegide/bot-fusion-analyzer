@@ -84,6 +84,7 @@ def main(analysis:Analysis):
     else:
         handle_some_content(analysis)
 
+
 def handle_some_content(analysis:Analysis):
     content_context = ContentContext(analysis)
     analysis.attachment_url = utils.get_attachment_url(analysis)
@@ -98,4 +99,3 @@ def handle_some_content(analysis:Analysis):
 def handle_no_content(analysis:Analysis):
     analysis.severity = Severity.ignored
     analysis.issues.add(MissingSprite())
-

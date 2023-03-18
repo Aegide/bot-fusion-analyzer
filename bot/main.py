@@ -53,7 +53,9 @@ id_channel_logs_pif = 999653562202214450
 # id_channel_spritework_pif = 307020509856530434
 
 
-TICKET_CATEGORY_ID = 1073799466773127178
+TICKETS_CATEGORY_ID = 1073799466773127178
+TICKETS_2_CATEGORY_ID = 1081725164187824270
+LIST_TICKET_CATEGORY = [TICKETS_CATEGORY_ID, TICKETS_2_CATEGORY_ID]
 
 
 def get_channel_from_id(server:Guild, channel_id) -> TextChannel :
@@ -206,7 +208,6 @@ async def on_ready():
     await ctx().aegide.logs.send(content="(OK)")
 
 
-
 def get_pixels(image:Image.Image) -> PyAccess:
     return image.load()  # type: ignore
 
@@ -252,7 +253,7 @@ def is_mentioning_ticket(message:Message):
 def is_ticket_category(message:Message):
     result = False
     try:
-        result = message.channel.category_id == TICKET_CATEGORY_ID  # type: ignore
+        result = message.channel.category_id in LIST_TICKET_CATEGORY  # type: ignore
     except:
         pass
     return result
