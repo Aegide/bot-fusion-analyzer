@@ -86,7 +86,7 @@ class SpriteContext():
                 analysis.issues.add(HalfPixelsAmount(half_pixels_amount))
 
     def highlight_transparency(self)->tuple[int, Image]:
-        local_image = self.image  # TODO
+        local_image = self.image.copy()
         local_pixels = get_pixels(local_image)
         first_pixel = self.pixels[0, 0]
         transparency_amount = 0
@@ -106,7 +106,7 @@ class SpriteContext():
         return (transparency_amount, local_image)
 
     def highlight_half_pixels(self)->tuple[int, Image]:
-        local_image = self.image  # TODO
+        local_image = self.image.copy()
         local_pixels = get_pixels(local_image)
         (delta_i, delta_j) = find_first_pixel(self.pixels)
         max_i = 288 - (STEP - delta_i)
