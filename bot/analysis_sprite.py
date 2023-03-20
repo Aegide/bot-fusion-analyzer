@@ -1,5 +1,6 @@
 
 import requests
+import urllib3
 from analysis import Analysis
 from enums import Severity
 from issues import (AsepriteUser, ColorAmount, ColorExcess, InvalidSize,
@@ -35,8 +36,9 @@ class SpriteContext():
 
         print(type(response))
         print(type(response.raw))
+        print(type(response.raw.data))
 
-        self.raw_data = response.raw
+        self.raw_data = response.raw.data
         self.image = open(self.raw_data)
         self.pixels = get_pixels(self.image)
 
