@@ -31,6 +31,9 @@ class SpriteContext():
         if analysis.attachment_url is None:
             raise RuntimeError()
         self.raw_data = requests.get(analysis.attachment_url, stream=True).raw
+
+        print(type(self.raw_data), self.raw_data)
+
         self.image = open(self.raw_data)
         self.pixels = get_pixels(self.image)
 
