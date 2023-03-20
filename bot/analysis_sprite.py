@@ -32,15 +32,8 @@ class SpriteContext():
         if analysis.attachment_url is None:
             raise RuntimeError()
         
-        response = requests.get(analysis.attachment_url, stream=True)
-
-        print(type(response))
-        print(type(response.raw))
-        print(type(response.raw.data))
-        print(response.raw.data)
-
-        self.raw_data = response.raw.data
-        self.image = open(self.raw_data)
+        raw_data = requests.get(analysis.attachment_url, stream=True).raw
+        self.image = open(raw_data)
         self.pixels = get_pixels(self.image)
 
     def handle_sprite_size(self, analysis:Analysis):
@@ -93,7 +86,7 @@ class SpriteContext():
                 analysis.issues.add(HalfPixelsAmount(half_pixels_amount))
 
     def highlight_transparency(self)->tuple[int, Image]:
-        local_image = open(self.raw_data)
+        local_image = self.image  # TODO
         local_pixels = get_pixels(local_image)
         first_pixel = self.pixels[0, 0]
         transparency_amount = 0
@@ -113,7 +106,7 @@ class SpriteContext():
         return (transparency_amount, local_image)
 
     def highlight_half_pixels(self)->tuple[int, Image]:
-        local_image = open(self.raw_data)
+        local_image = self.image  # TODO
         local_pixels = get_pixels(local_image)
         (delta_i, delta_j) = find_first_pixel(self.pixels)
         max_i = 288 - (STEP - delta_i)
