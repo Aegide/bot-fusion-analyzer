@@ -134,7 +134,6 @@ class TestHalfPixels(unittest.TestCase):
 
 def find_first_pixel(pixels:PyAccess):
     default_value = pixels[0, 0]
-    count = 0
     for i in range(0, 288):
         for j in range(0, 288):
             if default_value != pixels[i, j]:

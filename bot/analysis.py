@@ -1,8 +1,10 @@
 from io import BytesIO
+
 import utils
-from discord.message import Attachment, Message
+from discord.colour import Colour
 from discord.embeds import Embed
 from discord.file import File
+from discord.message import Attachment, Message
 from enums import DiscordColour, Severity
 from issues import Issues
 from PIL.Image import Image
@@ -28,16 +30,20 @@ class Analysis:
     specific_attachment: Attachment|None = None
 
     size_issue: bool = False
-    transparency: bool = False
+
+    transparency_issue: bool = False
     transparency_image: Image
     transparency_embed: Embed
+
+    half_pixels_issue: bool = False
+    half_pixels_image: Image
+    half_pixels_embed: Embed
 
     def __init__(self, message:Message, specific_attachment:Attachment|None) -> None:
         self.message = message
         self.specific_attachment = specific_attachment
         self.issues = Issues()
         self.severity = Severity.accepted
-        
 
     def generate_embed(self):
         self.embed = Embed()
@@ -50,19 +56,27 @@ class Analysis:
         self.apply_attachment_url()
         self.handle_bonus_embed()
 
-    def gen_transparency_file(self):
+    def generate_transparency_file(self):
         if self.transparency_image is None:
-            raise ValueError
+            raise RuntimeError()
         bytes = BytesIO()
         self.transparency_image.save(bytes, format="PNG")
         bytes.seek(0)
         return File(bytes, filename="image.png")
 
+    def generate_half_pixels_file(self):
+        if self.half_pixels_image is None:
+            raise RuntimeError()
+        bytes = BytesIO()
+        self.half_pixels_image.save(bytes, format="PNG")
+        bytes.seek(0)
+        return File(bytes, filename="image.png")
+
     def handle_bonus_embed(self):
-        if self.transparency is True:
-            self.transparency_embed = Embed()
-            self.transparency_embed.colour = DiscordColour.pink.value
-            self.transparency_embed.set_image(url="attachment://image.png")
+        if self.transparency_issue is True:
+            self.transparency_embed = get_bonus_embed(DiscordColour.pink.value)
+        if self.half_pixels_issue is True:
+            self.half_pixels_embed = get_bonus_embed(DiscordColour.red.value)
 
     def apply_title(self):
         if self.severity == Severity.accepted:
@@ -90,3 +104,17 @@ class Analysis:
     def apply_attachment_url(self):
         if self.attachment_url is not None:
             self.embed.set_thumbnail(url=self.attachment_url)
+
+def get_bonus_embed(discord_colour:Colour):
+    bonus_embed = Embed()
+    bonus_embed.colour = discord_colour
+    bonus_embed.set_image(url="attachment://image.png")
+    return bonus_embed
+
+def generate_bonus_file(image:Image):
+    if image is None:
+        raise RuntimeError()
+    bytes = BytesIO()
+    image.save(bytes, format="PNG")
+    bytes.seek(0)
+    return File(bytes, filename="image.png")

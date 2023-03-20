@@ -126,3 +126,11 @@ class TransparencyAmount(Issue):
     def __str__(self) -> str:
         return f"{self.description.value} : {self.amount}"
 
+
+class HalfPixelsAmount(Issue):
+    description = Description.half_pixels_amount
+    severity = Severity.refused
+    def __init__(self, amount:int) -> None:
+        self.amount = amount
+    def __str__(self) -> str:
+        return f"{self.description.value} : {self.amount}"

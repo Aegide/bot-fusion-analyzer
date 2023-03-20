@@ -4,6 +4,7 @@ import os
 
 import discord
 import utils
+from analysis import generate_bonus_file
 from analyzer import Analysis, generate_analysis
 from discord import Client, PartialEmoji, app_commands
 from discord.channel import TextChannel
@@ -15,6 +16,7 @@ from enums import DiscordColour, Severity
 from models import GlobalContext, ServerContext
 from PIL import Image
 from PIL.PyAccess import PyAccess
+
 
 ERROR_EMOJI_NAME = "NANI"
 ERROR_EMOJI_ID = f"<:{ERROR_EMOJI_NAME}:770390673664114689>"
@@ -118,9 +120,10 @@ async def send_bot_logs(analysis:Analysis, author_id:int):
 
 
 async def send_bonus_content(analysis:Analysis):
-    if analysis.transparency is True:
-        # await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
-        await ctx().pif.logs.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
+    if analysis.transparency_issue is True:
+        await ctx().pif.logs.send(embed=analysis.transparency_embed, file=generate_bonus_file(analysis.transparency_image))
+    if analysis.half_pixels_issue is True:
+        await ctx().pif.logs.send(embed=analysis.half_pixels_embed, file=generate_bonus_file(analysis.half_pixels_image))
 
 
 async def send_with_content(analysis:Analysis, author_id:int):
@@ -146,8 +149,10 @@ async def handle_test_sprite_gallery(message:Message):
     utils.log_event("T-SG>", message)
     analysis = generate_analysis(message)
     await ctx().aegide.logs.send(embed=analysis.embed)
-    if analysis.transparency is True:
-        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
+    if analysis.transparency_issue is True:
+        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=generate_bonus_file(analysis.transparency_image))
+    if analysis.half_pixels_issue is True:
+        await ctx().aegide.logs.send(embed=analysis.half_pixels_embed, file=generate_bonus_file(analysis.half_pixels_image))
 
 
 async def handle_ticket_gallery(message:Message):
@@ -156,8 +161,11 @@ async def handle_ticket_gallery(message:Message):
         analysis = generate_analysis(message, specific_attachment)
         try:
             await message.channel.send(embed=analysis.embed)
-            if analysis.transparency is True:
-                await message.channel.send(embed=analysis.transparency_embed, file=analysis.gen_transparency_file())
+            if analysis.transparency_issue is True:
+                await message.channel.send(embed=analysis.transparency_embed, file=generate_bonus_file(analysis.transparency_image))
+            if analysis.half_pixels_issue is True:
+                await message.channel.send(embed=analysis.half_pixels_embed, file=generate_bonus_file(analysis.half_pixels_image))
+
         except discord.Forbidden:
            print("T>> Missing permissions in %s" % message.channel.name)  # type: ignore
  

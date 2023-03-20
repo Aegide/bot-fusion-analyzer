@@ -10,6 +10,7 @@ class Description(str, Enum):
     different_fusion_id = "Different ID"
     colour_excess       = "Too many colours"
     transparency_amount = "Transparency"
+    half_pixels_amount  = "Half-pixels"
     colour_amount       = "Colours"
     file_name           = "Filename"
     invalid_fusion_id   = "Invalid fusion ID"
