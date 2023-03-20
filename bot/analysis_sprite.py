@@ -37,6 +37,7 @@ class SpriteContext():
         print(type(response))
         print(type(response.raw))
         print(type(response.raw.data))
+        print(response.raw.data)
 
         self.raw_data = response.raw.data
         self.image = open(self.raw_data)
