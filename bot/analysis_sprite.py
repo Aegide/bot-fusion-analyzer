@@ -116,6 +116,7 @@ class SpriteContext():
                 color_set = get_color_set(i, j, self.pixels)
                 color = get_color_from_set(color_set)
                 recolor_pixels(i, j, local_pixels, color)
+                half_pixels_amount += 9
         return half_pixels_amount, local_image
 
 
