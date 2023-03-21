@@ -80,7 +80,7 @@ class SpriteContext():
             half_pixels_amount, image = self.highlight_half_pixels()
             if half_pixels_amount > 0:
                 analysis.half_pixels_issue = True
-                analysis.transparency_image = image
+                analysis.half_pixels_image = image
                 analysis.severity = Severity.refused
                 analysis.issues.add(HalfPixelsAmount(half_pixels_amount))
 
