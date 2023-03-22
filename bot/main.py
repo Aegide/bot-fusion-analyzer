@@ -241,8 +241,8 @@ async def on_message(message:Message):
                 await handle_sprite_gallery(message)
             elif is_mentioning_reply(message):
                 await handle_reply(message)
-            else:
-                utils.log_event("X>", message)
+            # else:
+            #     utils.log_event("X>", message)
 
     except Exception as message_exception:
         print(" ")
