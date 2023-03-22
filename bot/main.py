@@ -249,7 +249,8 @@ async def on_message(message:Message):
         print(message)
         print(" ")
         ping_author = f"<@!{message.author.id}>"
-        await ctx().pif.logs.send(f"{ping_aegide} {ping_author} An error occurred while processing your message from {message.channel}")
+        error_message = "An error occurred while processing your message from"
+        await ctx().pif.logs.send(f"{ping_aegide}/{ping_author} : {error_message} #{message.channel} ({message.jump_url})")
         raise RuntimeError from message_exception
         
 
