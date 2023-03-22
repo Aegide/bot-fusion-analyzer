@@ -155,8 +155,8 @@ async def handle_test_sprite_gallery(message:Message):
         await ctx().aegide.logs.send(embed=analysis.half_pixels_embed, file=generate_bonus_file(analysis.half_pixels_image))
 
 
-async def handle_ticket_gallery(message:Message):
-    utils.log_event("T>", message)
+async def handle_reply_message(message:Message):
+    utils.log_event("R>", message)
     for specific_attachment in message.attachments:
         analysis = generate_analysis(message, specific_attachment)
         try:
@@ -165,9 +165,8 @@ async def handle_ticket_gallery(message:Message):
                 await message.channel.send(embed=analysis.transparency_embed, file=generate_bonus_file(analysis.transparency_image))
             if analysis.half_pixels_issue is True:
                 await message.channel.send(embed=analysis.half_pixels_embed, file=generate_bonus_file(analysis.half_pixels_image))
-
         except discord.Forbidden:
-           print("T>> Missing permissions in %s" % message.channel.name)  # type: ignore
+           print("R>> Missing permissions in %s" % message.channel)
  
 
 def is_message_from_spritework_thread(message:Message):
@@ -240,31 +239,26 @@ async def on_message(message:Message):
         if utils.is_message_from_human(message, bot_id):
             if is_sprite_gallery(message):
                 await handle_sprite_gallery(message)
-            elif is_mentioning_ticket(message):
-                await handle_ticket(message)
+            elif is_mentioning_reply(message):
+                await handle_reply(message)
+            else:
+                utils.log_event("X>", message)
 
     except Exception as message_exception:
         print(" ")
         print(message)
         print(" ")
+        ping_author = f"<@!{message.author}>"
+        await ctx().pif.logs.send(f"{ping_author} An error occurred while processing your message from {message.channel}")
         raise RuntimeError from message_exception
-
+        
 
 def is_sprite_gallery(message:Message):
     return message.channel.id == id_channel_gallery_pif
 
 
-def is_mentioning_ticket(message:Message):
-    return is_ticket_category(message) and is_reply(message) and is_mentioning_bot(message)
-
-
-def is_ticket_category(message:Message):
-    result = False
-    try:
-        result = message.channel.category_id in LIST_TICKET_CATEGORY  # type: ignore
-    except:
-        pass
-    return result
+def is_mentioning_reply(message:Message):
+    return is_mentioning_bot(message) and is_reply(message)
 
 
 def is_reply(message:Message):
@@ -280,9 +274,9 @@ def is_mentioning_bot(message:Message):
     return result
 
 
-async def handle_ticket(message:Message):
+async def handle_reply(message:Message):
     reply_message = await get_reply_message(message)
-    await handle_ticket_gallery(reply_message)
+    await handle_reply_message(reply_message)
 
 
 async def get_reply_message(message:Message):
