@@ -24,13 +24,28 @@ AUTOGEN_FUSION_URL = "https://raw.githubusercontent.com/Aegide/FusionSprites/mas
 YAGPDB_ID = 204255221017214977
 
 
+LCB = "{"
+RCB = "}"
+
+
 def log_event(decorator:str, event:Message|Thread):
     if isinstance(event, Message):
         _log_message(decorator, event)
 
 
 def _log_message(decorator:str, message:Message):
-    print(f"{decorator} [{message.author.name}] {message.content}")
+    channel_name = get_channel_name(message)
+    print(f"{decorator} [{message.author.name}] {LCB}{channel_name}{RCB} {message.content}")
+
+
+def get_channel_name(message:Message):
+    try:
+        channel_name = message.channel.name  # type: ignore
+        if not isinstance(channel_name, str):
+            channel_name = "INVALID"
+    except:
+        channel_name = "INVALID"
+    return channel_name
 
 
 # is_message_not_from_a_bot
