@@ -55,11 +55,6 @@ id_channel_logs_pif = 999653562202214450
 id_channel_debug_pif = 703351286019653762
 
 
-TICKETS_CATEGORY_ID = 1073799466773127178
-TICKETS_2_CATEGORY_ID = 1081725164187824270
-LIST_TICKET_CATEGORY = [TICKETS_CATEGORY_ID, TICKETS_2_CATEGORY_ID]
-
-
 def get_channel_from_id(server:Guild, channel_id) -> TextChannel :
     channel = server.get_channel(channel_id)
     if channel is None:
