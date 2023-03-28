@@ -44,13 +44,13 @@ class SpriteContext():
 
     def handle_sprite_colours(self, analysis:Analysis):
         all_colors = self.image.getcolors(UPPER_COLOR_LIMIT)
-        if is_not_color_excess(all_colors):
+        if is_color_excess(all_colors):
+            analysis.issues.add(ColorOverExcess(UPPER_COLOR_LIMIT))
+        else:
             useful_colors = remove_useless_colors(all_colors)
             self.handle_color_amount(analysis, all_colors, useful_colors)
             self.handle_color_limit(analysis)
             self.handle_aseprite(analysis)
-        else:
-            analysis.issues.add(ColorOverExcess(UPPER_COLOR_LIMIT))
 
     def handle_color_amount(self, analysis:Analysis, all_colors, useful_colors):
         self.all_amount = len(all_colors)
@@ -125,7 +125,7 @@ class SpriteContext():
 
 
 # Maximum number of colors. If this number is exceeded, this method returns None.
-def is_not_color_excess(color_list:list|None):
+def is_color_excess(color_list:list|None):
     return color_list is None
 
 
