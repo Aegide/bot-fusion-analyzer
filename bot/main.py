@@ -45,14 +45,14 @@ worksheet_name = "Full dex"
 id_server_aegide = 293500383769133056
 id_channel_gallery_aegide = 858107956326826004
 id_channel_logs_aegide = 616239403957747742
-# id_channel_spritework_aegide = 1013429382213279783
+# id_channel_debug = None
 
 
 # Pokémon Infinite Fusion
 id_server_pif = 302153478556352513
 id_channel_gallery_pif = 543958354377179176
 id_channel_logs_pif = 999653562202214450
-# id_channel_spritework_pif = 307020509856530434
+id_channel_debug_pif = 703351286019653762
 
 
 TICKETS_CATEGORY_ID = 1073799466773127178
@@ -86,16 +86,19 @@ class BotContext:
             server=server_aegide,
             gallery=channel_gallery_aegide,
             logs=channel_log_aegide,
+            debug=None
         )
 
         server_pif = get_server_from_id(bot, id_server_pif)
         channel_gallery_pif = get_channel_from_id(server_pif, id_channel_gallery_pif)
         channel_log_pif = get_channel_from_id(server_pif, id_channel_logs_pif)
+        channel_debug_pif = get_channel_from_id(server_pif, id_channel_debug_pif)
 
         pif_context = ServerContext(
             server=server_pif,
             gallery=channel_gallery_pif,
             logs=channel_log_pif,
+            debug=channel_debug_pif
         )
 
         self.context = GlobalContext(
@@ -166,7 +169,7 @@ async def handle_reply_message(message:Message):
             if analysis.half_pixels_issue is True:
                 await message.channel.send(embed=analysis.half_pixels_embed, file=generate_bonus_file(analysis.half_pixels_image))
         except discord.Forbidden:
-           print("R>> Missing permissions in %s" % message.channel)
+            print("R>> Missing permissions in %s" % message.channel)
  
 
 def is_message_from_spritework_thread(message:Message):
@@ -188,7 +191,8 @@ def is_thread_from_spritework(thread:Thread):
 async def chat(interaction: discord.Interaction):
     if interaction.user == bot.user:
         return
-    await interaction.response.send_message("You can contact Aegide, if you need help with anything related to the fusion bot.")
+    message = "You can contact Aegide, if you need help with anything related to the fusion bot."
+    await interaction.response.send_message(message)
 
 
 @bot.event
@@ -241,8 +245,6 @@ async def on_message(message:Message):
                 await handle_sprite_gallery(message)
             elif is_mentioning_reply(message):
                 await handle_reply(message)
-            # else:
-            #     utils.log_event("X>", message)
 
     except Exception as message_exception:
         print(" ")
@@ -250,9 +252,9 @@ async def on_message(message:Message):
         print(" ")
         ping_author = f"<@!{message.author.id}>"
         error_message = "An error occurred while processing your message from"
-        await ctx().pif.logs.send(f"{ping_aegide}/{ping_author} : {error_message} #{message.channel} ({message.jump_url})")
+        await ctx().pif.debug.send(f"{ping_aegide}/{ping_author} : {error_message} #{message.channel} ({message.jump_url})")  # type: ignore
         raise RuntimeError from message_exception
-        
+
 
 def is_sprite_gallery(message:Message):
     return message.channel.id == id_channel_gallery_pif
