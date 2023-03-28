@@ -109,6 +109,15 @@ class ColorExcess(Issue):
         return f"{self.description.value} (max: {self.max})"
 
 
+class ColorOverExcess(Issue):
+    description = Description.colour_excess
+    severity = Severity.refused
+    def __init__(self, max:int) -> None:
+        self.max = max
+    def __str__(self) -> str:
+        return f"{self.description.value} (it's over {self.max})"
+
+
 class AsepriteUser(Issue):
     description = Description.aseprite_user
     severity = Severity.accepted

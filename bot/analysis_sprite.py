@@ -3,7 +3,7 @@ import requests
 from analysis import Analysis
 from enums import Severity
 from issues import (AsepriteUser, ColorAmount, ColorExcess, InvalidSize,
-                    TransparencyAmount, HalfPixelsAmount)
+                    TransparencyAmount, HalfPixelsAmount, ColorOverExcess)
 from PIL.Image import Image, open, new
 from PIL.PyAccess import PyAccess
 
@@ -12,7 +12,7 @@ colorType = int|tuple
 
 
 VALID_SIZE = (288,288)
-UPPER_COLOR_LIMIT = 1000
+UPPER_COLOR_LIMIT = 9000
 MAX_SIZE = 288
 COLOR_LIMIT = 64
 STEP = 3
@@ -44,10 +44,13 @@ class SpriteContext():
 
     def handle_sprite_colours(self, analysis:Analysis):
         all_colors = self.image.getcolors(UPPER_COLOR_LIMIT)
-        useful_colors = remove_useless_colors(all_colors)
-        self.handle_color_amount(analysis, all_colors, useful_colors)
-        self.handle_color_limit(analysis)
-        self.handle_aseprite(analysis)
+        if is_not_color_excess(all_colors):
+            useful_colors = remove_useless_colors(all_colors)
+            self.handle_color_amount(analysis, all_colors, useful_colors)
+            self.handle_color_limit(analysis)
+            self.handle_aseprite(analysis)
+        else:
+            analysis.issues.add(ColorOverExcess(UPPER_COLOR_LIMIT))
 
     def handle_color_amount(self, analysis:Analysis, all_colors, useful_colors):
         self.all_amount = len(all_colors)
@@ -119,6 +122,11 @@ class SpriteContext():
                 if color == RED:
                     half_pixels_amount += 9
         return half_pixels_amount, local_image
+
+
+# Maximum number of colors. If this number is exceeded, this method returns None.
+def is_not_color_excess(color_list:list|None):
+    return color_list is None
 
 
 def is_half_transparent(alpha):
