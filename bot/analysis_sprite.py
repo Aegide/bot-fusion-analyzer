@@ -37,8 +37,8 @@ class SpriteContext():
         self.image = open(raw_data)
         self.pixels = get_pixels(self.image)
 
-        self.useful_amount: int
-        self.useless_amount: int
+        self.useful_amount: int = 0
+        self.useless_amount: int = 0
 
     def handle_sprite_size(self, analysis:Analysis):
         size = self.image.size
@@ -76,7 +76,7 @@ class SpriteContext():
             analysis.issues.add(ColorExcess(COLOR_LIMIT))
 
     def handle_aseprite(self, analysis:Analysis):
-        aseprite_ratio = self.useless_amount/self.useful_amount
+        aseprite_ratio = self.useless_amount / self.useful_amount
         if aseprite_ratio > ASEPRITE_RATIO:
             analysis.issues.add(AsepriteUser(aseprite_ratio))
 
