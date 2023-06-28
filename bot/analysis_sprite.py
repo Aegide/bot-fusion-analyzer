@@ -1,6 +1,7 @@
 
 import requests
 from analysis import Analysis
+from bot.exceptions import TransparencyException
 from enums import Severity
 from issues import (AsepriteUser, ColorAmount, ColorExcess, ColorOverExcess,
                     GraphicsGaleUser, HalfPixelsAmount, InvalidSize,
@@ -61,7 +62,7 @@ class SpriteContext():
         try:
             useful_colors = remove_useless_colors(all_colors)
             self.handle_color_amount(analysis, all_colors, useful_colors)
-        except ValueError:
+        except TransparencyException:
             analysis.issues.add(MissingTransparency())
 
     def handle_color_amount(self, analysis:Analysis, all_colors, useful_colors):
@@ -87,14 +88,17 @@ class SpriteContext():
             analysis.issues.add(GraphicsGaleUser())
 
     def handle_sprite_transparency(self, analysis:Analysis):
-        if analysis.size_issue is False:
-            transparency_amount, image = self.highlight_transparency()
-            if transparency_amount > 0:
-                analysis.transparency_issue = True
-                analysis.transparency_image = image
-                if analysis.severity is not Severity.refused:
-                    analysis.severity = Severity.controversial
-                analysis.issues.add(TransparencyAmount(transparency_amount))
+        try:
+            if analysis.size_issue is False:
+                transparency_amount, image = self.highlight_transparency()
+                if transparency_amount > 0:
+                    analysis.transparency_issue = True
+                    analysis.transparency_image = image
+                    if analysis.severity is not Severity.refused:
+                        analysis.severity = Severity.controversial
+                    analysis.issues.add(TransparencyAmount(transparency_amount))
+        except TransparencyException:
+            pass
 
     def handle_sprite_half_pixels(self, analysis:Analysis):
         if analysis.size_issue is False:
@@ -106,6 +110,7 @@ class SpriteContext():
                 analysis.issues.add(HalfPixelsAmount(half_pixels_amount))
 
     def highlight_transparency(self)->tuple[int, Image]:
+        """# TransparencyException"""
         local_image = new("RGBA", (MAX_SIZE, MAX_SIZE))
         local_pixels = get_pixels(local_image)
         first_pixel = self.pixels[0, 0]
@@ -160,7 +165,7 @@ def get_pixels(image:Image) -> PyAccess:
 
 
 def remove_useless_colors(old_colors:list):
-    """# ValueError"""
+    """# TransparencyException"""
     new_colors = []
     for old_color in old_colors:
         _color_amount, color_value = old_color
@@ -170,7 +175,7 @@ def remove_useless_colors(old_colors:list):
 
 
 def is_useless_color(color:colorType):
-    """# ValueError"""
+    """# TransparencyException"""
     if is_indexed(color):
         return False
     alpha = get_alpha(color)
@@ -178,9 +183,9 @@ def is_useless_color(color:colorType):
 
 
 def get_alpha(color:tuple) -> int:
-    """# ValueError"""
+    """# TransparencyException"""
     if len(color) != 4:
-        raise ValueError(len(color), color)
+        raise TransparencyException()
     _r, _g, _b, alpha = color
     return alpha
 

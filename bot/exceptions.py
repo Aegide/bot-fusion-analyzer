@@ -1,0 +1,2 @@
+class TransparencyException(Exception):
+    pass
