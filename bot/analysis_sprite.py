@@ -63,6 +63,7 @@ class SpriteContext():
             useful_colors = remove_useless_colors(all_colors)
             self.handle_color_amount(analysis, all_colors, useful_colors)
         except TransparencyException:
+            analysis.severity = Severity.refused
             analysis.issues.add(MissingTransparency())
 
     def handle_color_amount(self, analysis:Analysis, all_colors, useful_colors):
