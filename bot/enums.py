@@ -21,7 +21,9 @@ class Description(str, Enum):
     egg                 = "Egg sprite"
     incomprehensible    = "Incomprehensible sprite"
     test                = "Description test"
+    no_transparency     = "Missing transparency"
     aseprite_user       = "Aseprite user detected"
+    graphics_gale_user  = "GraphicsGale user detected"
 
 
 class Severity(Enum):

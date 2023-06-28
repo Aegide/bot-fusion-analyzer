@@ -118,6 +118,11 @@ class ColorOverExcess(Issue):
         return f"{self.description.value} (it's over {self.max})"
 
 
+class MissingTransparency(Issue):
+    description = Description.no_transparency
+    severity = Severity.refused
+
+
 class AsepriteUser(Issue):
     description = Description.aseprite_user
     severity = Severity.accepted
@@ -125,6 +130,11 @@ class AsepriteUser(Issue):
         self.ratio = int(ratio)
     def __str__(self) -> str:
         return f"{self.description.value} (r{self.ratio})"
+
+
+class GraphicsGaleUser(Issue):
+    description = Description.graphics_gale_user
+    severity = Severity.accepted
 
 
 class TransparencyAmount(Issue):

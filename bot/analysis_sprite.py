@@ -2,11 +2,13 @@
 import requests
 from analysis import Analysis
 from enums import Severity
-from issues import (AsepriteUser, ColorAmount, ColorExcess, InvalidSize,
-                    TransparencyAmount, HalfPixelsAmount, ColorOverExcess)
-from PIL.Image import Image, open, new
+from issues import (AsepriteUser, ColorAmount, ColorExcess, ColorOverExcess,
+                    GraphicsGaleUser, HalfPixelsAmount, InvalidSize,
+                    TransparencyAmount)
+from PIL.Image import Image, new, open
 from PIL.PyAccess import PyAccess
 
+from bot.issues import MissingTransparency
 
 colorType = int|tuple
 
@@ -30,10 +32,13 @@ class SpriteContext():
     def __init__(self, analysis:Analysis):
         if analysis.attachment_url is None:
             raise RuntimeError()
-        
+
         raw_data = requests.get(analysis.attachment_url, stream=True).raw
         self.image = open(raw_data)
         self.pixels = get_pixels(self.image)
+
+        self.useful_amount: int
+        self.useless_amount: int
 
     def handle_sprite_size(self, analysis:Analysis):
         size = self.image.size
@@ -47,15 +52,22 @@ class SpriteContext():
         if is_color_excess(all_colors):
             analysis.issues.add(ColorOverExcess(UPPER_COLOR_LIMIT))
         else:
-            useful_colors = remove_useless_colors(all_colors)
-            self.handle_color_amount(analysis, all_colors, useful_colors)
+            self.handle_color_count(analysis, all_colors)
             self.handle_color_limit(analysis)
             self.handle_aseprite(analysis)
+            self.handle_graphics_gale(analysis)
+
+    def handle_color_count(self, analysis:Analysis, all_colors:list):
+        try:
+            useful_colors = remove_useless_colors(all_colors)
+            self.handle_color_amount(analysis, all_colors, useful_colors)
+        except ValueError:
+            analysis.issues.add(MissingTransparency())
 
     def handle_color_amount(self, analysis:Analysis, all_colors, useful_colors):
-        self.all_amount = len(all_colors)
+        all_amount = len(all_colors)
         self.useful_amount = len(useful_colors)
-        self.useless_amount = self.all_amount - self.useful_amount
+        self.useless_amount = all_amount - self.useful_amount
         analysis.issues.add(ColorAmount(self.useful_amount))
 
     def handle_color_limit(self, analysis:Analysis):
@@ -67,6 +79,11 @@ class SpriteContext():
         aseprite_ratio = self.useless_amount/self.useful_amount
         if aseprite_ratio > ASEPRITE_RATIO:
             analysis.issues.add(AsepriteUser(aseprite_ratio))
+
+    def handle_graphics_gale(self, analysis:Analysis):
+        is_graphics_gale = "GLDPNG" in self.image.info.get("Software", "")
+        if is_graphics_gale:
+            analysis.issues.add(GraphicsGaleUser())
 
     def handle_sprite_transparency(self, analysis:Analysis):
         if analysis.size_issue is False:
@@ -142,6 +159,7 @@ def get_pixels(image:Image) -> PyAccess:
 
 
 def remove_useless_colors(old_colors:list):
+    """# ValueError"""
     new_colors = []
     for old_color in old_colors:
         _color_amount, color_value = old_color
@@ -151,13 +169,15 @@ def remove_useless_colors(old_colors:list):
 
 
 def is_useless_color(color:colorType):
+    """# ValueError"""
     if is_indexed(color):
         return False
-    alpha = get_alpha(color)        # type: ignore
-    return is_transparent(alpha)    # type: ignore
+    alpha = get_alpha(color)
+    return is_transparent(alpha)
 
 
 def get_alpha(color:tuple) -> int:
+    """# ValueError"""
     if len(color) != 4:
         raise ValueError(len(color), color)
     _r, _g, _b, alpha = color
@@ -207,8 +227,8 @@ def main(analysis:Analysis):
 
 
 def handle_valid_sprite(analysis:Analysis):
-    content_context = SpriteContext(analysis)
-    content_context.handle_sprite_size(analysis)
-    content_context.handle_sprite_colours(analysis)
-    content_context.handle_sprite_transparency(analysis)
-    content_context.handle_sprite_half_pixels(analysis)
+    context = SpriteContext(analysis)
+    context.handle_sprite_size(analysis)
+    context.handle_sprite_colours(analysis)
+    context.handle_sprite_transparency(analysis)
+    context.handle_sprite_half_pixels(analysis)
