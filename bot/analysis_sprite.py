@@ -76,9 +76,10 @@ class SpriteContext():
             analysis.issues.add(ColorExcess(COLOR_LIMIT))
 
     def handle_aseprite(self, analysis:Analysis):
-        aseprite_ratio = self.useless_amount / self.useful_amount
-        if aseprite_ratio > ASEPRITE_RATIO:
-            analysis.issues.add(AsepriteUser(aseprite_ratio))
+        if self.useful_amount != 0:
+            aseprite_ratio = self.useless_amount / self.useful_amount
+            if aseprite_ratio > ASEPRITE_RATIO:
+                analysis.issues.add(AsepriteUser(aseprite_ratio))
 
     def handle_graphics_gale(self, analysis:Analysis):
         is_graphics_gale = "GLDPNG" in self.image.info.get("Software", "")
