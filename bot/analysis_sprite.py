@@ -1,15 +1,13 @@
 
 import requests
 from analysis import Analysis
-from bot.exceptions import TransparencyException
 from enums import Severity
+from exceptions import TransparencyException
 from issues import (AsepriteUser, ColorAmount, ColorExcess, ColorOverExcess,
                     GraphicsGaleUser, HalfPixelsAmount, InvalidSize,
-                    TransparencyAmount)
+                    MissingTransparency, TransparencyAmount)
 from PIL.Image import Image, new, open
 from PIL.PyAccess import PyAccess
-
-from bot.issues import MissingTransparency
 
 colorType = int|tuple
 
