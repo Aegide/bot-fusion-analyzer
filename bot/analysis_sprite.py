@@ -98,18 +98,6 @@ class SpriteContext():
                 analysis.severity = Severity.controversial
                 analysis.issues.add(SimilarityAmount(similarity_amount))
 
-    def get_color_dict(self):
-        color_dict = {}
-        for color_a in self.useful_colors:
-            for color_b in self.useful_colors:
-                if color_a == color_b:
-                    continue
-                color_delta = get_color_delta(color_a, color_b)
-                if is_similar(color_delta):
-                    frozen_set = frozenset([color_a, color_b])
-                    color_dict[frozen_set] = color_delta
-        return color_dict
-
     def handle_color_limit(self, analysis:Analysis):
         if self.useful_amount > COLOR_LIMIT:
             analysis.severity = Severity.refused
@@ -139,10 +127,16 @@ class SpriteContext():
         except TransparencyException:
             pass
 
+    # FIXME : add support for indexed sprites
     def get_similarity_amount(self):
-        print("(get_similarity_amount)", self.useful_colors[0])
-        # return len(self.get_color_dict())
-        return 0
+        similarity_amount = 0
+        try:
+            rgb_color_list = get_rgb_color_list(self.useful_colors)
+            color_dict = get_color_dict(rgb_color_list)
+            similarity_amount = len(color_dict)
+        except Exception:
+            pass
+        return similarity_amount
 
     def handle_sprite_half_pixels(self, analysis:Analysis):
         if analysis.size_issue is False:
@@ -153,7 +147,7 @@ class SpriteContext():
                 analysis.severity = Severity.refused
                 analysis.issues.add(HalfPixelsAmount(half_pixels_amount))
 
-    def highlight_transparency(self)->tuple[int, Image]:
+    def highlight_transparency(self) -> tuple[int, Image]:
         """# TransparencyException"""
         local_image = new("RGBA", (MAX_SIZE, MAX_SIZE))
         local_pixels = get_pixels(local_image)
@@ -174,7 +168,7 @@ class SpriteContext():
                     local_pixels[i, j] = WHITE
         return (transparency_amount, local_image)
 
-    def highlight_half_pixels(self)->tuple[int, Image]:
+    def highlight_half_pixels(self) -> tuple[int, Image]:
         local_image = new("RGBA", (MAX_SIZE, MAX_SIZE))
         local_pixels = get_pixels(local_image)
         (delta_i, delta_j) = find_first_pixel(self.pixels)
@@ -189,6 +183,27 @@ class SpriteContext():
                 if color == RED:
                     half_pixels_amount += 9
         return half_pixels_amount, local_image
+
+
+def get_color_dict(rgb_color_list):
+    color_dict = {}
+    for color_a in rgb_color_list:
+        for color_b in rgb_color_list:
+            if color_a == color_b:
+                continue
+            color_delta = get_color_delta(color_a, color_b)
+            if is_similar(color_delta):
+                frozen_set = frozenset([color_a, color_b])
+                color_dict[frozen_set] = color_delta
+    return color_dict
+
+
+def get_rgb_color_list(color_data_list:list) -> list[tuple[int, int, int]]:
+    rgb_color_list = []
+    for color_data in color_data_list:
+        rgb_color = color_data[1][0:3]
+        rgb_color_list.append(rgb_color)
+    return rgb_color_list
 
 
 # Maximum number of colors. If this number is exceeded, this method returns None.
