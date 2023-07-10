@@ -189,8 +189,7 @@ async def help(interaction: discord.Interaction):
 
 
 @tree.command(name="similar", description="Get the list of similar colors")
-async def similar(interaction: discord.Interaction, message: discord.Message):
-    print(message)
+async def similar(interaction: discord.Interaction):
     text = "soon TM."
     await interaction.response.send_message(text)
 
