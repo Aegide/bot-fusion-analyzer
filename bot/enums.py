@@ -19,7 +19,7 @@ class Description(str, Enum):
     icon                = "Icon sprite"
     custom              = "Custom sprite"
     egg                 = "Egg sprite"
-    incomprehensible    = "Incomprehensible sprite"
+    incomprehensible    = "Incomprehensible name"
     test                = "Description test"
     no_transparency     = "Missing transparency"
     aseprite_user       = "Aseprite user detected"
