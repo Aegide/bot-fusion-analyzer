@@ -32,7 +32,7 @@ class SpriteContext():
         if analysis.attachment_url is None:
             raise RuntimeError()
 
-        raw_data = requests.get(analysis.attachment_url, stream=True).raw
+        raw_data = requests.get(analysis.attachment_url, stream=True, timeout=1).raw
         self.image = open(raw_data)
         self.pixels = get_pixels(self.image)
 
@@ -177,7 +177,7 @@ def is_useless_color(color:colorType):
     """# TransparencyException"""
     if is_indexed(color):
         return False
-    alpha = get_alpha(color)
+    alpha = get_alpha(color) # type: ignore
     return is_transparent(alpha)
 
 
