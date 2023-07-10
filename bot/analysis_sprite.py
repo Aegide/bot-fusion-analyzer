@@ -133,7 +133,9 @@ class SpriteContext():
         try:
             rgb_color_list = get_rgb_color_list(self.useful_colors)
             color_dict = get_color_dict(rgb_color_list)
+            color_dict = sort_color_dict(color_dict)
             similarity_amount = len(color_dict)
+            print_color_dict(color_dict)
         except Exception:
             pass
         print(similarity_amount)
@@ -198,6 +200,20 @@ def get_color_dict(rgb_color_list):
                 color_dict[frozen_set] = color_delta
     return color_dict
 
+
+def sort_color_dict(some_dict:dict):
+    return {k: v for k, v in sorted(some_dict.items(), key=sort_element)}
+
+
+def sort_element(x):
+    return x[1][2]
+
+
+def print_color_dict(color_dict:dict):
+    for key, value in color_dict.items():
+        color:list = list(key)
+        deltas = f"({value[0]}, {value[1]}) : {value[2]}"
+        print(deltas, color)
 
 def get_rgb_color_list(color_data_list:list) -> list[tuple[int, int, int]]:
     rgb_color_list = []
