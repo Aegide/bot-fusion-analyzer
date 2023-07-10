@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import os
 from typing import Any
 import unittest
@@ -10,6 +11,7 @@ from utils import get_fusion_id_from_filename as gfiff
 from math import sqrt
 
 
+# Fuck colormath
 import numpy
 def patch_asscalar(a):
     return a.item()
@@ -18,11 +20,11 @@ setattr(numpy, "asscalar", patch_asscalar)
 
 from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
-from colormath.color_diff import delta_e_cie2000
+from colormath.color_diff import delta_e_cie2000, delta_e_cmc
 
 
 UPPER_COLOR_LIMIT = 1000
-VISUAL_DISTANCE_LIMIT = 10
+DELTA_COLOR_LIMIT = 10
 
 PINK = (255, 0, 255, 255)
 BLACK = (0, 0, 0, 255)
@@ -38,11 +40,6 @@ MAX_SIZE = 288
 RGB_MODE = "RGB"
 RGBA_MODE = "RGBA"
 PALETTE_MODE = "P"
-
-
-
-
-
 
 
 # class TestGalleryNames(unittest.TestCase):
@@ -217,9 +214,6 @@ def get_colors(image:Image, color_limit:int) -> list[tuple[int, tuple[int]]]:
     return image.getcolors(color_limit) # type: ignore
 
 
-USELESS_RGB = (0, 0, 0)
-
-
 def factor(rgb_256:tuple[int, int, int]):
     red = rgb_256[0] / 255.0
     green= rgb_256[0] / 255.0
@@ -234,12 +228,15 @@ def get_color_distance(rgb_a:tuple, rgb_b:tuple):
     return sqrt(red + green + blue)
 
 
-def get_visual_distance(rgb_a:tuple, rgb_b:tuple):
+def get_color_delta(rgb_a:tuple, rgb_b:tuple):
     color_rgb_a = sRGBColor(rgb_a[0], rgb_a[1], rgb_a[2], True)
     color_rgb_b = sRGBColor(rgb_b[0], rgb_b[1], rgb_b[2], True)
     color_lab_a = convert_color(color_rgb_a, LabColor)
     color_lab_b = convert_color(color_rgb_b, LabColor)
-    return delta_e_cie2000(color_lab_a, color_lab_b)
+    cie2000 = delta_e_cie2000(color_lab_a, color_lab_b)
+    cmc = delta_e_cmc(color_lab_a, color_lab_b)
+    combination = cie2000 * cmc
+    return [int(cie2000), int(cmc), int(combination)]
 
 
 def get_rgb_color_list(image:Image) -> list[tuple[int, int, int]]:
@@ -257,34 +254,42 @@ def get_color_dict(rgb_color_list:list):
         for color_b in rgb_color_list:
             if color_a == color_b:
                 continue
-
-            visual_distance = get_visual_distance(color_a, color_b)
-            frozen_set = frozenset([color_a, color_b])
-            if visual_distance < VISUAL_DISTANCE_LIMIT:
-                color_dict[frozen_set] = (visual_distance, frozen_set)
+            color_delta = get_color_delta(color_a, color_b)
+            condition = color_delta[0] < DELTA_COLOR_LIMIT and color_delta[1] < DELTA_COLOR_LIMIT
+            if condition:
+                frozen_set = frozenset([color_a, color_b])
+                color_dict[frozen_set] = color_delta
     return color_dict
 
 
 def print_color_dict(color_dict:dict):
-    for value in color_dict.values():
-        number: float = value[0]
-        element:frozenset = value[1]
-        print(">", number, list(element))
+    for key, value in color_dict.items():
+        color:list = list(key)
+        deltas = f"({value[0]}, {value[1]}) : {value[2]}"
+        print(deltas, color)
+
+
+def sort_color_dict(some_dict:dict):
+    return {k: v for k, v in sorted(some_dict.items(), key=sort_element)}
+
+
+def sort_element(x):
+    return x[1][2]
 
 
 class TestVisualDiversity(unittest.TestCase):
     def test_visual_diversity(self):
-
         sprites = os.listdir("fixtures")
         for sprite in sprites:
             sprite_path = os.path.join("fixtures", sprite)
             with open(sprite_path) as image:
                 print(sprite)
-
                 rgb_color_list = get_rgb_color_list(image)
                 color_dict = get_color_dict(rgb_color_list)
+                color_dict = sort_color_dict(color_dict)
                 print_color_dict(color_dict)
                 print("\n")
+
 
 if __name__ == '__main__':
     unittest.main()
