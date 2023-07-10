@@ -251,9 +251,14 @@ def get_rgb_color_list(image:Image) -> list[tuple[int, int, int]]:
     rgb_color_list = []
     color_data_list = get_colors(image, UPPER_COLOR_LIMIT)
     for color_data in color_data_list:
-        rgb_color = color_data[1][0:3]
-        rgb_color_list.append(rgb_color)
+        if not is_useless(color_data):
+            rgb_color = color_data[1][0:3]
+            rgb_color_list.append(rgb_color)
     return rgb_color_list
+
+
+def is_useless(color):
+    return color[1][3] == 0
 
 
 def get_color_dict(rgb_color_list:list):
@@ -291,11 +296,17 @@ class TestVisualDiversity(unittest.TestCase):
         for sprite in sprites:
             sprite_path = os.path.join("fixtures", sprite)
             with open(sprite_path) as image:
-                print(sprite)
-                rgb_color_list = get_rgb_color_list(image)
-                color_dict = get_color_dict(rgb_color_list)
-                color_dict = sort_color_dict(color_dict)
-                print_color_dict(color_dict)
+
+                try:
+                    rgb_color_list = get_rgb_color_list(image)
+                    print(f"{sprite} ({len(rgb_color_list)})")
+                    color_dict = get_color_dict(rgb_color_list)
+                    color_dict = sort_color_dict(color_dict)
+                    print_color_dict(color_dict)
+
+                except (TypeError, ValueError):
+                    print(print(sprite))
+
                 print("\n")
 
 
