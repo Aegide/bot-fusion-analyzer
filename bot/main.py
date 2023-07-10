@@ -13,10 +13,10 @@ from discord.message import Message
 from discord.threads import Thread
 from discord.user import User
 from enums import DiscordColour, Severity
+from exceptions import MissingBotContext
 from models import GlobalContext, ServerContext
 from PIL import Image
 from PIL.PyAccess import PyAccess
-
 
 ERROR_EMOJI_NAME = "NANI"
 ERROR_EMOJI_ID = f"<:{ERROR_EMOJI_NAME}:770390673664114689>"
@@ -106,7 +106,7 @@ def ctx()->GlobalContext:
     if bot_context is not None:
         return bot_context.context
     else:
-        raise ConnectionError
+        raise MissingBotContext
 
 
 async def send_bot_logs(analysis:Analysis, author_id:int):
