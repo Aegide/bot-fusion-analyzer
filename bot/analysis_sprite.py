@@ -136,7 +136,8 @@ class SpriteContext():
             similarity_amount = len(color_dict)
         except Exception:
             pass
-        return similarity_amount
+        print(similarity_amount)
+        return 0
 
     def handle_sprite_half_pixels(self, analysis:Analysis):
         if analysis.size_issue is False:
