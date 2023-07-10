@@ -1,27 +1,18 @@
-from collections import OrderedDict
 import os
-from typing import Any
-import unittest
 
-from PIL.ImagePalette import ImagePalette
-from PIL.Image import Image, open, new
-from PIL.PyAccess import PyAccess
-from numpy import array
-from utils import get_fusion_id_from_filename as gfiff
-from math import sqrt
+import numpy
+from PIL.Image import Image, open # Pillow
 
 
 # Fuck colormath
-import numpy
 def patch_asscalar(a):
     return a.item()
 setattr(numpy, "asscalar", patch_asscalar)
 
 
-from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000, delta_e_cmc
-
+from colormath.color_objects import LabColor, sRGBColor
 
 UPPER_COLOR_LIMIT = 1000
 DIFFERENCE_COLOR_LIMIT = 32
@@ -215,20 +206,6 @@ def get_colors(image:Image, color_limit:int) -> list[tuple[int, tuple[int]]]:
     return image.getcolors(color_limit) # type: ignore
 
 
-def factor(rgb_256:tuple[int, int, int]):
-    red = rgb_256[0] / 255.0
-    green= rgb_256[0] / 255.0
-    blue = rgb_256[0] / 255.0
-    return array([red, green, blue])
-
-
-def get_color_distance(rgb_a:tuple, rgb_b:tuple):
-    red = (rgb_a[0] - rgb_b[0])**2
-    green = (rgb_a[1] - rgb_b[1])**2
-    blue = (rgb_a[1] - rgb_b[2])**2
-    return sqrt(red + green + blue)
-
-
 def get_max_difference(rgb_a:tuple, rgb_b:tuple):
     red_difference = abs(rgb_a[0] - rgb_b[0])
     green_difference = abs(rgb_a[1] - rgb_b[1])
@@ -290,25 +267,24 @@ def sort_element(x):
     return x[1][2]
 
 
-class TestVisualDiversity(unittest.TestCase):
-    def test_visual_diversity(self):
-        sprites = os.listdir("fixtures")
-        for sprite in sprites:
-            sprite_path = os.path.join("fixtures", sprite)
-            with open(sprite_path) as image:
+def test_visual_diversity():
+    sprites = os.listdir("fixtures")
+    for sprite in sprites:
+        sprite_path = os.path.join("fixtures", sprite)
+        with open(sprite_path) as image:
 
-                try:
-                    rgb_color_list = get_rgb_color_list(image)
-                    print(f"{sprite} ({len(rgb_color_list)})")
-                    color_dict = get_color_dict(rgb_color_list)
-                    color_dict = sort_color_dict(color_dict)
-                    print_color_dict(color_dict)
+            try:
+                rgb_color_list = get_rgb_color_list(image)
+                print(f"{sprite} ({len(rgb_color_list)})")
+                color_dict = get_color_dict(rgb_color_list)
+                color_dict = sort_color_dict(color_dict)
+                print_color_dict(color_dict)
 
-                except (TypeError, ValueError):
-                    print(print(sprite))
+            except (TypeError, ValueError, IndexError):
+                print(print(sprite))
 
-                print("\n")
+            print("\n")
 
 
 if __name__ == '__main__':
-    unittest.main()
+    test_visual_diversity()
