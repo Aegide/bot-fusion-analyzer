@@ -2,7 +2,7 @@ import os
 
 import numpy
 from PIL.Image import Image, open # Pillow
-
+from PIL import UnidentifiedImageError
 
 # Fuck colormath
 def patch_asscalar(a):
@@ -271,18 +271,17 @@ def test_visual_diversity():
     sprites = os.listdir("fixtures")
     for sprite in sprites:
         sprite_path = os.path.join("fixtures", sprite)
-        with open(sprite_path) as image:
-
-            try:
+        try:
+            with open(sprite_path) as image:
                 rgb_color_list = get_rgb_color_list(image)
                 print(f"{sprite} ({len(rgb_color_list)})")
                 color_dict = get_color_dict(rgb_color_list)
                 color_dict = sort_color_dict(color_dict)
                 print_color_dict(color_dict)
+                print("\n")
 
-            except (TypeError, ValueError, IndexError):
-                print(print(sprite))
-
+        except (TypeError, ValueError, IndexError, UnidentifiedImageError):
+            print(print(sprite))
             print("\n")
 
 
