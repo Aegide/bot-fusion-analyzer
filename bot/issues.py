@@ -146,6 +146,15 @@ class TransparencyAmount(Issue):
         return f"{self.description.value} : {self.amount}"
 
 
+class SimilarityAmount(Issue):
+    description = Description.similarity_amount
+    severity = Severity.controversial
+    def __init__(self, amount:int) -> None:
+        self.amount = amount
+    def __str__(self) -> str:
+        return f"{self.description.value} : {self.amount} colors"
+
+
 class HalfPixelsAmount(Issue):
     description = Description.half_pixels_amount
     severity = Severity.refused

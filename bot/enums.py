@@ -24,6 +24,7 @@ class Description(str, Enum):
     no_transparency     = "Missing transparency"
     aseprite_user       = "Aseprite user detected"
     graphics_gale_user  = "GraphicsGale user detected"
+    similarity_amount   = "Similarity"
 
 
 class Severity(Enum):

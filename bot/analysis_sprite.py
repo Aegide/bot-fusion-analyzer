@@ -5,7 +5,7 @@ from enums import Severity
 from exceptions import TransparencyException
 from issues import (AsepriteUser, ColorAmount, ColorExcess, ColorOverExcess,
                     GraphicsGaleUser, HalfPixelsAmount, InvalidSize,
-                    MissingTransparency, TransparencyAmount)
+                    MissingTransparency, SimilarityAmount, TransparencyAmount)
 from PIL.Image import Image, new, open
 from PIL.PyAccess import PyAccess
 
@@ -98,6 +98,17 @@ class SpriteContext():
                     analysis.issues.add(TransparencyAmount(transparency_amount))
         except TransparencyException:
             pass
+
+    def get_similarity_amount(self):
+        return 0
+
+    def handle_sprite_similarity(self, analysis:Analysis):
+        if analysis.size_issue is False:
+            similarity_amount = self.get_similarity_amount()
+            if similarity_amount > 0:
+                if analysis.severity is not Severity.refused:
+                    analysis.severity = Severity.controversial
+                    analysis.issues.add(SimilarityAmount(similarity_amount))
 
     def handle_sprite_half_pixels(self, analysis:Analysis):
         if analysis.size_issue is False:
@@ -237,3 +248,4 @@ def handle_valid_sprite(analysis:Analysis):
     context.handle_sprite_colours(analysis)
     context.handle_sprite_transparency(analysis)
     context.handle_sprite_half_pixels(analysis)
+    context.handle_sprite_similarity(analysis)
