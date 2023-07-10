@@ -153,9 +153,9 @@ class SimilarityAmount(Issue):
         self.amount = amount
         self.color_color_dict = color_color_dict
     def __str__(self) -> str:
-        text = f"{self.description.value} : {self.amount} colors"
+        text = f"{self.description.value} : {self.amount} colors\n"
         for key, value in self.color_color_dict:
-            text += f"- {key} :: {value}"
+            text += f"* {key} :: {value}\n"
         return text
 
 class HalfPixelsAmount(Issue):
