@@ -103,19 +103,19 @@ class ColorAmount(Issue):
 class ColorExcess(Issue):
     description = Description.colour_excess
     severity = Severity.refused
-    def __init__(self, max:int) -> None:
-        self.max = max
+    def __init__(self, maximum:int) -> None:
+        self.maximum = maximum
     def __str__(self) -> str:
-        return f"{self.description.value} (max: {self.max})"
+        return f"{self.description.value} (max: {self.maximum})"
 
 
 class ColorOverExcess(Issue):
     description = Description.colour_excess
     severity = Severity.refused
-    def __init__(self, max:int) -> None:
-        self.max = max
+    def __init__(self, maximum:int) -> None:
+        self.maximum = maximum
     def __str__(self) -> str:
-        return f"{self.description.value} (it's over {self.max})"
+        return f"{self.description.value} (it's over {self.maximum})"
 
 
 class MissingTransparency(Issue):
@@ -149,11 +149,14 @@ class TransparencyAmount(Issue):
 class SimilarityAmount(Issue):
     description = Description.similarity_amount
     severity = Severity.controversial
-    def __init__(self, amount:int) -> None:
+    def __init__(self, amount:int, color_color_dict:dict) -> None:
         self.amount = amount
+        self.color_color_dict = color_color_dict
     def __str__(self) -> str:
-        return f"{self.description.value} : {self.amount} colors"
-
+        text = f"{self.description.value} : {self.amount} colors"
+        for key, value in self.color_color_dict:
+            text += f"- {key} :: {value}"
+        return text
 
 class HalfPixelsAmount(Issue):
     description = Description.half_pixels_amount

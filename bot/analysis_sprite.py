@@ -58,6 +58,7 @@ class SpriteContext():
         self.useless_amount: int = 0
 
         self.useful_colors: list = []
+        self.similar_color_dict: dict = {}
 
     def handle_sprite_size(self, analysis:Analysis):
         size = self.image.size
@@ -94,9 +95,9 @@ class SpriteContext():
     def handle_color_similarity(self, analysis:Analysis):
         similarity_amount = self.get_similarity_amount()
         if similarity_amount > 1:
-            if analysis.severity is not Severity.refused:
-                analysis.severity = Severity.controversial
-                analysis.issues.add(SimilarityAmount(similarity_amount))
+            # if analysis.severity is not Severity.refused:
+                # analysis.severity = Severity.controversial
+            analysis.issues.add(SimilarityAmount(similarity_amount, self.similar_color_dict))
 
     def handle_color_limit(self, analysis:Analysis):
         if self.useful_amount > COLOR_LIMIT:
@@ -132,14 +133,12 @@ class SpriteContext():
         similarity_amount = 0
         try:
             rgb_color_list = get_rgb_color_list(self.useful_colors)
-            color_dict = get_color_dict(rgb_color_list)
-            color_dict = sort_color_dict(color_dict)
-            similarity_amount = len(color_dict)
-            print_color_dict(color_dict)
+            self.similar_color_dict = get_similar_color_dict(rgb_color_list)
+            self.similar_color_dict = sort_color_dict(self.similar_color_dict)
+            similarity_amount = len(self.similar_color_dict)
         except Exception:
             pass
-        print(similarity_amount)
-        return 0
+        return similarity_amount
 
     def handle_sprite_half_pixels(self, analysis:Analysis):
         if analysis.size_issue is False:
@@ -188,7 +187,7 @@ class SpriteContext():
         return half_pixels_amount, local_image
 
 
-def get_color_dict(rgb_color_list):
+def get_similar_color_dict(rgb_color_list):
     color_dict = {}
     for color_a in rgb_color_list:
         for color_b in rgb_color_list:
