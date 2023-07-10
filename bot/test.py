@@ -24,6 +24,7 @@ from colormath.color_diff import delta_e_cie2000, delta_e_cmc
 
 
 UPPER_COLOR_LIMIT = 1000
+DIFFERENCE_COLOR_LIMIT = 32
 DELTA_COLOR_LIMIT = 10
 
 PINK = (255, 0, 255, 255)
@@ -228,6 +229,13 @@ def get_color_distance(rgb_a:tuple, rgb_b:tuple):
     return sqrt(red + green + blue)
 
 
+def get_max_difference(rgb_a:tuple, rgb_b:tuple):
+    red_difference = abs(rgb_a[0] - rgb_b[0])
+    green_difference = abs(rgb_a[1] - rgb_b[1])
+    blue_difference = abs(rgb_a[2] - rgb_b[2])
+    return max(red_difference, green_difference, blue_difference)
+
+
 def get_color_delta(rgb_a:tuple, rgb_b:tuple):
     color_rgb_a = sRGBColor(rgb_a[0], rgb_a[1], rgb_a[2], True)
     color_rgb_b = sRGBColor(rgb_b[0], rgb_b[1], rgb_b[2], True)
@@ -235,8 +243,8 @@ def get_color_delta(rgb_a:tuple, rgb_b:tuple):
     color_lab_b = convert_color(color_rgb_b, LabColor)
     cie2000 = delta_e_cie2000(color_lab_a, color_lab_b)
     cmc = delta_e_cmc(color_lab_a, color_lab_b)
-    combination = cie2000 * cmc
-    return [int(cie2000), int(cmc), int(combination)]
+    max_difference = get_max_difference(rgb_a, rgb_b)
+    return [int(cie2000), int(cmc), max_difference]
 
 
 def get_rgb_color_list(image:Image) -> list[tuple[int, int, int]]:
@@ -255,7 +263,7 @@ def get_color_dict(rgb_color_list:list):
             if color_a == color_b:
                 continue
             color_delta = get_color_delta(color_a, color_b)
-            condition = color_delta[0] < DELTA_COLOR_LIMIT and color_delta[1] < DELTA_COLOR_LIMIT
+            condition = color_delta[0] < DELTA_COLOR_LIMIT and color_delta[1] < DELTA_COLOR_LIMIT and color_delta[2] < DIFFERENCE_COLOR_LIMIT 
             if condition:
                 frozen_set = frozenset([color_a, color_b])
                 color_dict[frozen_set] = color_delta
