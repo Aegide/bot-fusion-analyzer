@@ -1,4 +1,3 @@
-
 import requests
 from analysis import Analysis
 from enums import Severity
@@ -6,16 +5,35 @@ from exceptions import TransparencyException
 from issues import (AsepriteUser, ColorAmount, ColorExcess, ColorOverExcess,
                     GraphicsGaleUser, HalfPixelsAmount, InvalidSize,
                     MissingTransparency, SimilarityAmount, TransparencyAmount)
-from PIL.Image import Image, new, open
+from PIL.Image import Image, new, open # Pillow
 from PIL.PyAccess import PyAccess
+
+
+# Fuck colormath
+import numpy
+def patch_asscalar(a):
+    return a.item()
+setattr(numpy, "asscalar", patch_asscalar)
+
+
+from colormath.color_objects import sRGBColor, LabColor
+from colormath.color_conversions import convert_color
+from colormath.color_diff import delta_e_cie2000, delta_e_cmc
+
 
 colorType = int|tuple
 
 
-VALID_SIZE = (288,288)
-UPPER_COLOR_LIMIT = 9000
 MAX_SIZE = 288
+VALID_SIZE = (MAX_SIZE, MAX_SIZE)
+
+
+UPPER_COLOR_LIMIT = 128
 COLOR_LIMIT = 64
+DIFFERENCE_COLOR_LIMIT = 32
+DELTA_COLOR_LIMIT = 10
+
+
 STEP = 3
 ASEPRITE_RATIO = 2
 
@@ -39,6 +57,8 @@ class SpriteContext():
         self.useful_amount: int = 0
         self.useless_amount: int = 0
 
+        self.useful_colors: list = []
+
     def handle_sprite_size(self, analysis:Analysis):
         size = self.image.size
         if size != VALID_SIZE:
@@ -46,29 +66,49 @@ class SpriteContext():
             analysis.severity = Severity.refused
             analysis.issues.add(InvalidSize(size))
 
-    def handle_sprite_colours(self, analysis:Analysis):
+    def handle_sprite_colors(self, analysis:Analysis):
         all_colors = self.image.getcolors(UPPER_COLOR_LIMIT)
         if is_color_excess(all_colors):
             analysis.issues.add(ColorOverExcess(UPPER_COLOR_LIMIT))
         else:
             self.handle_color_count(analysis, all_colors)
             self.handle_color_limit(analysis)
+            self.handle_color_similarity(analysis)
             self.handle_aseprite(analysis)
             self.handle_graphics_gale(analysis)
 
     def handle_color_count(self, analysis:Analysis, all_colors:list):
         try:
-            useful_colors = remove_useless_colors(all_colors)
-            self.handle_color_amount(analysis, all_colors, useful_colors)
+            self.useful_colors = remove_useless_colors(all_colors)
+            self.handle_color_amount(analysis, all_colors)
         except TransparencyException:
             analysis.severity = Severity.refused
             analysis.issues.add(MissingTransparency())
 
-    def handle_color_amount(self, analysis:Analysis, all_colors, useful_colors):
+    def handle_color_amount(self, analysis:Analysis, all_colors):
         all_amount = len(all_colors)
-        self.useful_amount = len(useful_colors)
+        self.useful_amount = len(self.useful_colors)
         self.useless_amount = all_amount - self.useful_amount
         analysis.issues.add(ColorAmount(self.useful_amount))
+
+    def handle_color_similarity(self, analysis:Analysis):
+        similarity_amount = self.get_similarity_amount()
+        if similarity_amount > 0:
+            if analysis.severity is not Severity.refused:
+                analysis.severity = Severity.controversial
+                analysis.issues.add(SimilarityAmount(similarity_amount))
+
+    def get_color_dict(self):
+        color_dict = {}
+        for color_a in self.useful_colors:
+            for color_b in self.useful_colors:
+                if color_a == color_b:
+                    continue
+                color_delta = get_color_delta(color_a, color_b)
+                if is_similar(color_delta):
+                    frozen_set = frozenset([color_a, color_b])
+                    color_dict[frozen_set] = color_delta
+        return color_dict
 
     def handle_color_limit(self, analysis:Analysis):
         if self.useful_amount > COLOR_LIMIT:
@@ -100,15 +140,9 @@ class SpriteContext():
             pass
 
     def get_similarity_amount(self):
+        print("(get_similarity_amount)", self.useful_colors[0])
+        # return len(self.get_color_dict())
         return 0
-
-    def handle_sprite_similarity(self, analysis:Analysis):
-        if analysis.size_issue is False:
-            similarity_amount = self.get_similarity_amount()
-            if similarity_amount > 0:
-                if analysis.severity is not Severity.refused:
-                    analysis.severity = Severity.controversial
-                    analysis.issues.add(SimilarityAmount(similarity_amount))
 
     def handle_sprite_half_pixels(self, analysis:Analysis):
         if analysis.size_issue is False:
@@ -237,6 +271,34 @@ def recolor_pixels(i:int, j:int, pixels:PyAccess, color:tuple):
             pixels[local_i, local_j] = color
 
 
+def is_similar(color_delta):
+    if color_delta[0] > DELTA_COLOR_LIMIT:
+        return False
+    if color_delta[1] > DELTA_COLOR_LIMIT:
+        return False
+    if color_delta[2] > DIFFERENCE_COLOR_LIMIT:
+        return False
+    return True
+
+
+def get_max_difference(rgb_a:tuple, rgb_b:tuple):
+    red_difference = abs(rgb_a[0] - rgb_b[0])
+    green_difference = abs(rgb_a[1] - rgb_b[1])
+    blue_difference = abs(rgb_a[2] - rgb_b[2])
+    return max(red_difference, green_difference, blue_difference)
+
+
+def get_color_delta(rgb_a:tuple, rgb_b:tuple):
+    color_rgb_a = sRGBColor(rgb_a[0], rgb_a[1], rgb_a[2], True)
+    color_rgb_b = sRGBColor(rgb_b[0], rgb_b[1], rgb_b[2], True)
+    color_lab_a = convert_color(color_rgb_a, LabColor)
+    color_lab_b = convert_color(color_rgb_b, LabColor)
+    cie2000 = delta_e_cie2000(color_lab_a, color_lab_b)
+    cmc = delta_e_cmc(color_lab_a, color_lab_b)
+    max_difference = get_max_difference(rgb_a, rgb_b)
+    return [int(cie2000), int(cmc), max_difference]
+
+
 def main(analysis:Analysis):
     if analysis.severity == Severity.accepted:
         handle_valid_sprite(analysis)
@@ -245,7 +307,6 @@ def main(analysis:Analysis):
 def handle_valid_sprite(analysis:Analysis):
     context = SpriteContext(analysis)
     context.handle_sprite_size(analysis)
-    context.handle_sprite_colours(analysis)
+    context.handle_sprite_colors(analysis)
     context.handle_sprite_transparency(analysis)
     context.handle_sprite_half_pixels(analysis)
-    context.handle_sprite_similarity(analysis)
