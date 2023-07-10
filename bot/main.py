@@ -183,11 +183,16 @@ def is_thread_from_spritework(thread:Thread):
 
 
 @tree.command(name="help", description="Get some help")
-async def chat(interaction: discord.Interaction):
-    if interaction.user == bot.user:
-        return
-    message = "You can contact Aegide, if you need help with anything related to the fusion bot."
-    await interaction.response.send_message(message)
+async def help(interaction: discord.Interaction):
+    text = "You can contact Aegide, if you need help with anything related to the fusion bot."
+    await interaction.response.send_message(text)
+
+
+@tree.command(name="similar", description="Get the list of similar colors")
+async def similar(interaction: discord.Interaction, message: discord.Message):
+    print(message)
+    text = "soon TM."
+    await interaction.response.send_message(text)
 
 
 @bot.event
