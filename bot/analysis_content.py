@@ -13,11 +13,11 @@ def exists(value):
 class ContentContext():
     def __init__(self, analysis:Analysis):
         self.filename_fusion_id = utils.extract_fusion_id_from_filename(analysis)
-        self.content_fusion_id = utils.extract_fusion_id_from_content(analysis)    
+        self.content_fusion_id = utils.extract_fusion_id_from_content(analysis)
 
     def have_two_values(self):
         return exists(self.filename_fusion_id) and exists(self.content_fusion_id)
-    
+
     def have_one_value(self):
         return exists(self.filename_fusion_id) or exists(self.content_fusion_id)
 
@@ -35,7 +35,7 @@ class ContentContext():
             analysis.issues.add(IncomprehensibleSprite())
             filename = utils.get_filename(analysis)
             analysis.issues.add(FileName(filename))
-            
+
     def handle_one_value(self, analysis:Analysis):
         if self.content_fusion_id is not None:
             analysis.severity = Severity.refused
@@ -49,12 +49,12 @@ class ContentContext():
             self.handle_dex_verification(analysis, self.filename_fusion_id)
 
     def handle_two_values(self, analysis:Analysis):
-            if self.filename_fusion_id != self.content_fusion_id:
-                self.handle_two_different_values(analysis)
-            else:
-                self.handle_two_same_values(analysis)
-            if self.filename_fusion_id is not None:
-                self.handle_dex_verification(analysis, self.filename_fusion_id)
+        if self.filename_fusion_id != self.content_fusion_id:
+            self.handle_two_different_values(analysis)
+        else:
+            self.handle_two_same_values(analysis)
+        if self.filename_fusion_id is not None:
+            self.handle_dex_verification(analysis, self.filename_fusion_id)
 
     def handle_two_different_values(self, analysis:Analysis):
         if self.filename_fusion_id is not None and self.content_fusion_id is not None:
