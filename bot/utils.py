@@ -14,9 +14,11 @@ PATTERN_CUSTOM = r'[cC]ustom'
 PATTERN_BASE = r'[bB]ase'
 PATTERN_EGG = r'[eE]gg'
 
-LAZY_PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+'
-STRICT_PATTERN_FUSION_ID = r'[0-9]+\.[0-9]+[a-z]{0,1}\.png$'
-SPOILER_PATTERN_FUSION_ID = f'SPOILER_{STRICT_PATTERN_FUSION_ID}'
+LAZY_PATTERN_FUSION_ID = r'([1-9]+[0-9]*)\.([1-9]+[0-9]*)'
+STRICT_PATTERN_FUSION_ID = LAZY_PATTERN_FUSION_ID + r'[a-z]{0,1}\.png$'
+
+REGULAR_PATTERN_FUSION_ID = rf'^{STRICT_PATTERN_FUSION_ID}'
+SPOILER_PATTERN_FUSION_ID = rf'^SPOILER_{STRICT_PATTERN_FUSION_ID}'
 
 AUTOGEN_FUSION_URL = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Battlers/"
 
@@ -124,7 +126,7 @@ def extract_fusion_id_from_filename(analysis:Analysis):
 
 def get_fusion_id_from_filename(filename:str):
     fusion_id = None
-    result = re.match(STRICT_PATTERN_FUSION_ID, filename)
+    result = re.match(REGULAR_PATTERN_FUSION_ID, filename)
     if result is not None:
         fusion_id = get_fusion_id_from_text(result[0])
     else:
