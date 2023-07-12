@@ -94,10 +94,10 @@ class SpriteContext():
 
     def handle_color_similarity(self, analysis:Analysis):
         similarity_amount = self.get_similarity_amount()
-        if similarity_amount > 1:
+        analysis.issues.add(SimilarityAmount(similarity_amount))
+        # if similarity_amount > 1:
             # if analysis.severity is not Severity.refused:
                 # analysis.severity = Severity.controversial
-            analysis.issues.add(SimilarityAmount(similarity_amount, self.similar_color_dict))
 
     def handle_color_limit(self, analysis:Analysis):
         if self.useful_amount > COLOR_LIMIT:

@@ -149,14 +149,10 @@ class TransparencyAmount(Issue):
 class SimilarityAmount(Issue):
     description = Description.similarity_amount
     severity = Severity.controversial
-    def __init__(self, amount:int, color_color_dict:dict) -> None:
+    def __init__(self, amount:int) -> None:
         self.amount = amount
-        self.color_color_dict = color_color_dict
     def __str__(self) -> str:
-        text = f"{self.description.value} : {self.amount}"
-        # for key, value in self.color_color_dict:
-        #     text += f"* {key} :: {value}\n"
-        return text
+        return  f"{self.description.value} : {self.amount}"
 
 class HalfPixelsAmount(Issue):
     description = Description.half_pixels_amount
