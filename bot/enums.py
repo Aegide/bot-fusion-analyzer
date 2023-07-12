@@ -8,7 +8,7 @@ class Description(str, Enum):
     missing_file_name   = "Missing file name"
     missing_fusion_id   = "Unable to identify fusion sprite"
     different_fusion_id = "Different ID"
-    colour_excess       = "Too many colours"
+    colour_excess       = "Colour excess"
     transparency_amount = "Transparency"
     half_pixels_amount  = "Half-pixels"
     colour_amount       = "Colours"

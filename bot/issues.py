@@ -115,7 +115,7 @@ class ColorOverExcess(Issue):
     def __init__(self, maximum:int) -> None:
         self.maximum = maximum
     def __str__(self) -> str:
-        return f"{self.description.value} (it's over {self.maximum})"
+        return f"{self.description.value} (+{self.maximum})"
 
 
 class MissingTransparency(Issue):

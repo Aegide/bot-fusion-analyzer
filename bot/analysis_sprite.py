@@ -70,6 +70,7 @@ class SpriteContext():
     def handle_sprite_colors(self, analysis:Analysis):
         all_colors = self.image.getcolors(UPPER_COLOR_LIMIT)
         if is_color_excess(all_colors):
+            analysis.severity = Severity.refused
             analysis.issues.add(ColorOverExcess(UPPER_COLOR_LIMIT))
         else:
             self.handle_color_count(analysis, all_colors)
