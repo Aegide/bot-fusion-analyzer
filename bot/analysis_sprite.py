@@ -6,7 +6,11 @@ from issues import (AsepriteUser, ColorAmount, ColorExcessControversial,
                     ColorExcessRefused, ColorOverExcess, GraphicsGaleUser,
                     HalfPixelsAmount, InvalidSize, MissingTransparency,
                     SimilarityAmount, TransparencyAmount)
-from PIL.Image import Image, new, open  # Pillow
+
+
+# Pillow
+from PIL.Image import open as image_open
+from PIL.Image import Image, new
 from PIL.PyAccess import PyAccess
 
 
@@ -53,7 +57,7 @@ class SpriteContext():
             raise RuntimeError()
 
         raw_data = requests.get(analysis.attachment_url, stream=True, timeout=1).raw
-        self.image = open(raw_data)
+        self.image = image_open(raw_data)
         self.pixels = get_pixels(self.image)
 
         self.useful_amount: int = 0
