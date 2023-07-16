@@ -100,13 +100,22 @@ class ColorAmount(Issue):
         return f"{self.description.value} : {self.amount}"
 
 
-class ColorExcess(Issue):
+class ColorExcessRefused(Issue):
     description = Description.colour_excess
     severity = Severity.refused
     def __init__(self, maximum:int) -> None:
         self.maximum = maximum
     def __str__(self) -> str:
         return f"{self.description.value} (max: {self.maximum})"
+
+
+class ColorExcessControversial(Issue):
+    description = Description.colour_excess
+    severity = Severity.controversial
+    def __init__(self, maximum:int) -> None:
+        self.maximum = maximum
+    def __str__(self) -> str:
+        return f"{self.description.value} (limit: {self.maximum})"
 
 
 class ColorOverExcess(Issue):

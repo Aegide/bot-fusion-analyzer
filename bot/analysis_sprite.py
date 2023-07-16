@@ -2,10 +2,11 @@ import requests
 from analysis import Analysis
 from enums import Severity
 from exceptions import TransparencyException
-from issues import (AsepriteUser, ColorAmount, ColorExcess, ColorOverExcess,
-                    GraphicsGaleUser, HalfPixelsAmount, InvalidSize,
-                    MissingTransparency, SimilarityAmount, TransparencyAmount)
-from PIL.Image import Image, new, open # Pillow
+from issues import (AsepriteUser, ColorAmount, ColorExcessControversial,
+                    ColorExcessRefused, ColorOverExcess, GraphicsGaleUser,
+                    HalfPixelsAmount, InvalidSize, MissingTransparency,
+                    SimilarityAmount, TransparencyAmount)
+from PIL.Image import Image, new, open  # Pillow
 from PIL.PyAccess import PyAccess
 
 
@@ -28,8 +29,9 @@ MAX_SIZE = 288
 VALID_SIZE = (MAX_SIZE, MAX_SIZE)
 
 
-UPPER_COLOR_LIMIT = 256
-COLOR_LIMIT = 64
+ALL_COLOR_LIMIT = 256
+REFUSED_COLOR_LIMIT = 64
+CONTROVERSIAL_COLOR_LIMIT = 32
 DIFFERENCE_COLOR_LIMIT = 32
 DELTA_COLOR_LIMIT = 10
 
@@ -68,10 +70,10 @@ class SpriteContext():
             analysis.issues.add(InvalidSize(size))
 
     def handle_sprite_colors(self, analysis:Analysis):
-        all_colors = self.image.getcolors(UPPER_COLOR_LIMIT)
+        all_colors = self.image.getcolors(ALL_COLOR_LIMIT)
         if is_color_excess(all_colors):
             analysis.severity = Severity.refused
-            analysis.issues.add(ColorOverExcess(UPPER_COLOR_LIMIT))
+            analysis.issues.add(ColorOverExcess(ALL_COLOR_LIMIT))
         else:
             self.handle_color_count(analysis, all_colors)
             self.handle_color_limit(analysis)
@@ -101,9 +103,13 @@ class SpriteContext():
                 # analysis.severity = Severity.controversial
 
     def handle_color_limit(self, analysis:Analysis):
-        if self.useful_amount > COLOR_LIMIT:
+        if self.useful_amount > REFUSED_COLOR_LIMIT:
+            analysis.issues.add(ColorExcessRefused(REFUSED_COLOR_LIMIT))
             analysis.severity = Severity.refused
-            analysis.issues.add(ColorExcess(COLOR_LIMIT))
+        elif self.useful_amount > CONTROVERSIAL_COLOR_LIMIT:
+            analysis.issues.add(ColorExcessControversial(CONTROVERSIAL_COLOR_LIMIT))
+            if analysis.severity is not Severity.refused:
+                analysis.severity = Severity.controversial
 
     def handle_aseprite(self, analysis:Analysis):
         if self.useful_amount != 0:
