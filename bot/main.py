@@ -156,7 +156,7 @@ async def handle_test_sprite_gallery(message:Message):
 async def handle_reply_message(message:Message):
     utils.log_event("R>", message)
     for specific_attachment in message.attachments:
-        analysis = generate_analysis(message, specific_attachment)
+        analysis = generate_analysis(message, specific_attachment, True)
         try:
             await message.channel.send(embed=analysis.embed)
             if analysis.transparency_issue is True:

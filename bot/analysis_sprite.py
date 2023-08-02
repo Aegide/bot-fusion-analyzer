@@ -341,8 +341,11 @@ def get_color_delta(rgb_a:tuple, rgb_b:tuple):
     return [int(cie2000), int(cmc), max_difference]
 
 
-def main(analysis:Analysis):
-    if analysis.severity == Severity.accepted:
+def main(analysis:Analysis, is_reply: bool):
+
+    if is_reply:
+        handle_valid_sprite(analysis)
+    elif analysis.severity == Severity.accepted:
         handle_valid_sprite(analysis)
 
 
