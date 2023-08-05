@@ -10,7 +10,6 @@ from discord import Client, PartialEmoji, app_commands
 from discord.channel import TextChannel
 from discord.guild import Guild
 from discord.message import Message
-from discord.threads import Thread
 from discord.user import User
 from enums import DiscordColour, Severity
 from exceptions import MissingBotContext
@@ -18,10 +17,11 @@ from models import GlobalContext, ServerContext
 from PIL import Image
 from PIL.PyAccess import PyAccess
 
+
 ERROR_EMOJI_NAME = "NANI"
 ERROR_EMOJI_ID = f"<:{ERROR_EMOJI_NAME}:770390673664114689>"
 ERROR_EMOJI = PartialEmoji(name=ERROR_EMOJI_NAME).from_str(ERROR_EMOJI_ID)
-MAX_SEVERITY = [Severity.refused, Severity.controversial] 
+MAX_SEVERITY = [Severity.refused, Severity.controversial]
 
 
 intents = discord.Intents.default()
@@ -64,16 +64,16 @@ def get_channel_from_id(server:Guild, channel_id) -> TextChannel :
     return channel
 
 
-def get_server_from_id(bot:Client, server_id) -> Guild:
-    server = bot.get_guild(server_id)
+def get_server_from_id(client:Client, server_id) -> Guild:
+    server = client.get_guild(server_id)
     if server is None:
         raise KeyError(server_id)
     return server
 
 
 class BotContext:
-    def __init__(self, bot:Client):
-        server_aegide = get_server_from_id(bot, id_server_aegide)
+    def __init__(self, client:Client):
+        server_aegide = get_server_from_id(client, id_server_aegide)
         channel_gallery_aegide = get_channel_from_id(server_aegide, id_channel_gallery_aegide)
         channel_log_aegide = get_channel_from_id(server_aegide, id_channel_logs_aegide)
 
@@ -84,7 +84,7 @@ class BotContext:
             debug=None
         )
 
-        server_pif = get_server_from_id(bot, id_server_pif)
+        server_pif = get_server_from_id(client, id_server_pif)
         channel_gallery_pif = get_channel_from_id(server_pif, id_channel_gallery_pif)
         channel_log_pif = get_channel_from_id(server_pif, id_channel_logs_pif)
         channel_debug_pif = get_channel_from_id(server_pif, id_channel_debug_pif)
@@ -118,10 +118,16 @@ async def send_bot_logs(analysis:Analysis, author_id:int):
 
 
 async def send_bonus_content(analysis:Analysis):
-    if analysis.transparency_issue is True:
-        await ctx().pif.logs.send(embed=analysis.transparency_embed, file=generate_bonus_file(analysis.transparency_image))
-    if analysis.half_pixels_issue is True:
-        await ctx().pif.logs.send(embed=analysis.half_pixels_embed, file=generate_bonus_file(analysis.half_pixels_image))
+    if analysis.transparency_issue:
+        await ctx().pif.logs.send(
+            embed=analysis.transparency_embed,
+            file=generate_bonus_file(analysis.transparency_image)
+        )
+    if analysis.half_pixels_issue:
+        await ctx().pif.logs.send(
+            embed=analysis.half_pixels_embed,
+            file=generate_bonus_file(analysis.half_pixels_image)
+        )
 
 
 async def send_with_content(analysis:Analysis, author_id:int):
@@ -147,10 +153,16 @@ async def handle_test_sprite_gallery(message:Message):
     utils.log_event("T-SG>", message)
     analysis = generate_analysis(message)
     await ctx().aegide.logs.send(embed=analysis.embed)
-    if analysis.transparency_issue is True:
-        await ctx().aegide.logs.send(embed=analysis.transparency_embed, file=generate_bonus_file(analysis.transparency_image))
-    if analysis.half_pixels_issue is True:
-        await ctx().aegide.logs.send(embed=analysis.half_pixels_embed, file=generate_bonus_file(analysis.half_pixels_image))
+    if analysis.transparency_issue:
+        await ctx().aegide.logs.send(
+            embed=analysis.transparency_embed,
+            file=generate_bonus_file(analysis.transparency_image)
+        )
+    if analysis.half_pixels_issue:
+        await ctx().aegide.logs.send(
+            embed=analysis.half_pixels_embed,
+            file=generate_bonus_file(analysis.half_pixels_image)
+        )
 
 
 async def handle_reply_message(message:Message):
@@ -159,37 +171,28 @@ async def handle_reply_message(message:Message):
         analysis = generate_analysis(message, specific_attachment, True)
         try:
             await message.channel.send(embed=analysis.embed)
-            if analysis.transparency_issue is True:
-                await message.channel.send(embed=analysis.transparency_embed, file=generate_bonus_file(analysis.transparency_image))
-            if analysis.half_pixels_issue is True:
-                await message.channel.send(embed=analysis.half_pixels_embed, file=generate_bonus_file(analysis.half_pixels_image))
+            if analysis.transparency_issue:
+                await message.channel.send(
+                    embed=analysis.transparency_embed,
+                    file=generate_bonus_file(analysis.transparency_image)
+                )
+            if analysis.half_pixels_issue:
+                await message.channel.send(
+                    embed=analysis.half_pixels_embed,
+                    file=generate_bonus_file(analysis.half_pixels_image)
+                )
         except discord.Forbidden:
-            print("R>> Missing permissions in %s" % message.channel)
- 
-
-def is_message_from_spritework_thread(message:Message):
-    result = False
-    thread = utils.get_thread(message)
-    if thread is not None:
-        result = is_thread_from_spritework(thread)
-    return result
-
-
-def is_thread_from_spritework(thread:Thread):
-    # is_spritework_pif = thread.parent_id == id_channel_spritework_aegide
-    # is_spritework_aegide = thread.parent_id == id_channel_spritework_pif
-    # return is_spritework_pif or is_spritework_aegide
-    return False
+            print(f"R>> Missing permissions in {message.channel}")
 
 
 @tree.command(name="help", description="Get some help")
-async def help(interaction: discord.Interaction):
+async def help_command(interaction: discord.Interaction):
     text = "You can contact Aegide, if you need help with anything related to the fusion bot."
     await interaction.response.send_message(text)
 
 
 @tree.command(name="similar", description="Get the list of similar colors")
-async def similar(interaction: discord.Interaction):
+async def similar_command(interaction: discord.Interaction):
     text = "soon TM."
     await interaction.response.send_message(text)
 
@@ -213,7 +216,9 @@ async def on_ready():
     global bot_context
     bot_context = BotContext(bot)
 
-    print("\n\nReady! bot invite:\n\nhttps://discordapp.com/api/oauth2/authorize?client_id=" + str(bot_id) + "&permissions=" + permission_id + "&scope=bot\n\n")
+    invite_parameters = f"client_id={str(bot_id)}&permissions={permission_id}&scope=bot"
+    invite_link = f"https://discordapp.com/api/oauth2/authorize?{invite_parameters}"
+    print(f"\n\nReady! bot invite:\n\n{invite_link}\n\n")
 
     await ctx().aegide.logs.send(content="(OK)")
 
