@@ -22,8 +22,8 @@ class Description(str, Enum):
     incomprehensible    = "Incomprehensible name"
     test                = "Description test"
     no_transparency     = "Missing transparency"
-    aseprite_user       = "(Aseprite)"
-    graphics_gale_user  = "(GraphicsGale)"
+    aseprite_user       = "Aseprite"
+    graphics_gale_user  = "GraphicsGale"
     similarity_amount   = "Similarity"
 
 
