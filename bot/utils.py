@@ -24,7 +24,7 @@ REGULAR_PATTERN_FUSION_ID = rf'^{STRICT_PATTERN_FUSION_ID}'
 SPOILER_PATTERN_FUSION_ID = rf'^SPOILER_{STRICT_PATTERN_FUSION_ID}'
 
 RAW_GITHUB = "https://raw.githubusercontent.com"
-AUTOGEN_FUSION_URL = f"{RAW_GITHUB}/Aegide/autogen-fusion-sprites/master/Battlers/"
+AUTOGEN_FUSION_URL = f"{RAW_GITHUB}/Scott-Bonner/autogen-fusion-sprites/master/Battlers/"
 QUESTION_URL = f"{RAW_GITHUB}/Aegide/bot-fusion-analyzer/main/bot/question.png"
 
 YAGPDB_ID = 204255221017214977
