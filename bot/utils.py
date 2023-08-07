@@ -6,8 +6,10 @@ from discord.user import User, ClientUser
 from discord.member import Member
 from discord.threads import Thread
 
-
 from analysis import Analysis
+
+
+MAX_DEX_ID = 450
 
 PATTERN_ICON = r'[iI]con'
 PATTERN_CUSTOM = r'[cC]ustom'
@@ -22,9 +24,7 @@ SPOILER_PATTERN_FUSION_ID = rf'^SPOILER_{STRICT_PATTERN_FUSION_ID}'
 
 AUTOGEN_FUSION_URL = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Battlers/"
 
-
 YAGPDB_ID = 204255221017214977
-
 
 LCB = "{"
 RCB = "}"
@@ -52,7 +52,7 @@ def get_channel_name(message:Message):
 
 # is_message_not_from_a_bot
 def is_message_from_human(message:Message, fusion_bot_id:int|None):
-    return message.author.id != fusion_bot_id and message.author.id != YAGPDB_ID
+    return message.author.id not in (fusion_bot_id, YAGPDB_ID)
 
 
 def get_thread(message:Message) -> (Thread | None):
@@ -109,7 +109,7 @@ def get_autogen_url(fusion_id:str):
 def is_invalid_fusion_id(fusion_id:str):
     head, body = fusion_id.split(".")
     head_id, body_id = int(head), int(body)
-    return head_id > 420 or body_id > 420
+    return head_id > MAX_DEX_ID or body_id > MAX_DEX_ID
 
 
 def get_display_avatar(user: User|Member|ClientUser) -> Asset:
