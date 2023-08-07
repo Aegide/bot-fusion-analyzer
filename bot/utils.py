@@ -10,6 +10,7 @@ from analysis import Analysis
 
 
 MAX_DEX_ID = 450
+MISSING_DEX_ID = 420
 
 PATTERN_ICON = r'[iI]con'
 PATTERN_CUSTOM = r'[cC]ustom'
@@ -22,7 +23,9 @@ STRICT_PATTERN_FUSION_ID = LAZY_PATTERN_FUSION_ID + r'[a-z]{0,1}\.png$'
 REGULAR_PATTERN_FUSION_ID = rf'^{STRICT_PATTERN_FUSION_ID}'
 SPOILER_PATTERN_FUSION_ID = rf'^SPOILER_{STRICT_PATTERN_FUSION_ID}'
 
-AUTOGEN_FUSION_URL = "https://raw.githubusercontent.com/Aegide/FusionSprites/master/Battlers/"
+RAW_GITHUB = "https://raw.githubusercontent.com"
+AUTOGEN_FUSION_URL = f"{RAW_GITHUB}/Aegide/autogen-fusion-sprites/master/Battlers/"
+QUESTION_URL = f"{RAW_GITHUB}/Aegide/bot-fusion-analyzer/tree/main/bot/question.png"
 
 YAGPDB_ID = 204255221017214977
 
@@ -102,7 +105,16 @@ def have_attachment(analysis:Analysis):
     return len(analysis.message.attachments) >= 1
 
 
+def is_missing_autogen(fusion_id:str):
+    split_fusion_id = fusion_id.split(".")
+    head_id = int(split_fusion_id[0])
+    body_id = int(split_fusion_id[1])
+    return head_id > MISSING_DEX_ID or body_id > MISSING_DEX_ID
+
+
 def get_autogen_url(fusion_id:str):
+    if is_missing_autogen(fusion_id):
+        return QUESTION_URL
     return AUTOGEN_FUSION_URL + fusion_id.split(".")[0] + "/" + fusion_id + ".png"
 
 
