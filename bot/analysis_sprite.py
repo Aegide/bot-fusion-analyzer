@@ -29,6 +29,9 @@ from colormath.color_diff import delta_e_cie2000, delta_e_cmc
 colorType = int|tuple
 
 
+TIMEOUT = 10
+
+
 MAX_SIZE = 288
 VALID_SIZE = (MAX_SIZE, MAX_SIZE)
 
@@ -56,7 +59,7 @@ class SpriteContext():
         if analysis.attachment_url is None:
             raise RuntimeError()
 
-        raw_data = requests.get(analysis.attachment_url, stream=True, timeout=1).raw
+        raw_data = requests.get(analysis.attachment_url, stream=True, timeout=TIMEOUT).raw
         self.image = image_open(raw_data)
         self.pixels = get_pixels(self.image)
 
