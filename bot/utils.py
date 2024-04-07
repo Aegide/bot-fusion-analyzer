@@ -10,7 +10,7 @@ from analysis import Analysis
 
 
 MAX_DEX_ID = 500
-MISSING_DEX_ID = 420
+MISSING_DEX_ID = 470
 
 PATTERN_ICON = r'[iI]con'
 PATTERN_CUSTOM = r'[cC]ustom'
