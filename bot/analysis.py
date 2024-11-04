@@ -20,7 +20,7 @@ DICT_SEVERITY_COLOUR = {
 
 class Analysis:
     message: Message
-    issues: Issues 
+    issues: Issues
     severity: Severity
     embed: Embed
     fusion_id: str = "DEFAULT_VALUE"
@@ -53,7 +53,7 @@ class Analysis:
         self.apply_author()
         self.apply_footer()
         self.apply_image()
-        self.apply_attachment_url()
+        self.apply_thumbnail()
         self.handle_bonus_embed()
 
     def generate_transparency_file(self):
@@ -98,10 +98,12 @@ class Analysis:
         self.embed.set_footer(text=self.message.content)
 
     def apply_image(self):
-        if self.autogen_url is not None:
-            self.embed.set_image(url=self.autogen_url)
+        # TODO : uncomment this when "get_autogen_url" works
+        # if self.autogen_url is not None:
+        #     self.embed.set_image(url=self.autogen_url)
+        pass
 
-    def apply_attachment_url(self):
+    def apply_thumbnail(self):
         if self.attachment_url is not None:
             self.embed.set_thumbnail(url=self.attachment_url)
 
@@ -114,7 +116,7 @@ def get_bonus_embed(discord_colour:Colour):
 def generate_bonus_file(image:Image):
     if image is None:
         raise RuntimeError()
-    bytes = BytesIO()
-    image.save(bytes, format="PNG")
-    bytes.seek(0)
-    return File(bytes, filename="image.png")
+    io_bytes = BytesIO()
+    image.save(io_bytes, format="PNG")
+    io_bytes.seek(0)
+    return File(io_bytes, filename="image.png")

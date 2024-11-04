@@ -114,6 +114,7 @@ def is_missing_autogen(fusion_id:str):
     return head_id > MISSING_DEX_ID or body_id > MISSING_DEX_ID
 
 
+# TODO : find a working link
 def get_autogen_url(fusion_id:str):
     if is_missing_autogen(fusion_id):
         return QUESTION_URL
