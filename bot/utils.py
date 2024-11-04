@@ -9,7 +9,7 @@ from discord.threads import Thread
 from analysis import Analysis
 
 
-MAX_DEX_ID = 500
+MAX_DEX_ID = 600
 MISSING_DEX_ID = 420
 
 PATTERN_ICON = r'[iI]con'
